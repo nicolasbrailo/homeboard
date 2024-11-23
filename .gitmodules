@@ -7,3 +7,6 @@
 [submodule "pipresencemon"]
 	path = pipresencemon
 	url = git@github.com:nicolasbrailo/pipresencemon.git
+[submodule "pi_gpio_mon"]
+	path = pi_gpio_mon
+	url = git@github.com:nicolasbrailo/pi_gpio_mon.git
