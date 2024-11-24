@@ -1,0 +1,12 @@
+[Unit]
+Description=wayfire
+
+[Service]
+RuntimeDirectory=/home/batman/run
+Environment=XDG_RUNTIME_DIR=/home/batman/run
+ExecStart=wayfire
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+RestartSec=10s
+User=batman

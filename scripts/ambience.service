@@ -1,14 +1,12 @@
 [Unit]
 Description=ambience
-Wants=network-online.target
-After=network-online.target
+After=network-online.target wayfire.service
 
 [Service]
-Environment=XDG_RUNTIME_DIR=/run/user/1000 WAYLAND_DISPLAY="wayland-1" DISPLAY=""
+Environment=XDG_RUNTIME_DIR=/home/batman/run WAYLAND_DISPLAY="wayland-1" DISPLAY=""
 ExecStart=/home/batman/homeboard/bin/pipresencemon /home/batman/homeboard/cfg/pipresencemon.cfg
 StandardOutput=inherit
 StandardError=inherit
 Restart=always
 RestartSec=3s
 User=batman
-

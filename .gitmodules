@@ -10,3 +10,6 @@
 [submodule "pi_gpio_mon"]
 	path = pi_gpio_mon
 	url = git@github.com:nicolasbrailo/pi_gpio_mon.git
+[submodule "hackwaytext"]
+	path = hackwaytext
+	url = git@github.com:nicolasbrailo/hackwaytext.git
