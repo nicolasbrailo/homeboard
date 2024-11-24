@@ -1,9 +1,14 @@
 
-all: wl-display-toggle/wl-display-toggle pipresencemon/pipresencemon hackswayimg/hackimg pi_gpio_mon/gpiomon
+all: wl-display-toggle/wl-display-toggle pipresencemon/pipresencemon hackswayimg/hackimg pi_gpio_mon/gpiomon hackwaytext/hackwaytext
 
-build: wl-display-toggle/wl-display-toggle pipresencemon/pipresencemon hackswayimg/hackimg pi_gpio_mon/gpiomon
+build: wl-display-toggle/wl-display-toggle pipresencemon/pipresencemon hackswayimg/hackimg pi_gpio_mon/gpiomon hackwaytext/hackwaytext
 	mkdir -p build/bin
-	cp pipresencemon/pipresencemon hackswayimg/hackimg wl-display-toggle/wl_display_toggle pi_gpio_mon/gpiomon build/bin/
+	cp pipresencemon/pipresencemon \
+		 hackswayimg/hackimg \
+		 wl-display-toggle/wl_display_toggle \
+		 pi_gpio_mon/gpiomon \
+		 hackwaytext/hackwaytext \
+		 	 build/bin/
 	rm -rf build/cfg build/scripts
 	cp -r cfg/ build/
 	cp -r scripts/ build/
@@ -28,4 +33,8 @@ hackswayimg/hackimg:
 .PHONY: pi_gpio_mon/gpiomon
 pi_gpio_mon/gpiomon:
 	make -C pi_gpio_mon
+
+.PHONY: hackwaytext/hackwaytext
+hackwaytext/hackwaytext:
+	make -C hackwaytext
 
