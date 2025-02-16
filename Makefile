@@ -1,4 +1,6 @@
 
+TARGET_IP=10.0.0.93
+
 all: wl-display-toggle/wl-display-toggle pipresencemon/pipresencemon hackswayimg/hackimg pi_gpio_mon/gpiomon hackwaytext/hackwaytext
 
 build: wl-display-toggle/wl-display-toggle pipresencemon/pipresencemon hackswayimg/hackimg pi_gpio_mon/gpiomon hackwaytext/hackwaytext
@@ -16,7 +18,16 @@ build: wl-display-toggle/wl-display-toggle pipresencemon/pipresencemon hackswayi
 	cp -r stockimgs/*.jpg build/stockimgs
 
 deploytgt: build
-	rsync --recursive --verbose ./build/* batman@10.0.0.146:/home/batman/homeboard/
+	rsync --recursive --verbose ./build/* batman@$(TARGET_IP):/home/batman/homeboard/
+
+.PHONY: setup-ssh
+KEY_PATH="$(HOME)/.ssh/id_rsa.pub"
+setup-ssh:
+	if [ ! -f $(KEY_PATH) ]; then \
+		echo "ssh pub key not found in $(KEY_PATH), run 'ssh-keygen -t rsa -b 4096'"; \
+		exit 1; \
+	fi
+	ssh-copy-id batman@$(TARGET_IP)
 
 .PHONY: wl-display-toggle/wl-display-toggle
 wl-display-toggle/wl-display-toggle:
@@ -37,4 +48,6 @@ pi_gpio_mon/gpiomon:
 .PHONY: hackwaytext/hackwaytext
 hackwaytext/hackwaytext:
 	make -C hackwaytext
+
+
 
