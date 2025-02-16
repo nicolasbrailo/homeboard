@@ -10,3 +10,6 @@ StandardError=inherit
 Restart=always
 RestartSec=3s
 User=batman
+
+[Install]
+WantedBy=network-online.target wayfire.service
