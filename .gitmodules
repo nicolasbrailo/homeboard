@@ -1,6 +1,3 @@
-[submodule "hackswayimg"]
-	path = hackswayimg
-	url = git@github.com:nicolasbrailo/hackswayimg.git
 [submodule "wl-display-toggle"]
 	path = wl-display-toggle
 	url = git@github.com:nicolasbrailo/wl-display-toggle.git
@@ -13,9 +10,6 @@
 [submodule "hackwaytext"]
 	path = hackwaytext
 	url = git@github.com:nicolasbrailo/hackwaytext.git
-[submodule "libeink"]
-	path = libeink
-	url = git@github.com:nicolasbrailo/libeink.git
 [submodule "homeboard_ambience"]
 	path = homeboard_ambience
 	url = git@github.com:nicolasbrailo/homeboard_ambience.git
