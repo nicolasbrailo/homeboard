@@ -13,3 +13,6 @@
 [submodule "homeboard_ambience"]
 	path = homeboard_ambience
 	url = git@github.com:nicolasbrailo/homeboard_ambience.git
+[submodule "mostlyhackswayimg/swayimg"]
+	path = mostlyhackswayimg/swayimg
+	url = https://github.com/artemsen/swayimg.git
