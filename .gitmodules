@@ -2,16 +2,16 @@
 	path = wl-display-toggle
 	url = git@github.com:nicolasbrailo/wl-display-toggle.git
 [submodule "pipresencemon"]
-	path = pipresencemon
+	path = pipresencemonsvc
 	url = git@github.com:nicolasbrailo/pipresencemon.git
 [submodule "pi_gpio_mon"]
-	path = pi_gpio_mon
+	path = pigpiomon
 	url = git@github.com:nicolasbrailo/pi_gpio_mon.git
 [submodule "hackwaytext"]
-	path = hackwaytext
+	path = hackswaytext
 	url = git@github.com:nicolasbrailo/hackwaytext.git
 [submodule "homeboard_ambience"]
-	path = homeboard_ambience
+	path = ambiencesvc
 	url = git@github.com:nicolasbrailo/homeboard_ambience.git
 [submodule "mostlyhackswayimg/swayimg"]
 	path = mostlyhackswayimg/swayimg
