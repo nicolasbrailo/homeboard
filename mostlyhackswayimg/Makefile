@@ -1,12 +1,12 @@
 .PHONY: clean deploytgt
 
-all: hackimg
+all: hackswayimg
 
 clean:
 	rm -rf build hackswayimg
 
-deploytgt: hackimg
-	scp ./hackimg batman@StonebakedMargheritaHomeboard:/home/batman/hackswayimg
+deploytgt: hackswayimg
+	scp ./hackswayimg batman@StonebakedMargheritaHomeboard:/home/batman/hackswayimg
 
 
 SYSROOT=/home/batman/src/xcomp-rpiz-env/mnt/
@@ -34,8 +34,13 @@ CFLAGS= \
 	-isystem ./build \
 	-isystem $(SYSROOT)/usr/include/freetype2 \
 	-isystem $(SYSROOT)/usr/include/json-c \
+	-fdiagnostics-color=always \
+	-ffunction-sections -fdata-sections \
+	-ggdb -O3 \
+	-std=gnu99 \
 	-Wall -Werror -Wextra -Wpedantic \
 	-Wendif-labels \
+	-Wfloat-equal \
 	-Wformat=2 \
 	-Wimplicit-fallthrough \
 	-Winit-self \
@@ -44,19 +49,16 @@ CFLAGS= \
 	-Wmissing-include-dirs \
 	-Wno-strict-prototypes \
 	-Wno-unused-function \
+	-Wno-unused-parameter \
 	-Woverflow \
 	-Wpointer-arith \
 	-Wredundant-decls \
 	-Wstrict-aliasing=2 \
 	-Wundef \
 	-Wuninitialized \
-	-ggdb -O3 \
-	-std=gnu99 \
-	-fdiagnostics-color=always \
-	-ffunction-sections -fdata-sections \
 	-pthread \
 
-# static linking like this seems to mess up loader, so run with /lib/ld-linux-armhf.so.3 ./hackimg
+# static linking like this seems to mess up loader, so run with /lib/ld-linux-armhf.so.3 ./hackswayimg
 LDFLAGS=\
 	-L $(SYSROOT)/usr/lib/arm-linux-gnueabihf \
 	-static \
@@ -117,7 +119,7 @@ build/src/formats/%.o: swayimg/src/formats/%.c
 	mkdir -p build/src/formats
 	clang $(CFLAGS) $< -c -o $@
 
-hackimg:  \
+hackswayimg:  \
 	build/content-type-v1-protocol.o \
 	build/cursor-shape-v1-protocol.o \
 	build/fractional-scale-v1-protocol.o \

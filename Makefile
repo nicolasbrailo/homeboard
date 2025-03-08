@@ -1,14 +1,73 @@
+TARGET_IP=StonebakedMargheritaHomeboard
 
-TARGET_IP=10.0.0.93
+all: build
 
-all: wl-display-toggle/wl-display-toggle pipresencemon/pipresencemon hackswayimg/hackimg pi_gpio_mon/gpiomon hackwaytext/hackwaytext
+.PHONY: \
+	build \
+	clean \
+	ambiencesvc/ambiencesvc \
+	hackswaytext/hackswaytext \
+	mostlyhackswayimg/hackswayimg \
+	pigpiomon/gpiomon \
+	pipresencemonsvc/pipresencemonsvc \
+	wl-display-toggle/wl-display-toggle
+ambiencesvc/ambiencesvc:
+	make -C ambiencesvc
+hackswaytext/hackswaytext:
+	make -C hackswaytext
+mostlyhackswayimg/hackswayimg:
+	make -C mostlyhackswayimg
+pigpiomon/gpiomon:
+	make -C pigpiomon
+pipresencemonsvc/pipresencemonsvc:
+	make -C pipresencemonsvc
+wl-display-toggle/wl-display-toggle:
+	make -C wl-display-toggle
+
+clean:
+	rm -rf build
+	make -C ambiencesvc clean
+	make -C hackswaytext clean
+	make -C mostlyhackswayimg clean
+	make -C pigpiomon clean
+	make -C pipresencemonsvc clean
+	make -C wl-display-toggle clean
+
+build: \
+		ambiencesvc/ambiencesvc \
+		hackswaytext/hackswaytext \
+		mostlyhackswayimg/hackswayimg \
+		pigpiomon/gpiomon \
+		pipresencemonsvc/pipresencemonsvc \
+		wl-display-toggle/wl-display-toggle
+	
+	rm -rf build/cfg build/scripts build/stockimgs
+	mkdir -p build/bin
+	mkdir -p build/cfg
+	
+	cp pigpiomon/gpiomon build/bin
+	cp wl-display-toggle/wl-display-toggle build/bin
+	cp mostlyhackswayimg/hackswayimg build/bin
+	cp pipresencemonsvc/pipresencemonsvc build/bin
+	cp ambiencesvc/ambiencesvc build/bin
+	cp hackswaytext/hackswaytext build/bin
+	
+	cp -r stockimgs/ build/
+	cp -r scripts/ build/
+	cp -r cfg/ build/
+	cp ambiencesvc/config.json build/cfg/ambiencesvc.json
+	cp pipresencemonsvc/pipresencemon.cfg build/cfg/pipresencemon.cfg
+
+deploytgt: build
+	rsync --recursive --verbose ./build/* batman@$(TARGET_IP):/home/batman/homeboard/
 
 install_sysroot_deps:
 	make -C wl-display-toggle install_sysroot_deps
-	make -C pipresencemon install_sysroot_deps
+	make -C pipresencemonsvc install_sysroot_deps
+	make -C ambiencesvc install_sysroot_deps
 	make -C pi_gpio_mon install_sysroot_deps
-	make -C hackwaytext install_sysroot_deps
-	make -C hackswayimg install_sysroot_deps
+	make -C hackswaytext install_sysroot_deps
+	make -C mostlyhackswayimg install_sysroot_deps
 
 install_system_deps:
 	sudo apt-get -y install clang-format
@@ -19,23 +78,6 @@ install_system_deps:
 	# Install protocols.xml into /usr/share/wayland-protocols, not sure if needed
 	sudo apt-get -y install wayland-protocols
 
-build: wl-display-toggle/wl-display-toggle pipresencemon/pipresencemon hackswayimg/hackimg pi_gpio_mon/gpiomon hackwaytext/hackwaytext
-	mkdir -p build/bin
-	cp pipresencemon/pipresencemon \
-		 hackswayimg/hackimg \
-		 wl-display-toggle/wl_display_toggle \
-		 pi_gpio_mon/gpiomon \
-		 hackwaytext/hackwaytext \
-		 	 build/bin/
-	rm -rf build/cfg build/scripts
-	cp -r cfg/ build/
-	cp -r scripts/ build/
-	mkdir -p build/stockimgs
-	cp -r stockimgs/*.jpg build/stockimgs
-
-deploytgt: build
-	rsync --recursive --verbose ./build/* batman@$(TARGET_IP):/home/batman/homeboard/
-
 .PHONY: setup-ssh
 KEY_PATH="$(HOME)/.ssh/id_rsa.pub"
 setup-ssh:
@@ -44,26 +86,4 @@ setup-ssh:
 		exit 1; \
 	fi
 	ssh-copy-id batman@$(TARGET_IP)
-
-.PHONY: wl-display-toggle/wl-display-toggle
-wl-display-toggle/wl-display-toggle:
-	make -C wl-display-toggle
-
-.PHONY: pipresencemon/pipresencemon
-pipresencemon/pipresencemon:
-	make -C pipresencemon
-
-.PHONY: hackswayimg/hackimg
-hackswayimg/hackimg:
-	make -C hackswayimg
-
-.PHONY: pi_gpio_mon/gpiomon
-pi_gpio_mon/gpiomon:
-	make -C pi_gpio_mon
-
-.PHONY: hackwaytext/hackwaytext
-hackwaytext/hackwaytext:
-	make -C hackwaytext
-
-
 
