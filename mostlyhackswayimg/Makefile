@@ -15,6 +15,10 @@ XCOMPILE=\
 	-mcpu=arm1176jzf-s \
 	--sysroot $(SYSROOT)
 
+# There is a linker option that messes with the loader, but I'm not sure which one
+# This will force the right loder to be used
+PI_LOADER=-Wl,--dynamic-linker=/usr/lib/arm-linux-gnueabihf/ld-linux-armhf.so.3
+
 # Use XCOMPILE=/ for local build includes. You may need SYSROOT=/ too to regen wayland protos
 #XCOMPILE=
 #SYSROOT=
@@ -96,6 +100,7 @@ LDFLAGS=\
 	-lxkbcommon \
 	-lm \
 	-Wl,--end-group \
+	$(PI_LOADER) \
 	-v
 
 build/%-protocol.o build/%-client-protocol.h:
