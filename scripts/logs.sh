@@ -1,3 +1,2 @@
-
-journalctl --follow --unit wayfire --unit ambience
+journalctl --follow --unit wayfire --unit ambiencesvc --unit presencesvc
 

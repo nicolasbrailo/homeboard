@@ -18,6 +18,7 @@ XCOMPILE=\
 # Use XCOMPILE=/ for local build includes. You may need SYSROOT=/ too to regen wayland protos
 #XCOMPILE=
 #SYSROOT=
+#X86_LIBS=-lsharpyuv -lbz2
 
 SWAYBUILDEFS=\
 	-DHAVE_INOTIFY=1 \
@@ -25,6 +26,8 @@ SWAYBUILDEFS=\
 	-DHAVE_LIBPNG=1 \
 	-DAPP_NAME='"hackswayimg"' \
 	-DAPP_VERSION='"0.0.0"' \
+
+#	-Wfloat-equal \
 
 CFLAGS= \
 	$(XCOMPILE) \
@@ -40,7 +43,6 @@ CFLAGS= \
 	-std=gnu99 \
 	-Wall -Werror -Wextra -Wpedantic \
 	-Wendif-labels \
-	-Wfloat-equal \
 	-Wformat=2 \
 	-Wimplicit-fallthrough \
 	-Winit-self \
@@ -86,13 +88,13 @@ LDFLAGS=\
 	-lgif \
 	-lbrotlicommon \
 	-lbrotlidec \
-	-lm \
+	$(X86_LIBS) \
 	-pthread \
 	-lstdc++ \
 	-Wl,-Bdynamic \
-	-lcurl \
 	-lwayland-client \
 	-lxkbcommon \
+	-lm \
 	-Wl,--end-group \
 	-v
 
@@ -101,7 +103,8 @@ build/%-protocol.o build/%-client-protocol.h:
 	
 	@echo "Scanning for Wayland proto $* (will pick first found)" ;\
 	PROTO_DEF=$$(find $(SYSROOT)/usr/share/wayland-protocols/ -type f | grep $* | head -n 1) ;\
-	test -f $$PROTO_DEF || { echo "Can't find Wayland proto $*: found $$PROTO_DEF"; exit 1; } ;\
+	test ! -z $$PROTO_DEF || { echo "Can't find Wayland proto $*"; exit 1; } ;\
+	test -f $$PROTO_DEF || { echo "Can't find Wayland proto $*: found non-file $$PROTO_DEF"; exit 1; } ;\
 	echo "Found $$PROTO_DEF" ;\
 	C_OUT=build/$*-protocol.c ;\
 	H_OUT=build/$*-client-protocol.h ;\
@@ -126,7 +129,7 @@ hackswayimg:  \
 	build/viewporter-protocol.o \
 	build/xdg-decoration-unstable-v1-protocol.o \
 	build/xdg-shell-protocol.o \
-	build/tablet-v2-protocol.o \
+	build/tablet-protocol.o \
 	build/src/action.o \
 	build/src/application.o \
 	build/src/config.o \
@@ -174,7 +177,6 @@ xcompile-end:
 install_sysroot_deps:
 	./rpiz-xcompile/add_sysroot_pkg.sh ~/src/xcomp-rpiz-env http://raspbian.raspberrypi.com/raspbian/pool/main/w/wayland-protocols/wayland-protocols_1.41-1_all.deb
 	./rpiz-xcompile/add_sysroot_pkg.sh ~/src/xcomp-rpiz-env http://raspbian.raspberrypi.com/raspbian/pool/main/g/giflib/libgif-dev_5.2.2-1_armhf.deb
-	./rpiz-xcompile/add_sysroot_pkg.sh ~/src/xcomp-rpiz-env http://raspbian.raspberrypi.com/raspbian/pool/main/c/curl/libcurl4-openssl-dev_7.88.1-10+rpi1+deb12u8_armhf.deb
 	./rpiz-xcompile/add_sysroot_pkg.sh ~/src/xcomp-rpiz-env http://archive.raspberrypi.com/debian/pool/main/w/wayland/libwayland-dev_1.22.0-2.1~bpo12+rpt1_armhf.deb
 	./rpiz-xcompile/add_sysroot_pkg.sh ~/src/xcomp-rpiz-env http://raspbian.raspberrypi.com/raspbian/pool/main/libx/libxkbcommon/libxkbcommon-dev_1.5.0-1_armhf.deb
 	./rpiz-xcompile/add_sysroot_pkg.sh ~/src/xcomp-rpiz-env http://raspbian.raspberrypi.com/raspbian/pool/main/libe/libexif/libexif12_0.6.24-1+b2_armhf.deb

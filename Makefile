@@ -34,6 +34,7 @@ clean:
 	make -C wl-display-toggle clean
 
 build: \
+		cfg/* \
 		ambiencesvc/ambiencesvc \
 		hackswaytext/hackswaytext \
 		mostlyhackswayimg/hackswayimg \
@@ -55,8 +56,6 @@ build: \
 	cp -r stockimgs/ build/
 	cp -r scripts/ build/
 	cp -r cfg/ build/
-	cp ambiencesvc/config.json build/cfg/ambiencesvc.json
-	cp pipresencemonsvc/pipresencemon.cfg build/cfg/pipresencemon.cfg
 
 deploytgt: build
 	rsync --recursive --verbose ./build/* batman@$(TARGET_IP):/home/batman/homeboard/
