@@ -1,0 +1,45 @@
+{
+  "COMMENT": "Print verbose logs about gpio state",
+  "gpio_debug": false,
+
+  "COMMENT": "If true, uses a file as source of GPIO input (instead of real GPIO)",
+  "gpio_use_mock": false,
+
+  "COMMENT": "Sensor assumed to be PIR.",
+  "COMMENT": "Because a PIR will be motion based, we want a low threshold and a long history",
+  "sensor_pin": 26,
+  "sensor_poll_period_secs": 1,
+  "sensor_monitor_window_seconds": 10,
+  "rising_edge_occupancy_threshold_pct": 20,
+  "falling_edge_vacancy_threshold_pct": 10,
+
+  "COMMENT": "Minimum wait before ambience mode goes to no-presence mode. If presence is detected, the timeout is reset.",
+  "vacancy_motion_timeout_seconds": 30,
+
+  "COMMENT": "Restart apps by default on crash?",
+  "restart_cmd_wait_time_seconds": 3,
+  "crash_on_repeated_cmd_failure_count": 10,
+
+  "COMMENT": "Apps to launch when presence is detected",
+  "on_occupancy": [{
+      "cmd": "/home/batman/homeboard/bin/wl-display-toggle on",
+      "should_restart_on_crash": false,
+      "max_restarts": 0
+    },{
+      "cmd": "/home/batman/homeboard/bin/hackswayimg /home/batman/homeboard/cfg/hackswayimg.cfg /dev/shm/ambience_img",
+      "should_restart_on_crash": true,
+      "max_restarts": 20
+    },{
+      "cmd": "/home/batman/homeboard/bin/ambiencesvc /home/batman/homeboard/cfg/ambiencesvc.json",
+      "should_restart_on_crash": true,
+      "max_restarts": 20
+    }
+  ],
+
+  "COMMENT": "Launch when transitions to presence not detected",
+  "on_vacancy": [{
+      "cmd": "/home/batman/homeboard/bin/wl-display-toggle off",
+      "should_restart_on_crash": false,
+      "max_restarts": 0
+  }]
+}
