@@ -22,6 +22,7 @@ PI_LOADER=-Wl,--dynamic-linker=/usr/lib/arm-linux-gnueabihf/ld-linux-armhf.so.3
 # Use XCOMPILE=/ for local build includes. You may need SYSROOT=/ too to regen wayland protos
 #XCOMPILE=
 #SYSROOT=
+#PI_LOADER=
 #X86_LIBS=-lsharpyuv -lbz2
 
 SWAYBUILDEFS=\
