@@ -1,0 +1,148 @@
+diff --git a/src/application.c b/src/application.c
+index d8c1de8..78e5fa2 100644
+--- a/src/application.c
++++ b/src/application.c
+@@ -387,18 +387,33 @@ bool app_init(const struct config* cfg, const char** sources, size_t num)
+     }
+     if (image_list_size() == 0) {
+         if (force_load) {
+-            fprintf(stderr, "%s: Unable to open\n", sources[0]);
++            int retry_timeout = 10;
++            do {
++                fprintf(stderr, "%s: Unable to open, will wait a second...\n", sources[0]);
++                sleep(1);
++                image_list_add(sources[0]);
++            } while (image_list_size() == 0 && retry_timeout-- > 0);
++
++            if (image_list_size() == 0) {
++                fprintf(stderr, "%s: Unable to open, and timed out\n", sources[0]);
++                return false;
++            }
+         } else {
+             fprintf(stderr, "No image files found to view, exit\n");
++            return false;
+         }
+-        return false;
+     }
+     image_list_reorder();
+ 
+     // load the first image
+     first_image = load_first_file(image_list_find(sources[0]), force_load);
+     if (!first_image) {
+-        return false;
++        int retry_timeout = 10;
++        do {
++            fprintf(stderr, "%s: Unable to load, will wait a second...\n", sources[0]);
++            sleep(1);
++            first_image = load_first_file(image_list_find(sources[0]), force_load);
++        } while (!first_image && retry_timeout-- > 0);
+     }
+ 
+     // setup window position and size
+@@ -416,9 +431,16 @@ bool app_init(const struct config* cfg, const char** sources, size_t num)
+     }
+ 
+     // connect to wayland
+-    if (!ui_init(ctx.app_id, ctx.window.width, ctx.window.height,
+-                 ctx.wnd_decor)) {
+-        return false;
++    {
++      size_t retries = 10;
++      bool ui_initd = ui_init(ctx.app_id, ctx.window.width, ctx.window.height, ctx.wnd_decor);
++      while (!ui_initd && retries-- > 0) {
++          fprintf(stderr, "Failed to initialize UI, will retry in a second (%zu retries pending)\n", retries);
++      }
++      if (!ui_initd) {
++          fprintf(stderr, "Failed to initialize UI, giving up\n");
++          return false;
++      }
+     }
+ 
+     // create event queue notification
+diff --git a/src/config.c b/src/config.c
+index 6511f49..f8d4407 100644
+--- a/src/config.c
++++ b/src/config.c
+@@ -352,7 +352,7 @@ static bool text_to_color(const char* text, argb_t* value)
+     return false;
+ }
+ 
+-struct config* config_load(void)
++struct config* config_load(const char *optional_cfg_path)
+ {
+     struct config* cfg = NULL;
+ 
+@@ -383,13 +383,20 @@ struct config* config_load(void)
+     }
+ 
+     // find and load first available config file
+-    for (size_t i = 0; i < ARRAY_SIZE(config_locations); ++i) {
+-        const struct location* cl = &config_locations[i];
+-        char* path = config_expand_path(cl->prefix, cl->postfix);
+-        const bool loaded = path && load(cfg, path);
+-        free(path);
+-        if (loaded) {
+-            break;
++    if (optional_cfg_path) {
++        if (!load(cfg, optional_cfg_path)) {
++          fprintf(stderr, "Can't load config file %s\n", optional_cfg_path);
++          return NULL;
++        }
++    } else {
++        for (size_t i = 0; i < ARRAY_SIZE(config_locations); ++i) {
++            const struct location* cl = &config_locations[i];
++            char* path = config_expand_path(cl->prefix, cl->postfix);
++            const bool loaded = path && load(cfg, path);
++            free(path);
++            if (loaded) {
++                break;
++            }
+         }
+     }
+ 
+diff --git a/src/config.h b/src/config.h
+index 0186a5d..e7e59ad 100644
+--- a/src/config.h
++++ b/src/config.h
+@@ -93,7 +93,7 @@ struct config {
+  * Load configuration from file.
+  * @return loaded config instance
+  */
+-struct config* config_load(void);
++struct config* config_load(const char *optional_cfg_path);
+ 
+ /**
+  * Free configuration instance.
+diff --git a/src/main.c b/src/main.c
+index df375d0..ea87c4f 100644
+--- a/src/main.c
++++ b/src/main.c
+@@ -162,14 +162,27 @@ int main(int argc, char* argv[])
+ {
+     bool rc;
+     struct config* cfg;
+-    int argn;
+ 
+     setlocale(LC_ALL, "");
+ 
++#if 0
++    int argn;
+     cfg = config_load();
+     argn = parse_cmdargs(argc, argv, cfg);
+     rc = app_init(cfg, (const char**)&argv[argn], argc - argn);
+     config_free(cfg);
++#else
++    if (argc != 3) {
++      printf("Usage: %s $path_to_cfg $path_to_img\n", argv[0]);
++      return EXIT_FAILURE;
++    }
++    cfg = config_load(argv[1]);
++    if (!cfg) {
++      return EXIT_FAILURE;
++    }
++    rc = app_init(cfg, (const char**)&argv[2], 1);
++    config_free(cfg);
++#endif
+ 
+     if (rc) {
+         rc = app_run();
