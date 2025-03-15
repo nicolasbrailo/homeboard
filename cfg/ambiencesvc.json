@@ -4,6 +4,11 @@
   "image_embed_qr": false,
   "image_request_standalone_qr": true,
   "image_request_metadata": true,
+  "image_metadata_keys": [
+    "EXIF DateTimeOriginal",
+    "albumname",
+    "reverse_geo.revgeo"
+  ],
 
   "www_svc_url": "http://bati.casa:5000",
   "www_client_id": "ambience_svc_test",
@@ -11,8 +16,13 @@
   "shm_image_file_name": "ambience_img",
   "shm_image_max_size_bytes": 20971520,
   "shm_leak_file": true,
-  "shm_leak_image_path": "/home/batman/homeboard/stockimgs/test.jpg",
+  "shm_leak_image_path": "/home/batman/homeboard/stockimgs/starry-night.jpg",
 
   "image_render_proc_name": "hackswayimg",
-  "slideshow_sleep_time_sec": 45
+  "slideshow_sleep_time_sec": 45,
+
+  "eink_mock_display": false,
+  "SKIP_eink_save_render_to_png_file": "eink.png",
+  "eink_hello_message": "Homeboard is waking up!",
+  "eink_goodbye_message": "Homeboard in deep meditation..."
 }

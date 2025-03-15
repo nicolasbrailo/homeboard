@@ -1,13 +1,15 @@
 {
   "COMMENT": "Print verbose logs about gpio state",
-  "gpio_debug": false,
+  "gpio_debug": true,
 
   "COMMENT": "If true, uses a file as source of GPIO input (instead of real GPIO)",
   "gpio_use_mock": false,
 
   "COMMENT": "Sensor assumed to be PIR.",
   "COMMENT": "Because a PIR will be motion based, we want a low threshold and a long history",
-  "sensor_pin": 26,
+  "MARGHERITA_sensor_pin": 4,
+  "MOJITO_sensor_pin": 26,
+  "sensor_pin": 4,
   "sensor_poll_period_secs": 1,
   "sensor_monitor_window_seconds": 10,
   "rising_edge_occupancy_threshold_pct": 20,
