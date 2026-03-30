@@ -2,9 +2,9 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="420mm"
-   height="297mm"
-   viewBox="0 0 420 297"
+   width="594mm"
+   height="420mm"
+   viewBox="0 0 594 420"
    version="1.1"
    id="svg286"
    inkscape:version="1.4.2 (ebf0e940d0, 2025-05-08)"
@@ -25,10 +25,10 @@
      inkscape:document-units="mm"
      showgrid="false"
      inkscape:zoom="0.5"
-     inkscape:cx="842"
-     inkscape:cy="696"
-     inkscape:window-width="1718"
-     inkscape:window-height="998"
+     inkscape:cx="966"
+     inkscape:cy="681"
+     inkscape:window-width="1868"
+     inkscape:window-height="991"
      inkscape:window-x="26"
      inkscape:window-y="23"
      inkscape:window-maximized="0"
@@ -36,6 +36,57 @@
      showguides="true" />
   <defs
      id="defs283">
+    <inkscape:path-effect
+       effect="fillet_chamfer"
+       id="path-effect6"
+       is_visible="true"
+       lpeversion="1"
+       nodesatellites_param="F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,2.0000001,0,1"
+       radius="2"
+       unit="mm"
+       method="auto"
+       mode="F"
+       chamfer_steps="1"
+       flexible="false"
+       use_knot_distance="true"
+       apply_no_radius="true"
+       apply_with_radius="true"
+       only_selected="false"
+       hide_knots="false" />
+    <inkscape:path-effect
+       effect="fillet_chamfer"
+       id="path-effect5"
+       is_visible="true"
+       lpeversion="1"
+       nodesatellites_param="F,0,0,1,0,2,0,1 @ F,0,0,1,0,2,0,1 @ F,0,0,1,0,2,0,1 @ F,0,0,1,0,2,0,1"
+       radius="2"
+       unit="mm"
+       method="auto"
+       mode="F"
+       chamfer_steps="1"
+       flexible="false"
+       use_knot_distance="true"
+       apply_no_radius="true"
+       apply_with_radius="true"
+       only_selected="false"
+       hide_knots="false" />
+    <inkscape:path-effect
+       effect="fillet_chamfer"
+       id="path-effect1"
+       is_visible="true"
+       lpeversion="1"
+       nodesatellites_param="F,0,0,1,0,2.9999999,0,1 @ F,0,0,1,0,2.9999999,0,1 @ F,0,0,1,0,2.9999999,0,1 @ F,0,0,1,0,2.9999999,0,1"
+       radius="3"
+       unit="mm"
+       method="auto"
+       mode="F"
+       chamfer_steps="1"
+       flexible="false"
+       use_knot_distance="true"
+       apply_no_radius="true"
+       apply_with_radius="true"
+       only_selected="false"
+       hide_knots="false" />
     <inkscape:path-effect
        effect="fillet_chamfer"
        id="path-effect18"
@@ -143,9 +194,9 @@
        id="path-effect12"
        is_visible="true"
        lpeversion="1"
-       nodesatellites_param="F,0,0,1,0,5.2916665,0,1 @ F,0,0,1,0,5.2916665,0,1 @ F,0,0,1,0,5.2916665,0,1 @ F,0,0,1,0,5.2916665,0,1"
-       radius="20"
-       unit="px"
+       nodesatellites_param="F,0,0,1,0,1.9206458,0,1 @ F,0,0,1,0,1.9206458,0,1 @ F,0,0,1,0,1.9206458,0,1 @ F,0,0,1,0,1.9206458,0,1"
+       radius="1"
+       unit="mm"
        method="auto"
        mode="F"
        chamfer_steps="1"
@@ -417,6 +468,91 @@
        apply_with_radius="true"
        only_selected="false"
        hide_knots="false" />
+    <inkscape:path-effect
+       effect="fillet_chamfer"
+       id="path-effect6-0"
+       is_visible="true"
+       lpeversion="1"
+       nodesatellites_param="F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,2.0000001,0,1"
+       radius="2"
+       unit="mm"
+       method="auto"
+       mode="F"
+       chamfer_steps="1"
+       flexible="false"
+       use_knot_distance="true"
+       apply_no_radius="true"
+       apply_with_radius="true"
+       only_selected="false"
+       hide_knots="false" />
+    <inkscape:path-effect
+       effect="fillet_chamfer"
+       id="path-effect6-3"
+       is_visible="true"
+       lpeversion="1"
+       nodesatellites_param="F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,2.0000001,0,1"
+       radius="2"
+       unit="mm"
+       method="auto"
+       mode="F"
+       chamfer_steps="1"
+       flexible="false"
+       use_knot_distance="true"
+       apply_no_radius="true"
+       apply_with_radius="true"
+       only_selected="false"
+       hide_knots="false" />
+    <inkscape:path-effect
+       effect="fillet_chamfer"
+       id="path-effect6-0-6"
+       is_visible="true"
+       lpeversion="1"
+       nodesatellites_param="F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,2.0000001,0,1"
+       radius="2"
+       unit="mm"
+       method="auto"
+       mode="F"
+       chamfer_steps="1"
+       flexible="false"
+       use_knot_distance="true"
+       apply_no_radius="true"
+       apply_with_radius="true"
+       only_selected="false"
+       hide_knots="false" />
+    <inkscape:path-effect
+       effect="fillet_chamfer"
+       id="path-effect6-0-6-5"
+       is_visible="true"
+       lpeversion="1"
+       nodesatellites_param="F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,2.0000001,0,1"
+       radius="2"
+       unit="mm"
+       method="auto"
+       mode="F"
+       chamfer_steps="1"
+       flexible="false"
+       use_knot_distance="true"
+       apply_no_radius="true"
+       apply_with_radius="true"
+       only_selected="false"
+       hide_knots="false" />
+    <inkscape:path-effect
+       effect="fillet_chamfer"
+       id="path-effect6-0-6-5-8"
+       is_visible="true"
+       lpeversion="1"
+       nodesatellites_param="F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,2.0000001,0,1"
+       radius="2"
+       unit="mm"
+       method="auto"
+       mode="F"
+       chamfer_steps="1"
+       flexible="false"
+       use_knot_distance="true"
+       apply_no_radius="true"
+       apply_with_radius="true"
+       only_selected="false"
+       hide_knots="false" />
   </defs>
   <g
      id="g16"
@@ -448,7 +584,7 @@
        inkscape:label="MainBoard To frame screw right" />
     <path
        id="rect16"
-       style="fill:none;fill-opacity:1;stroke:none;stroke-width:0.264583"
+       style="fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
        d="m 55.909609,218.12996 a 7.9999998,7.9999998 0 0 0 -8.000029,8.00002 v 72.00026 a 7.9999998,7.9999998 0 0 0 8.000029,8.00003 H 390.90984 a 7.9999998,7.9999998 0 0 0 8.00003,-8.00003 v -48.8456 h -0.005 a 1.3846776,1.2898437 0 0 0 -1.07694,-1.11259 v -0.0124 a 3.5379209,2.9766548 0 0 1 -2.16593,-2.76676 v -8.94932 a 3.5656679,2.9999999 0 0 1 2.16628,-2.75952 v -0.002 a 1.3890625,1.2898437 0 0 0 1.07487,-1.25626 1.3890625,1.2898437 0 0 0 -0.002,-0.0744 h 0.009 v -6.22133 a 7.9999998,7.9999998 0 0 0 -8.00003,-8.00002 z"
        inkscape:label="Main board shape" />
     <g
@@ -492,13 +628,13 @@
                style="fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1">65</tspan></tspan></text>
         <text
            xml:space="preserve"
-           style="font-size:2.02547px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.200762;fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+           style="font-size:2.02547px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.200762;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
            x="493.75131"
            y="18.175867"
            id="text3-5-1-4-6-8-7-7-2"
            transform="scale(1.0698408,0.93471851)"><tspan
              sodipodi:role="line"
-             style="fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+             style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
              x="493.75131"
              y="18.175867"
              dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.097224377"
@@ -537,7 +673,7 @@
          transform="rotate(-135)"
          inkscape:label="Screw Top left" />
       <path
-         style="fill:none;fill-opacity:1;stroke:none;stroke-width:0.000264583"
+         style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.000264583"
          id="rect15"
          width="65"
          height="30"
@@ -561,26 +697,28 @@
     <g
        id="g9"
        inkscape:label="PoE"
-       style="display:inline;fill:none;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+       style="display:inline;fill:none;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
        transform="translate(54.36855,-47.298075)">
       <text
          xml:space="preserve"
-         style="font-size:6.20393px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+         style="font-size:6.20393px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
          x="363.22183"
          y="244.34879"
          id="text3-5-3-8-09-9"
-         transform="scale(0.84725198,1.1802864)"><tspan
+         transform="scale(0.84725198,1.1802864)"
+         inkscape:label="PoE Elm position txt"><tspan
            sodipodi:role="line"
-           style="fill:none;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+           style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
            x="363.22183"
            y="244.34879"
            dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0.29779372"
            id="tspan5-2-1-4-3-4">PoE</tspan></text>
       <g
          id="g12"
-         inkscape:label="PoE Outline and screw holes">
+         inkscape:label="PoE Outline and screw holes"
+         style="stroke:none">
         <rect
-           style="fill:none;stroke-width:0.000212774"
+           style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.000212774"
            id="rect4"
            width="46.999786"
            height="41.499786"
@@ -588,24 +726,27 @@
            y="-333.77286"
            transform="matrix(0,-1,-1,0,0,0)" />
         <ellipse
-           style="display:inline;fill:#000000;stroke:#000000;stroke-width:0.000132283;stroke-dasharray:none;stroke-opacity:1"
+           style="display:inline;fill:#000000;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
            id="path4-6"
            cx="294.27295"
            cy="-292.70752"
            rx="0.9999339"
            ry="0.99993384"
-           transform="scale(1,-1)" />
+           transform="scale(1,-1)"
+           inkscape:label="Board screw through hole" />
         <ellipse
-           style="display:inline;fill:#000000;stroke:#000000;stroke-width:0.000132283;stroke-dasharray:none;stroke-opacity:1"
+           style="display:inline;fill:#000000;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
            id="path4-6-3"
            cx="331.77298"
            cy="327.20749"
            rx="0.9999339"
-           ry="0.99993384" />
+           ry="0.99993384"
+           inkscape:label="Board screw through hole" />
       </g>
       <g
          id="g10"
-         inkscape:label="PoEBoardElms">
+         inkscape:label="PoEBoardElms"
+         style="stroke:none">
         <rect
            style="fill:none;stroke:none;stroke-width:0.000264583"
            id="rect5"
@@ -638,11 +779,11 @@
            id="text5"><tspan
              sodipodi:role="line"
              id="tspan5"
-             style="stroke-width:0.000264583"
+             style="stroke:none;stroke-width:0.000264583"
              x="305.54816"
              y="324.84436">ETH IN</tspan><tspan
              sodipodi:role="line"
-             style="stroke-width:0.000264583"
+             style="stroke:none;stroke-width:0.000264583"
              x="305.54816"
              y="328.81311"
              id="tspan6">     ↑</tspan></text>
@@ -654,11 +795,11 @@
            id="text5-2"><tspan
              sodipodi:role="line"
              id="tspan5-7"
-             style="stroke-width:0.000264583"
+             style="stroke:none;stroke-width:0.000264583"
              x="322.2605"
              y="328.71109">USB</tspan><tspan
              sodipodi:role="line"
-             style="stroke-width:0.000264583"
+             style="stroke:none;stroke-width:0.000264583"
              x="322.2605"
              y="332.67984"
              id="tspan6-0" /></text>
@@ -669,7 +810,7 @@
            y="298.52341"
            id="text5-2-3"><tspan
              sodipodi:role="line"
-             style="stroke-width:0.000264583"
+             style="stroke:none;stroke-width:0.000264583"
              x="301.39224"
              y="298.52341"
              id="tspan6-0-5">Trfo</tspan></text>
@@ -681,12 +822,12 @@
            id="text5-2-6"
            transform="rotate(-90)"><tspan
              sodipodi:role="line"
-             style="stroke-width:0.000264583"
+             style="stroke:none;stroke-width:0.000264583"
              x="-291.52615"
              y="329.09918"
              id="tspan6-0-6"> USB</tspan><tspan
              sodipodi:role="line"
-             style="stroke-width:0.000264583"
+             style="stroke:none;stroke-width:0.000264583"
              x="-291.52615"
              y="333.06793"
              id="tspan9">   ↓</tspan></text>
@@ -703,7 +844,7 @@
       <g
          id="g173415-8-5-5-6"
          transform="translate(282.14848,94.791119)"
-         style="display:inline;fill:none;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+         style="display:inline;fill:none;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
          inkscape:label="PoEClip screw holes">
         <circle
            style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
@@ -711,17 +852,20 @@
            cx="-55.073841"
            cy="214.5134"
            r="1.3"
-           transform="scale(-1,1)" />
+           transform="scale(-1,1)"
+           inkscape:label="Screw hole clip" />
         <circle
            style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
            id="path3-5-3-5-1-0-9-2-9-1-0-1-2-8"
            cx="6.6749821"
            cy="214.51323"
-           r="1.3" />
+           r="1.3"
+           inkscape:label="ScreHole clip" />
         <g
            id="g15"
            inkscape:label="Clip hole comment"
-           transform="translate(-5.0446229,3.5856959)">
+           transform="translate(-5.0446229,3.5856959)"
+           style="stroke:none">
           <text
              xml:space="preserve"
              style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:none;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1"
@@ -729,7 +873,7 @@
              y="217.06374"
              id="text5-2-3-1"><tspan
                sodipodi:role="line"
-               style="stroke-width:0.000264583"
+               style="stroke:none;stroke-width:0.000264583"
                x="61.826057"
                y="217.06374"
                id="tspan6-0-5-9">Clip</tspan></text>
@@ -753,7 +897,7 @@
            id="g15-4"
            inkscape:label="Clip hole comment"
            transform="translate(-53.451606,3.5959321)"
-           style="display:inline;fill:none;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1">
+           style="display:inline;fill:none;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1">
           <text
              xml:space="preserve"
              style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:none;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1"
@@ -761,7 +905,7 @@
              y="215.06422"
              id="text5-2-3-1-5"><tspan
                sodipodi:role="line"
-               style="stroke-width:0.000264583"
+               style="stroke:none;stroke-width:0.000264583"
                x="54.30743"
                y="215.06422"
                id="tspan6-0-5-9-0">Clip</tspan></text>
@@ -782,6 +926,18 @@
              transform="rotate(90)" />
         </g>
       </g>
+      <path
+         style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.00086603;stroke-dasharray:none;stroke-opacity:1"
+         id="rect18"
+         width="15"
+         height="10"
+         x="341.36066"
+         y="-176.22194"
+         sodipodi:type="rect"
+         d="m 343.36066,-176.22194 11,0 a 2,2 45 0 1 2,2 v 6 a 2,2 135 0 1 -2,2 h -11 a 2,2 45 0 1 -2,-2 v -6 a 2,2 135 0 1 2,-2 z"
+         transform="matrix(1.3333333,0,0,1,-179.25124,494.47813)"
+         inkscape:label="USB Eth notch"
+         inkscape:path-effect="#path-effect18" />
     </g>
     <g
        id="g2"
@@ -968,7 +1124,7 @@
          transform="matrix(1,0,0,-1,37.703743,291.46393)">
         <path
            id="rect18232-3-4"
-           style="fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+           style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
            d="m 168.56522,117.84284 v 52.19 h -73.4 v -52.19 z m -1.09547,1.63089 H 96.26069 v 48.92822 h 71.20906 z" />
         <text
            xml:space="preserve"
@@ -1007,19 +1163,20 @@
              id="tspan47671" /></text>
         <text
            xml:space="preserve"
-           style="font-size:2.02547px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.200762;fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+           style="font-size:2.02547px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.200762;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
            x="-122.73618"
            y="152.14586"
            id="text3-5-1-4-6-8-7-7-1"
-           transform="scale(-1.0698408,0.93471851)"><tspan
+           transform="scale(-1.0698408,0.93471851)"
+           inkscape:label="Comm"><tspan
              sodipodi:role="line"
-             style="text-align:center;text-anchor:middle;fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+             style="text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
              x="-122.73618"
              y="152.14586"
              dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.097224377"
              id="tspan27123-0-4">HDMI 2 eDP</tspan><tspan
              sodipodi:role="line"
-             style="text-align:center;text-anchor:middle;fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+             style="text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
              x="-122.73618"
              y="154.6777"
              dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.097224377"
@@ -1232,19 +1389,20 @@
            transform="matrix(-1,0,0,1,1.2291666e-6,0)" />
         <text
            xml:space="preserve"
-           style="font-size:2.02547px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;opacity:0.200762;fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+           style="font-size:2.02547px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;opacity:0.200762;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
            x="-103.58715"
            y="164.40147"
            id="text3-5-1-4-6-8-7-7-1-8"
-           transform="scale(-1.0698408,0.93471852)"><tspan
+           transform="scale(-1.0698408,0.93471852)"
+           inkscape:label="Comm"><tspan
              sodipodi:role="line"
-             style="text-align:center;text-anchor:middle;fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+             style="text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
              x="-103.58715"
              y="164.40147"
              dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.097224377"
              id="tspan49854-8">Mount towards back,</tspan><tspan
              sodipodi:role="line"
-             style="text-align:center;text-anchor:middle;fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+             style="text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
              x="-103.58715"
              y="166.93332"
              dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.097224377"
@@ -1276,18 +1434,6 @@
          x="344.62753"
          y="25.730112" />
     </g>
-    <path
-       style="fill:none;fill-opacity:1;stroke:none;stroke-width:0.264583"
-       id="rect18"
-       width="15"
-       height="10"
-       x="341.36066"
-       y="-176.22194"
-       sodipodi:type="rect"
-       d="m 343.36066,-176.22194 11,0 a 2,2 45 0 1 2,2 v 6 a 2,2 135 0 1 -2,2 h -11 a 2,2 45 0 1 -2,-2 v -6 a 2,2 135 0 1 2,-2 z"
-       transform="matrix(1.3333333,0,0,1,-124.88269,447.18006)"
-       inkscape:label="USB Eth notch"
-       inkscape:path-effect="#path-effect18" />
     <g
        id="g6"
        inkscape:label="DC2DC"
@@ -1361,13 +1507,14 @@
                style="fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1">66</tspan></tspan></text>
         <text
            xml:space="preserve"
-           style="font-size:2.02547px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.200762;fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+           style="font-size:2.02547px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.200762;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
            x="199.41861"
            y="27.862196"
            id="text3-5-1-4-6-8-7-7-8"
-           transform="scale(1.0698408,0.93471851)"><tspan
+           transform="scale(1.0698408,0.93471851)"
+           inkscape:label="ElmTxt"><tspan
              sodipodi:role="line"
-             style="fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+             style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
              x="199.41861"
              y="27.862196"
              dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.097224377"
@@ -1498,7 +1645,7 @@
              id="tspan76508-7-6-9" /></text>
         <path
            id="rect18232-3-6"
-           style="fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+           style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
            d="m 184.37953,7.562248 v 36 h 66 v -36 z m 0.98503,1.12496 h 64.02994 v 33.75008 h -64.02994 z" />
         <text
            xml:space="preserve"
@@ -1526,7 +1673,7 @@
      id="g7"
      inkscape:label="Frame"
      style="display:inline;fill:none;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1">
-    <rect
+    <path
        style="display:inline;fill:none;stroke:#000000;stroke-width:0.00129206;stroke-dasharray:none;stroke-opacity:1"
        id="rect446-73"
        x="-403.99933"
@@ -1534,7 +1681,10 @@
        width="403.99872"
        height="303.99872"
        transform="scale(-1)"
-       inkscape:label="IkeaFrameInnerSz" />
+       inkscape:label="IkeaFrameInnerSz"
+       inkscape:path-effect="#path-effect1"
+       sodipodi:type="rect"
+       d="M -400.99933,-303.99936 H -3.0006103 a 2.9999999,2.9999999 45 0 1 2.99999994844,3 V -3.0006408 A 2.9999999,2.9999999 135 0 1 -3.0006103,-6.4086914e-4 H -400.99933 a 2.9999999,2.9999999 45 0 1 -3,-2.99999993086 V -300.99936 a 2.9999999,2.9999999 135 0 1 3,-3 z" />
     <g
        id="g19969"
        inkscape:label="DisplayEdpLocation"
@@ -1582,7 +1732,7 @@
        inkscape:label="DisplayMount"
        transform="translate(-8.000546,1.9007955)"
        style="display:inline">
-      <rect
+      <path
          style="fill:none;stroke:#000000;stroke-width:0.000995204;stroke-dasharray:none;stroke-opacity:1"
          id="rect446"
          x="-385.99951"
@@ -1590,7 +1740,10 @@
          width="351.99899"
          height="206.99901"
          transform="scale(-1)"
-         inkscape:label="DisplaySz" />
+         inkscape:label="DisplaySz"
+         inkscape:path-effect="#path-effect5"
+         sodipodi:type="rect"
+         d="m -383.99951,-275.99951 h 347.998991 a 2,2 45 0 1 2,2 v 202.999006 a 2,2 135 0 1 -2,2 H -383.99951 a 2,2 45 0 1 -2,-2 V -273.99951 a 2,2 135 0 1 2,-2 z" />
       <g
          id="g8"
          inkscape:label="ClipHolderHoles">
@@ -1679,75 +1832,6 @@
          y="25.730112" />
     </g>
     <g
-       id="g2240"
-       inkscape:label="ButtonsR"
-       transform="translate(-4,112.40102)">
-      <circle
-         style="fill:none;stroke:#000000;stroke-width:0.000499928"
-         id="path2-5"
-         cx="401.2829"
-         cy="131.41461"
-         r="1.74975"
-         transform="translate(-10.283317,-114.41511)" />
-      <circle
-         style="fill:none;stroke:#000000;stroke-width:0.000499928"
-         id="path2-5-8"
-         cx="487.29456"
-         cy="161.97009"
-         r="1.74975"
-         transform="translate(-96.270109,-99.965603)" />
-      <circle
-         style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
-         id="path3-5-3-5-1-0-9-2-1-4-3-6-5"
-         cx="-359.42264"
-         cy="187.87727"
-         r="1.3"
-         transform="rotate(-135,-21.279013,-57.028937)" />
-      <circle
-         style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
-         id="path3-5-3-5-1-0-9-2-1-4-3-6-8-0"
-         cx="326.70016"
-         cy="-226.24641"
-         r="1.3"
-         transform="rotate(45)"
-         inkscape:label="path3-5-3-5-1-0-9-2-1-4-3-6-8-0" />
-    </g>
-    <g
-       id="g2240-6"
-       inkscape:label="ButtonsL"
-       transform="translate(-373.24958,112.40063)"
-       style="display:inline;fill:none;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1">
-      <circle
-         style="fill:none;stroke:#000000;stroke-width:0.000499928"
-         id="path2-5-1"
-         cx="401.2829"
-         cy="131.41461"
-         r="1.74975"
-         transform="translate(-10.283317,-114.41511)" />
-      <circle
-         style="fill:none;stroke:#000000;stroke-width:0.000499928"
-         id="path2-5-8-0"
-         cx="487.29456"
-         cy="161.97009"
-         r="1.74975"
-         transform="translate(-96.270109,-99.965603)" />
-      <circle
-         style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
-         id="path3-5-3-5-1-0-9-2-1-4-3-6-5-6"
-         cx="-359.42264"
-         cy="187.87727"
-         r="1.3"
-         transform="rotate(-135,-21.279013,-57.028937)" />
-      <circle
-         style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
-         id="path3-5-3-5-1-0-9-2-1-4-3-6-8-0-3"
-         cx="326.70016"
-         cy="-226.24641"
-         r="1.3"
-         transform="rotate(45)"
-         inkscape:label="path3-5-3-5-1-0-9-2-1-4-3-6-8-0" />
-    </g>
-    <g
        id="g173415-8-5-5-6-9-4"
        transform="translate(168.49641,-163.93303)"
        style="display:inline;fill:none;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
@@ -1828,6 +1912,529 @@
            y="-63.12447"
            width="0.001"
            transform="rotate(90)" />
+      </g>
+    </g>
+    <g
+       id="g17"
+       inkscape:label="FrameButtonsLeft"
+       style="display:inline"
+       transform="translate(-370.85674)">
+      <g
+         id="g11-2-6-7"
+         inkscape:label="ButtonsMount"
+         style="display:inline"
+         transform="rotate(180,385.9425,173.16382)">
+        <circle
+           style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+           id="path3-5-3-5-1-0-9-2-1-4-3-6-2-4-8"
+           cx="-356.27768"
+           cy="187.27705"
+           r="1.3"
+           transform="rotate(-135)" />
+        <circle
+           style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+           id="path3-5-3-5-1-0-9-2-1-4-3-6-6-0-5-6"
+           cx="-370.27771"
+           cy="173.27704"
+           r="1.3"
+           transform="rotate(-135)" />
+        <circle
+           style="display:inline;fill:none;stroke:#000000;stroke-width:0.000499928;stroke-dasharray:none;stroke-opacity:1"
+           id="path2-5-8"
+           cx="-384.35083"
+           cy="-129.40152"
+           r="1.74975"
+           transform="scale(-1)" />
+        <g
+           id="g15-4-6"
+           inkscape:label="Clip hole comment"
+           transform="rotate(180,222.31955,165.15882)"
+           style="display:inline;fill:none;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1">
+          <text
+             xml:space="preserve"
+             style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:none;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1"
+             x="54.30743"
+             y="215.06422"
+             id="text5-2-3-1-5-6"><tspan
+               sodipodi:role="line"
+               style="stroke:none;stroke-width:0.000264583"
+               x="54.30743"
+               y="215.06422"
+               id="tspan6-0-5-9-0-4">Clip</tspan></text>
+          <rect
+             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             id="rect12-3-9"
+             height="6"
+             x="60.123493"
+             y="207.9164"
+             width="0.001" />
+          <rect
+             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             id="rect12-7-6-5"
+             height="6"
+             x="210.91588"
+             y="-63.12447"
+             width="0.001"
+             transform="rotate(90)" />
+        </g>
+        <g
+           id="g15-4-6-7"
+           inkscape:label="Clip hole comment"
+           transform="rotate(180,222.28564,170.17031)"
+           style="display:inline;fill:none;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1">
+          <text
+             xml:space="preserve"
+             style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:none;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1"
+             x="48.694771"
+             y="214.03523"
+             id="text5-2-3-1-5-6-2"><tspan
+               sodipodi:role="line"
+               style="stroke:none;stroke-width:0.000264583"
+               x="48.694771"
+               y="214.03523"
+               id="tspan6-0-5-9-0-4-2">Button</tspan><tspan
+               sodipodi:role="line"
+               style="stroke:none;stroke-width:0.000264583"
+               x="48.694771"
+               y="218.00398"
+               id="tspan7">Exit</tspan></text>
+          <rect
+             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             id="rect12-3-9-6"
+             height="6"
+             x="60.123493"
+             y="207.9164"
+             width="0.001" />
+          <rect
+             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             id="rect12-7-6-5-1"
+             height="6"
+             x="210.91588"
+             y="-63.12447"
+             width="0.001"
+             transform="rotate(90)" />
+        </g>
+        <g
+           id="g15-4-6-4"
+           inkscape:label="Clip hole comment"
+           transform="rotate(180,222.26066,175.09929)"
+           style="display:inline;fill:none;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1">
+          <text
+             xml:space="preserve"
+             style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:none;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1"
+             x="54.30743"
+             y="215.06422"
+             id="text5-2-3-1-5-6-8"><tspan
+               sodipodi:role="line"
+               style="stroke:none;stroke-width:0.000264583"
+               x="54.30743"
+               y="215.06422"
+               id="tspan6-0-5-9-0-4-7">Clip</tspan></text>
+          <rect
+             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             id="rect12-3-9-1"
+             height="6"
+             x="60.123493"
+             y="207.9164"
+             width="0.001" />
+          <rect
+             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             id="rect12-7-6-5-7"
+             height="6"
+             x="210.91588"
+             y="-63.12447"
+             width="0.001"
+             transform="rotate(90)" />
+        </g>
+      </g>
+      <g
+         id="g11-2-6-7-6"
+         inkscape:label="ButtonsMount"
+         style="display:inline;fill:none;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+         transform="rotate(180,385.94237,130.27572)">
+        <circle
+           style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+           id="path3-5-3-5-1-0-9-2-1-4-3-6-2-4-8-1"
+           cx="-356.27768"
+           cy="187.27705"
+           r="1.3"
+           transform="rotate(-135)" />
+        <circle
+           style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+           id="path3-5-3-5-1-0-9-2-1-4-3-6-6-0-5-6-5"
+           cx="-370.27771"
+           cy="173.27704"
+           r="1.3"
+           transform="rotate(-135)" />
+        <circle
+           style="display:inline;fill:none;stroke:#000000;stroke-width:0.000499928;stroke-dasharray:none;stroke-opacity:1"
+           id="path2-5-8-9"
+           cx="-384.35083"
+           cy="-129.40152"
+           r="1.74975"
+           transform="scale(-1)" />
+        <g
+           id="g15-4-6-49"
+           inkscape:label="Clip hole comment"
+           transform="rotate(180,222.31955,165.15882)"
+           style="display:inline;fill:none;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1">
+          <text
+             xml:space="preserve"
+             style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:none;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1"
+             x="54.30743"
+             y="215.06422"
+             id="text5-2-3-1-5-6-0"><tspan
+               sodipodi:role="line"
+               style="stroke:none;stroke-width:0.000264583"
+               x="54.30743"
+               y="215.06422"
+               id="tspan6-0-5-9-0-4-9">Clip</tspan></text>
+          <rect
+             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             id="rect12-3-9-17"
+             height="6"
+             x="60.123493"
+             y="207.9164"
+             width="0.001" />
+          <rect
+             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             id="rect12-7-6-5-71"
+             height="6"
+             x="210.91588"
+             y="-63.12447"
+             width="0.001"
+             transform="rotate(90)" />
+        </g>
+        <g
+           id="g15-4-6-7-1"
+           inkscape:label="Clip hole comment"
+           transform="rotate(180,222.28564,170.17031)"
+           style="display:inline;fill:none;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1">
+          <text
+             xml:space="preserve"
+             style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:none;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1"
+             x="47.946415"
+             y="214.12878"
+             id="text5-2-3-1-5-6-2-5"><tspan
+               sodipodi:role="line"
+               style="stroke:none;stroke-width:0.000264583"
+               x="47.946415"
+               y="214.12878"
+               id="tspan6-0-5-9-0-4-2-9">Button</tspan><tspan
+               sodipodi:role="line"
+               style="stroke:none;stroke-width:0.000264583"
+               x="47.946415"
+               y="218.09753"
+               id="tspan7-7">Exit</tspan></text>
+          <rect
+             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             id="rect12-3-9-6-7"
+             height="6"
+             x="60.123493"
+             y="207.9164"
+             width="0.001" />
+          <rect
+             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             id="rect12-7-6-5-1-6"
+             height="6"
+             x="210.91588"
+             y="-63.12447"
+             width="0.001"
+             transform="rotate(90)" />
+        </g>
+        <g
+           id="g15-4-6-4-7"
+           inkscape:label="Clip hole comment"
+           transform="rotate(180,222.26066,175.09929)"
+           style="display:inline;fill:none;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1">
+          <text
+             xml:space="preserve"
+             style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:none;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1"
+             x="54.30743"
+             y="215.06422"
+             id="text5-2-3-1-5-6-8-3"><tspan
+               sodipodi:role="line"
+               style="stroke:none;stroke-width:0.000264583"
+               x="54.30743"
+               y="215.06422"
+               id="tspan6-0-5-9-0-4-7-6">Clip</tspan></text>
+          <rect
+             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             id="rect12-3-9-1-5"
+             height="6"
+             x="60.123493"
+             y="207.9164"
+             width="0.001" />
+          <rect
+             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             id="rect12-7-6-5-7-6"
+             height="6"
+             x="210.91588"
+             y="-63.12447"
+             width="0.001"
+             transform="rotate(90)" />
+        </g>
+      </g>
+    </g>
+    <g
+       id="g34"
+       inkscape:label="FrameButtonsRight"
+       style="display:inline">
+      <g
+         id="g25"
+         inkscape:label="ButtonsMount"
+         style="display:inline"
+         transform="rotate(180,385.9425,173.16382)">
+        <circle
+           style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+           id="circle17"
+           cx="-356.27768"
+           cy="187.27705"
+           r="1.3"
+           transform="rotate(-135)" />
+        <circle
+           style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+           id="circle18"
+           cx="-370.27771"
+           cy="173.27704"
+           r="1.3"
+           transform="rotate(-135)" />
+        <circle
+           style="display:inline;fill:none;stroke:#000000;stroke-width:0.000499928;stroke-dasharray:none;stroke-opacity:1"
+           id="circle19"
+           cx="-384.35083"
+           cy="-129.40152"
+           r="1.74975"
+           transform="scale(-1)" />
+        <g
+           id="g20"
+           inkscape:label="Clip hole comment"
+           transform="rotate(180,222.31955,165.15882)"
+           style="display:inline;fill:none;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1">
+          <text
+             xml:space="preserve"
+             style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:none;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1"
+             x="54.30743"
+             y="215.06422"
+             id="text19"><tspan
+               sodipodi:role="line"
+               style="stroke:none;stroke-width:0.000264583"
+               x="54.30743"
+               y="215.06422"
+               id="tspan19">Clip</tspan></text>
+          <rect
+             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             id="rect19"
+             height="6"
+             x="60.123493"
+             y="207.9164"
+             width="0.001" />
+          <rect
+             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             id="rect20"
+             height="6"
+             x="210.91588"
+             y="-63.12447"
+             width="0.001"
+             transform="rotate(90)" />
+        </g>
+        <g
+           id="g22"
+           inkscape:label="Clip hole comment"
+           transform="rotate(180,222.28564,170.17031)"
+           style="display:inline;fill:none;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1">
+          <text
+             xml:space="preserve"
+             style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:none;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1"
+             x="63.287685"
+             y="214.31587"
+             id="text21"><tspan
+               sodipodi:role="line"
+               style="stroke:none;stroke-width:0.000264583"
+               x="63.287685"
+               y="214.31587"
+               id="tspan20">Button</tspan><tspan
+               sodipodi:role="line"
+               style="stroke:none;stroke-width:0.000264583"
+               x="63.287685"
+               y="218.28462"
+               id="tspan21">Exit</tspan></text>
+          <rect
+             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             id="rect21"
+             height="6"
+             x="60.123493"
+             y="207.9164"
+             width="0.001" />
+          <rect
+             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             id="rect22"
+             height="6"
+             x="210.91588"
+             y="-63.12447"
+             width="0.001"
+             transform="rotate(90)" />
+        </g>
+        <g
+           id="g24"
+           inkscape:label="Clip hole comment"
+           transform="rotate(180,222.26066,175.09929)"
+           style="display:inline;fill:none;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1">
+          <text
+             xml:space="preserve"
+             style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:none;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1"
+             x="54.30743"
+             y="215.06422"
+             id="text22"><tspan
+               sodipodi:role="line"
+               style="stroke:none;stroke-width:0.000264583"
+               x="54.30743"
+               y="215.06422"
+               id="tspan22">Clip</tspan></text>
+          <rect
+             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             id="rect23"
+             height="6"
+             x="60.123493"
+             y="207.9164"
+             width="0.001" />
+          <rect
+             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             id="rect24"
+             height="6"
+             x="210.91588"
+             y="-63.12447"
+             width="0.001"
+             transform="rotate(90)" />
+        </g>
+      </g>
+      <g
+         id="g33"
+         inkscape:label="ButtonsMount"
+         style="display:inline;fill:none;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+         transform="rotate(180,385.94237,130.27572)">
+        <circle
+           style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+           id="circle25"
+           cx="-356.27768"
+           cy="187.27705"
+           r="1.3"
+           transform="rotate(-135)" />
+        <circle
+           style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+           id="circle26"
+           cx="-370.27771"
+           cy="173.27704"
+           r="1.3"
+           transform="rotate(-135)" />
+        <circle
+           style="display:inline;fill:none;stroke:#000000;stroke-width:0.000499928;stroke-dasharray:none;stroke-opacity:1"
+           id="circle27"
+           cx="-384.35083"
+           cy="-129.40152"
+           r="1.74975"
+           transform="scale(-1)" />
+        <g
+           id="g28"
+           inkscape:label="Clip hole comment"
+           transform="rotate(180,222.31955,165.15882)"
+           style="display:inline;fill:none;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1">
+          <text
+             xml:space="preserve"
+             style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:none;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1"
+             x="54.30743"
+             y="215.06422"
+             id="text27"><tspan
+               sodipodi:role="line"
+               style="stroke:none;stroke-width:0.000264583"
+               x="54.30743"
+               y="215.06422"
+               id="tspan27">Clip</tspan></text>
+          <rect
+             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             id="rect27"
+             height="6"
+             x="60.123493"
+             y="207.9164"
+             width="0.001" />
+          <rect
+             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             id="rect28"
+             height="6"
+             x="210.91588"
+             y="-63.12447"
+             width="0.001"
+             transform="rotate(90)" />
+        </g>
+        <g
+           id="g30"
+           inkscape:label="Clip hole comment"
+           transform="rotate(180,222.28564,170.17031)"
+           style="display:inline;fill:none;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1">
+          <text
+             xml:space="preserve"
+             style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:none;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1"
+             x="63.287685"
+             y="214.31587"
+             id="text29"><tspan
+               sodipodi:role="line"
+               style="stroke:none;stroke-width:0.000264583"
+               x="63.287685"
+               y="214.31587"
+               id="tspan28">Button</tspan><tspan
+               sodipodi:role="line"
+               style="stroke:none;stroke-width:0.000264583"
+               x="63.287685"
+               y="218.28462"
+               id="tspan29">Exit</tspan></text>
+          <rect
+             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             id="rect29"
+             height="6"
+             x="60.123493"
+             y="207.9164"
+             width="0.001" />
+          <rect
+             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             id="rect30"
+             height="6"
+             x="210.91588"
+             y="-63.12447"
+             width="0.001"
+             transform="rotate(90)" />
+        </g>
+        <g
+           id="g32"
+           inkscape:label="Clip hole comment"
+           transform="rotate(180,222.26066,175.09929)"
+           style="display:inline;fill:none;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1">
+          <text
+             xml:space="preserve"
+             style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:none;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1"
+             x="54.30743"
+             y="215.06422"
+             id="text30"><tspan
+               sodipodi:role="line"
+               style="stroke:none;stroke-width:0.000264583"
+               x="54.30743"
+               y="215.06422"
+               id="tspan30">Clip</tspan></text>
+          <rect
+             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             id="rect31"
+             height="6"
+             x="60.123493"
+             y="207.9164"
+             width="0.001" />
+          <rect
+             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             id="rect32"
+             height="6"
+             x="210.91588"
+             y="-63.12447"
+             width="0.001"
+             transform="rotate(90)" />
+        </g>
       </g>
     </g>
   </g>
@@ -2089,7 +2696,7 @@
     </g>
     <g
        id="g173415-8-5-5-6-9"
-       transform="translate(223.32663,44.776288)"
+       transform="translate(223.32663,45.279771)"
        style="display:inline;fill:none;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
        inkscape:label="PoEClip">
       <circle
@@ -2141,11 +2748,11 @@
          transform="scale(-1,1)"
          r="1.3" />
       <circle
-         style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+         style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.0011534;stroke-dasharray:none;stroke-opacity:1"
          id="path3-5-3-5-1-0-9-2-9-1-0-1-2-8-3-6-5"
-         cx="0.36548001"
-         cy="200.66867"
-         r="1.3" />
+         cx="0.56498003"
+         cy="200.6684"
+         r="1.4994233" />
       <text
          xml:space="preserve"
          style="font-size:3.84244px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
@@ -2170,204 +2777,414 @@
          ry="1.8964827" />
     </g>
     <g
+       id="g173415-8-5-5-6-9-6"
+       transform="translate(223.31057,38.559147)"
+       style="display:inline;fill:none;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+       inkscape:label="PoEClip">
+      <circle
+         style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+         id="path3-5-3-5-1-0-9-8-5-3-4-1-1-7-75"
+         cx="-55.073841"
+         cy="214.5134"
+         r="1.3"
+         transform="scale(-1,1)" />
+      <circle
+         style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+         id="path3-5-3-5-1-0-9-2-9-1-0-1-2-8-3-3"
+         cx="6.6749821"
+         cy="214.51323"
+         r="1.3" />
+      <text
+         xml:space="preserve"
+         style="font-size:3.84244px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+         x="232.586"
+         y="438.7258"
+         id="text3-5-3-8-09-9-2-5"
+         transform="matrix(1.3053426,0,0,0.76608239,-282.33773,-120.64517)"><tspan
+           sodipodi:role="line"
+           style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+           x="232.586"
+           y="438.7258"
+           dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.18443994"
+           id="tspan5-2-1-4-3-4-9-6">PoE Clip</tspan></text>
+      <rect
+         style="font-variation-settings:normal;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.000886319;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;stop-color:#000000"
+         id="rect114228-3-1-6-7-4-7-6-2"
+         width="54.999115"
+         height="4.999114"
+         x="-58.374039"
+         y="212.01367"
+         transform="scale(-1,1)"
+         ry="1.8965765" />
+    </g>
+    <g
+       id="g173415-8-5-5-6-9-4-7-9"
+       transform="translate(287.24247,52.403973)"
+       style="display:inline;fill:none;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+       inkscape:label="eInk clip">
+      <circle
+         style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+         id="path3-5-3-5-1-0-9-8-5-3-4-1-1-7-7-4-1"
+         cx="-83.764481"
+         cy="200.66884"
+         transform="scale(-1,1)"
+         r="1.3" />
+      <circle
+         style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.0011534;stroke-dasharray:none;stroke-opacity:1"
+         id="path3-5-3-5-1-0-9-2-9-1-0-1-2-8-3-6-5-2"
+         cx="0.56498003"
+         cy="200.6684"
+         r="1.4994233" />
+      <text
+         xml:space="preserve"
+         style="font-size:3.84244px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+         x="25.321529"
+         y="263.04852"
+         id="text3-5-3-8-09-9-2-5-2-7"
+         transform="scale(1.3053426,0.7660824)"><tspan
+           sodipodi:role="line"
+           style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+           x="25.321529"
+           y="263.04852"
+           dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.18443994"
+           id="tspan5-2-1-4-3-4-9-6-5-0">eInk clip</tspan></text>
+      <rect
+         style="font-variation-settings:normal;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.00113375;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;stop-color:#000000"
+         id="rect114228-3-1-6-7-4-7-6-9-4-9"
+         width="89.998863"
+         height="4.9988666"
+         x="-87.064293"
+         y="198.16924"
+         transform="scale(-1,1)"
+         ry="1.8964827" />
+    </g>
+    <g
        id="g11"
        inkscape:label="ButtonsBoard"
        style="display:inline"
-       transform="rotate(-90,281.96522,362.13602)">
-      <path
-         id="rect1"
-         style="display:inline;fill:none;stroke:#000000;stroke-width:0.000625706;stroke-dasharray:none;stroke-opacity:1"
-         d="m 382.00022,122.19299 v 60.44911 a 5.2916665,5.2916665 45 0 0 5.29167,5.29167 5.0082976,5.0082976 131.65893 0 0 4.7079,-5.29167 l 0,-60.44911 a 5.2916665,5.2916665 45 0 0 -5.29167,-5.29167 5.0082976,5.0082976 131.65893 0 0 -4.7079,5.29167 z"
-         inkscape:path-effect="#path-effect12"
-         inkscape:original-d="m 382.00022,116.90132 v 71.03245 h 9.99957 v -71.03245 z" />
+       transform="rotate(-90,280.41769,360.50854)">
       <g
          id="g4"
-         transform="translate(-14.283317,-2.0140911)"
+         transform="translate(-16.932083,-2.0136033)"
          inkscape:label="Btn Pad B3F-40XX">
         <rect
-           style="fill:none;stroke:#000000;stroke-width:0.0010796"
+           style="fill:none;stroke:#000000;stroke-width:0.00124792"
            id="rect3-61"
-           width="0.3999204"
-           height="1.3989204"
-           x="-127.66507"
-           y="397.93396"
+           width="0.49875206"
+           height="1.4987521"
+           x="-127.71449"
+           y="397.88403"
            transform="rotate(-90)" />
         <rect
-           style="fill:none;stroke:#000000;stroke-width:0.0010796"
+           style="fill:none;stroke:#000000;stroke-width:0.00124792"
            id="rect3-6-5"
-           width="0.3999204"
-           height="1.3989204"
-           x="-127.66504"
-           y="403.23389"
+           width="0.49875206"
+           height="1.4987521"
+           x="-127.71445"
+           y="403.18396"
            transform="rotate(-90)" />
         <rect
-           style="fill:none;stroke:#000000;stroke-width:0.0010796"
+           style="fill:none;stroke:#000000;stroke-width:0.00124792"
            id="rect3-0-0"
-           width="0.3999204"
-           height="1.3989204"
-           x="-135.56506"
-           y="397.93384"
+           width="0.49875206"
+           height="1.4987521"
+           x="-135.61449"
+           y="397.88391"
            transform="rotate(-90)" />
         <rect
-           style="fill:none;stroke:#000000;stroke-width:0.0010796"
+           style="fill:none;stroke:#000000;stroke-width:0.00124916"
            id="rect3-6-3-6"
-           width="0.3999204"
-           height="1.3989204"
-           x="-135.56506"
-           y="403.23376"
-           transform="rotate(-90)" />
-      </g>
-      <g
-         id="g5"
-         inkscape:label="Btn Pad B3F-40XX"
-         transform="translate(-100.27011,12.435417)">
-        <rect
-           style="fill:none;stroke:#000000;stroke-width:0.0010796"
-           id="rect3-61-9"
-           width="0.3999204"
-           height="1.3989204"
-           x="-158.22055"
-           y="483.94562"
-           transform="rotate(-90)" />
-        <rect
-           style="fill:none;stroke:#000000;stroke-width:0.0010796"
-           id="rect3-6-5-5"
-           width="0.3999204"
-           height="1.3989204"
-           x="-158.22052"
-           y="489.24554"
-           transform="rotate(-90)" />
-        <rect
-           style="fill:none;stroke:#000000;stroke-width:0.0010796"
-           id="rect3-0-0-7"
-           width="0.3999204"
-           height="1.3989204"
-           x="-166.12054"
-           y="483.9455"
-           transform="rotate(-90)" />
-        <rect
-           style="fill:none;stroke:#000000;stroke-width:0.0010796"
-           id="rect3-6-3-6-6"
-           width="0.3999204"
-           height="1.3989204"
-           x="-166.12054"
-           y="489.24542"
+           width="0.49975082"
+           height="1.4987508"
+           x="-135.61499"
+           y="403.18384"
            transform="rotate(-90)" />
       </g>
       <circle
          style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
          id="path3-5-3-5-1-0-9-2-1-4-3-6"
-         cx="-359.42273"
-         cy="187.87791"
+         cx="-356.27768"
+         cy="187.27705"
          r="1.3"
          transform="rotate(-135)" />
       <circle
          style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
-         id="path3-5-3-5-1-0-9-2-1-4-3-6-8"
-         cx="403.40262"
-         cy="-143.89806"
+         id="path3-5-3-5-1-0-9-2-1-4-3-6-6"
+         cx="-370.27771"
+         cy="173.27704"
          r="1.3"
-         transform="rotate(45)" />
+         transform="rotate(-135)" />
+      <path
+         style="fill:#000000;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+         id="rect6"
+         width="25"
+         height="10"
+         x="132.94385"
+         y="-395.99677"
+         transform="rotate(90,4.6981612,-11.344186)"
+         ry="0"
+         inkscape:path-effect="#path-effect6"
+         sodipodi:type="rect"
+         rx="0"
+         d="m 134.94385,-395.99677 h 21 a 2.0000001,2.0000001 45 0 1 2,2 v 6 a 2.0000001,2.0000001 135 0 1 -2,2 h -21 a 2.0000001,2.0000001 45 0 1 -2,-2 v -6 a 2.0000001,2.0000001 135 0 1 2,-2 z" />
     </g>
     <g
        id="g11-2"
        inkscape:label="ButtonsBoard"
        style="display:inline"
-       transform="rotate(-90,275.80364,355.97442)">
-      <path
-         id="rect1-9"
-         style="display:inline;fill:none;stroke:#000000;stroke-width:0.000625706;stroke-dasharray:none;stroke-opacity:1"
-         d="m 382.00022,122.19299 v 60.44911 a 5.2916665,5.2916665 45 0 0 5.29167,5.29167 5.0082976,5.0082976 131.65893 0 0 4.7079,-5.29167 l 0,-60.44911 a 5.2916665,5.2916665 45 0 0 -5.29167,-5.29167 5.0082976,5.0082976 131.65893 0 0 -4.7079,5.29167 z"
-         inkscape:path-effect="#path-effect12-6"
-         inkscape:original-d="m 382.00022,116.90132 v 71.03245 h 9.99957 v -71.03245 z" />
+       transform="rotate(-90,294.28546,346.63793)">
       <g
-         id="g4-1"
-         transform="translate(-14.283317,-2.0140911)"
+         id="g4-6"
+         transform="translate(-16.932083,-2.0136033)"
          inkscape:label="Btn Pad B3F-40XX">
         <rect
-           style="fill:none;stroke:#000000;stroke-width:0.0010796"
-           id="rect3-61-2"
-           width="0.3999204"
-           height="1.3989204"
-           x="-127.66507"
-           y="397.93396"
+           style="fill:none;stroke:#000000;stroke-width:0.00124792"
+           id="rect3-61-1"
+           width="0.49875206"
+           height="1.4987521"
+           x="-127.71449"
+           y="397.88403"
            transform="rotate(-90)" />
         <rect
-           style="fill:none;stroke:#000000;stroke-width:0.0010796"
-           id="rect3-6-5-7"
-           width="0.3999204"
-           height="1.3989204"
-           x="-127.66504"
-           y="403.23389"
+           style="fill:none;stroke:#000000;stroke-width:0.00124792"
+           id="rect3-6-5-8"
+           width="0.49875206"
+           height="1.4987521"
+           x="-127.71445"
+           y="403.18396"
            transform="rotate(-90)" />
         <rect
-           style="fill:none;stroke:#000000;stroke-width:0.0010796"
-           id="rect3-0-0-0"
-           width="0.3999204"
-           height="1.3989204"
-           x="-135.56506"
-           y="397.93384"
+           style="fill:none;stroke:#000000;stroke-width:0.00124792"
+           id="rect3-0-0-7"
+           width="0.49875206"
+           height="1.4987521"
+           x="-135.61449"
+           y="397.88391"
            transform="rotate(-90)" />
         <rect
-           style="fill:none;stroke:#000000;stroke-width:0.0010796"
+           style="fill:none;stroke:#000000;stroke-width:0.00124916"
            id="rect3-6-3-6-9"
-           width="0.3999204"
-           height="1.3989204"
-           x="-135.56506"
-           y="403.23376"
-           transform="rotate(-90)" />
-      </g>
-      <g
-         id="g5-3"
-         inkscape:label="Btn Pad B3F-40XX"
-         transform="translate(-100.27011,12.435417)">
-        <rect
-           style="fill:none;stroke:#000000;stroke-width:0.0010796"
-           id="rect3-61-9-6"
-           width="0.3999204"
-           height="1.3989204"
-           x="-158.22055"
-           y="483.94562"
-           transform="rotate(-90)" />
-        <rect
-           style="fill:none;stroke:#000000;stroke-width:0.0010796"
-           id="rect3-6-5-5-0"
-           width="0.3999204"
-           height="1.3989204"
-           x="-158.22052"
-           y="489.24554"
-           transform="rotate(-90)" />
-        <rect
-           style="fill:none;stroke:#000000;stroke-width:0.0010796"
-           id="rect3-0-0-7-6"
-           width="0.3999204"
-           height="1.3989204"
-           x="-166.12054"
-           y="483.9455"
-           transform="rotate(-90)" />
-        <rect
-           style="fill:none;stroke:#000000;stroke-width:0.0010796"
-           id="rect3-6-3-6-6-2"
-           width="0.3999204"
-           height="1.3989204"
-           x="-166.12054"
-           y="489.24542"
+           width="0.49975082"
+           height="1.4987508"
+           x="-135.61499"
+           y="403.18384"
            transform="rotate(-90)" />
       </g>
       <circle
          style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
-         id="path3-5-3-5-1-0-9-2-1-4-3-6-6"
-         cx="-359.42273"
-         cy="187.87791"
+         id="path3-5-3-5-1-0-9-2-1-4-3-6-2"
+         cx="-356.27768"
+         cy="187.27705"
          r="1.3"
          transform="rotate(-135)" />
       <circle
          style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
-         id="path3-5-3-5-1-0-9-2-1-4-3-6-8-1"
-         cx="403.40262"
-         cy="-143.89806"
+         id="path3-5-3-5-1-0-9-2-1-4-3-6-6-0"
+         cx="-370.27771"
+         cy="173.27704"
          r="1.3"
-         transform="rotate(45)" />
+         transform="rotate(-135)" />
+      <path
+         style="fill:#000000;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+         id="rect6-2"
+         width="25"
+         height="10"
+         x="132.94385"
+         y="-395.99677"
+         transform="rotate(90,4.6981612,-11.344186)"
+         ry="0"
+         inkscape:path-effect="#path-effect6-0"
+         sodipodi:type="rect"
+         rx="0"
+         d="m 134.94385,-395.99677 h 21 a 2.0000001,2.0000001 45 0 1 2,2 v 6 a 2.0000001,2.0000001 135 0 1 -2,2 h -21 a 2.0000001,2.0000001 45 0 1 -2,-2 v -6 a 2.0000001,2.0000001 135 0 1 2,-2 z" />
+    </g>
+    <g
+       id="g11-0"
+       inkscape:label="ButtonsBoard"
+       style="display:inline"
+       transform="rotate(-90,308.15564,332.77291)">
+      <g
+         id="g4-63"
+         transform="translate(-16.932083,-2.0136033)"
+         inkscape:label="Btn Pad B3F-40XX">
+        <rect
+           style="fill:none;stroke:#000000;stroke-width:0.00124792"
+           id="rect3-61-2"
+           width="0.49875206"
+           height="1.4987521"
+           x="-127.71449"
+           y="397.88403"
+           transform="rotate(-90)" />
+        <rect
+           style="fill:none;stroke:#000000;stroke-width:0.00124792"
+           id="rect3-6-5-0"
+           width="0.49875206"
+           height="1.4987521"
+           x="-127.71445"
+           y="403.18396"
+           transform="rotate(-90)" />
+        <rect
+           style="fill:none;stroke:#000000;stroke-width:0.00124792"
+           id="rect3-0-0-6"
+           width="0.49875206"
+           height="1.4987521"
+           x="-135.61449"
+           y="397.88391"
+           transform="rotate(-90)" />
+        <rect
+           style="fill:none;stroke:#000000;stroke-width:0.00124916"
+           id="rect3-6-3-6-1"
+           width="0.49975082"
+           height="1.4987508"
+           x="-135.61499"
+           y="403.18384"
+           transform="rotate(-90)" />
+      </g>
+      <circle
+         style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+         id="path3-5-3-5-1-0-9-2-1-4-3-6-55"
+         cx="-356.27768"
+         cy="187.27705"
+         r="1.3"
+         transform="rotate(-135)" />
+      <circle
+         style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+         id="path3-5-3-5-1-0-9-2-1-4-3-6-6-4"
+         cx="-370.27771"
+         cy="173.27704"
+         r="1.3"
+         transform="rotate(-135)" />
+      <path
+         style="fill:#000000;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+         id="rect6-7"
+         width="25"
+         height="10"
+         x="132.94385"
+         y="-395.99677"
+         transform="rotate(90,4.6981612,-11.344186)"
+         ry="0"
+         inkscape:path-effect="#path-effect6-3"
+         sodipodi:type="rect"
+         rx="0"
+         d="m 134.94385,-395.99677 h 21 a 2.0000001,2.0000001 45 0 1 2,2 v 6 a 2.0000001,2.0000001 135 0 1 -2,2 h -21 a 2.0000001,2.0000001 45 0 1 -2,-2 v -6 a 2.0000001,2.0000001 135 0 1 2,-2 z" />
+    </g>
+    <g
+       id="g11-2-6"
+       inkscape:label="ButtonsBoard"
+       style="display:inline"
+       transform="rotate(-90,322.02341,318.9023)">
+      <g
+         id="g4-6-5"
+         transform="translate(-16.932083,-2.0136033)"
+         inkscape:label="Btn Pad B3F-40XX">
+        <rect
+           style="fill:none;stroke:#000000;stroke-width:0.00124792"
+           id="rect3-61-1-6"
+           width="0.49875206"
+           height="1.4987521"
+           x="-127.71449"
+           y="397.88403"
+           transform="rotate(-90)" />
+        <rect
+           style="fill:none;stroke:#000000;stroke-width:0.00124792"
+           id="rect3-6-5-8-9"
+           width="0.49875206"
+           height="1.4987521"
+           x="-127.71445"
+           y="403.18396"
+           transform="rotate(-90)" />
+        <rect
+           style="fill:none;stroke:#000000;stroke-width:0.00124792"
+           id="rect3-0-0-7-3"
+           width="0.49875206"
+           height="1.4987521"
+           x="-135.61449"
+           y="397.88391"
+           transform="rotate(-90)" />
+        <rect
+           style="fill:none;stroke:#000000;stroke-width:0.00124916"
+           id="rect3-6-3-6-9-7"
+           width="0.49975082"
+           height="1.4987508"
+           x="-135.61499"
+           y="403.18384"
+           transform="rotate(-90)" />
+      </g>
+      <circle
+         style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+         id="path3-5-3-5-1-0-9-2-1-4-3-6-2-4"
+         cx="-356.27768"
+         cy="187.27705"
+         r="1.3"
+         transform="rotate(-135)" />
+      <circle
+         style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+         id="path3-5-3-5-1-0-9-2-1-4-3-6-6-0-5"
+         cx="-370.27771"
+         cy="173.27704"
+         r="1.3"
+         transform="rotate(-135)" />
+      <path
+         style="fill:#000000;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+         id="rect6-2-2"
+         width="25"
+         height="10"
+         x="132.94385"
+         y="-395.99677"
+         transform="rotate(90,4.6981612,-11.344186)"
+         ry="0"
+         inkscape:path-effect="#path-effect6-0-6"
+         sodipodi:type="rect"
+         rx="0"
+         d="m 134.94385,-395.99677 h 21 a 2.0000001,2.0000001 45 0 1 2,2 v 6 a 2.0000001,2.0000001 135 0 1 -2,2 h -21 a 2.0000001,2.0000001 45 0 1 -2,-2 v -6 a 2.0000001,2.0000001 135 0 1 2,-2 z" />
     </g>
   </g>
+  <text
+     xml:space="preserve"
+     style="font-size:6.99074px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:none;fill-opacity:1;stroke:none;stroke-width:0.00220181;stroke-dasharray:none;stroke-opacity:1"
+     x="23.171207"
+     y="286.44687"
+     id="text35"
+     transform="scale(0.89067857,1.1227395)"
+     inkscape:label="Comments"><tspan
+       sodipodi:role="line"
+       id="tspan35"
+       style="fill:none;stroke:none;stroke-width:0.00220181"
+       x="23.171207"
+       y="286.44687">Project requires a sheet of 404 x 304 mm (A2 fits)</tspan><tspan
+       sodipodi:role="line"
+       style="fill:none;stroke:none;stroke-width:0.00220181"
+       x="23.171207"
+       y="295.1853"
+       id="tspan37">Print settings for a 3mm sheet:</tspan><tspan
+       sodipodi:role="line"
+       style="fill:none;stroke:none;stroke-width:0.00220181"
+       x="23.171207"
+       y="303.92371"
+       id="tspan38">  - Vector 10 seeed / 80 power</tspan><tspan
+       sodipodi:role="line"
+       style="fill:none;stroke:none;stroke-width:0.00220181"
+       x="23.171207"
+       y="312.66214"
+       id="tspan39">  - Raster 30 seeed / 50 power</tspan><tspan
+       sodipodi:role="line"
+       style="fill:none;stroke:none;stroke-width:0.00220181"
+       x="23.171207"
+       y="321.40057"
+       id="tspan41" /><tspan
+       sodipodi:role="line"
+       style="fill:none;stroke:none;stroke-width:0.00220181"
+       x="23.171207"
+       y="330.13901"
+       id="tspan42">Print settings for 4mm sheet: same as 3, but 2 passes</tspan><tspan
+       sodipodi:role="line"
+       style="fill:none;stroke:none;stroke-width:0.00220181"
+       x="23.171207"
+       y="338.87741"
+       id="tspan43" /><tspan
+       sodipodi:role="line"
+       style="fill:none;stroke:none;stroke-width:0.00220181"
+       x="23.171207"
+       y="347.61584"
+       id="tspan44">If possible, print main frame in 4mm and board/clips in 3 mm</tspan></text>
 </svg>
