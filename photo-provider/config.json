@@ -1,0 +1,12 @@
+{
+  "server_url": "http://10.0.0.10:5000",
+  "target_size_w": 1920,
+  "target_size_h": 1080,
+  "embed_qr": false,
+  "cache_depth": 2,
+  "history_depth": 8,
+  "dump_to_disk": false,
+  "dump_dir": "./photo-provider-diskdump",
+  "connect_timeout_s": 3,
+  "request_timeout_s": 10
+}

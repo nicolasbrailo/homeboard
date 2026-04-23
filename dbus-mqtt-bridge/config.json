@@ -1,0 +1,9 @@
+{
+  "mqtt_host": "10.0.0.10",
+  "mqtt_port": 4500,
+  "mqtt_client_id": "homeboard-bridge",
+  "mqtt_user": "",
+  "mqtt_pass": "",
+  "mqtt_keepalive_s": 30,
+  "topic_prefix": "homeboard/"
+}

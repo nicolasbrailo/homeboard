@@ -1,0 +1,40 @@
+{
+  "enable_uart": true,
+  "device": "/dev/ttyAMA0",
+  "debug": false,
+
+  "COMMENT_sensor_report_gpio": "Pin used by the sensor. Use -1 to disable GPIO monitoring.",
+  "sensor_report_gpio": 2,
+
+  "COMMENT_startup_delay_secs": "seconds to wait after startup before the first event is emitted; one event is always published once the delay elapses",
+  "startup_delay_secs": 10,
+
+  "COMMENT_hysteresis_occupied": "consecutive occupied reads required before an occupied event is emitted",
+  "hysteresis_occupied": 5,
+
+  "COMMENT_hysteresis_vacant": "consecutive vacant reads required before a vacant event is emitted",
+  "hysteresis_vacant": 9,
+
+  "COMMENT_farthest_gate": "gate index 0-15; each gate ~0.7 m range bin",
+  "farthest_gate": 6,
+
+  "COMMENT_nearest_gate": "gate index 0-15; each gate ~0.7 m range bin",
+  "nearest_gate": 0,
+
+  "COMMENT_unmanned_delay": "seconds of continuous absence before state flips to unoccupied",
+  "unmanned_delay": 5,
+
+  "COMMENT_status_report_freq": "reports/sec in tenths (5 = 0.5 Hz, 80 = 8 Hz); range 0.5-8 Hz",
+  "status_report_freq": 5,
+
+  "COMMENT_dist_report_freq": "reports/sec in tenths (5 = 0.5 Hz, 80 = 8 Hz); range 0.5-8 Hz",
+  "dist_report_freq": 5,
+
+  "COMMENT_response_speed": "enum: 5 = normal, 10 = fast",
+  "response_speed": 6,
+
+  "calibration_trigger": 2,
+  "calibration_retention": 1,
+  "COMMENT_calibration_duration": "seconds",
+  "calibration_duration": 120
+}

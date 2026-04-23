@@ -1,88 +1,45 @@
-TARGET_IP=StonebakedMargheritaHomeboard
+SUBDIRS := $(filter-out rpiz-xcompile stockimgs lib bin, $(patsubst %/,%,$(wildcard */)))
+SERVICES := ambience dbus-mqtt-bridge display-mgr occupancy-sensor-ld2410s photo-provider
 
-all: build
+# Keep these in sync with common.mk
+DEPLOY_TGT_HOST=batman@10.0.0.114
+DEPLOY_TGT_DIR=/home/batman/homeboard
 
-.PHONY: \
-	build \
-	clean \
-	ambiencesvc/ambiencesvc \
-	hackswaytext/hackswaytext \
-	mostlyhackswayimg/hackswayimg \
-	pigpiomon/gpiomon \
-	pipresencemonsvc/pipresencemonsvc \
-	wl-display-toggle/wl-display-toggle
-ambiencesvc/ambiencesvc:
-	make -C ambiencesvc
-hackswaytext/hackswaytext:
-	make -C hackswaytext
-mostlyhackswayimg/hackswayimg:
-	make -C mostlyhackswayimg
-pigpiomon/gpiomon:
-	make -C pigpiomon
-pipresencemonsvc/pipresencemonsvc:
-	make -C pipresencemonsvc
-wl-display-toggle/wl-display-toggle:
-	make -C wl-display-toggle
+.PHONY: all clean format $(SUBDIRS)
+
+all:
 
 clean:
-	rm -rf build
-	make -C ambiencesvc clean
-	make -C hackswaytext clean
-	make -C mostlyhackswayimg clean
-	make -C pigpiomon clean
-	make -C pipresencemonsvc clean
-	make -C wl-display-toggle clean
+	@for dir in $(SUBDIRS); do $(MAKE) -C $$dir clean; done
 
-build: \
-		cfg/* \
-		ambiencesvc/ambiencesvc \
-		hackswaytext/hackswaytext \
-		mostlyhackswayimg/hackswayimg \
-		pigpiomon/gpiomon \
-		pipresencemonsvc/pipresencemonsvc \
-		wl-display-toggle/wl-display-toggle
-	
-	rm -rf build/cfg build/scripts build/stockimgs
-	mkdir -p build/bin
-	mkdir -p build/cfg
-	
-	cp pigpiomon/gpiomon build/bin
-	cp wl-display-toggle/wl-display-toggle build/bin
-	cp mostlyhackswayimg/hackswayimg build/bin
-	cp pipresencemonsvc/pipresencemonsvc build/bin
-	cp ambiencesvc/ambiencesvc build/bin
-	cp hackswaytext/hackswaytext build/bin
-	
-	cp -r stockimgs/ build/
-	cp -r scripts/ build/
-	cp -r cfg/ build/
+deploy-all:
+	ssh "$(DEPLOY_TGT_HOST)" mkdir -p $(DEPLOY_TGT_DIR)/bin/
+	ssh "$(DEPLOY_TGT_HOST)" mkdir -p $(DEPLOY_TGT_DIR)/etc/
+	@for dir in $(SUBDIRS); do \
+		$(MAKE) -C $$dir deploy-bin; \
+		$(MAKE) -C $$dir deploy-config; \
+		$(MAKE) -C $$dir deploy-dbus-policy; \
+	done
+	$(MAKE) -C stockimgs deploy-imgs
 
-deploytgt: build
-	rsync --recursive --verbose ./build/* batman@$(TARGET_IP):/home/batman/homeboard/
+deploy-scripts:
+	scp scripts/* $(DEPLOY_TGT_HOST):$(DEPLOY_TGT_DIR)/bin/
 
-install_sysroot_deps:
-	make -C wl-display-toggle install_sysroot_deps
-	make -C pipresencemonsvc install_sysroot_deps
-	make -C ambiencesvc install_sysroot_deps
-	make -C pi_gpio_mon install_sysroot_deps
-	make -C hackswaytext install_sysroot_deps
-	make -C mostlyhackswayimg install_sysroot_deps
+install-systemd:
+	@for dir in $(SERVICES); do \
+		$(MAKE) -C $$dir install-systemd; \
+	done
 
-install_system_deps:
-	sudo apt-get -y install clang-format
-	# wayland headers
-	sudo apt-get -y install libwayland-dev
-	# wlroots protocol files, needed for wlr-output-power-management-unstable-v1.xml
-	sudo apt-get -y install libwlroots-dev
-	# Install protocols.xml into /usr/share/wayland-protocols, not sure if needed
-	sudo apt-get -y install wayland-protocols
+format:
+	find lib -name '*.c' -o -name '*.h' | xargs clang-format -i
+	@for dir in $(SUBDIRS); do $(MAKE) -C $$dir format; done
 
-.PHONY: setup-ssh
-KEY_PATH="$(HOME)/.ssh/id_rsa.pub"
-setup-ssh:
-	if [ ! -f $(KEY_PATH) ]; then \
-		echo "ssh pub key not found in $(KEY_PATH), run 'ssh-keygen -t rsa -b 4096'"; \
-		exit 1; \
-	fi
-	ssh-copy-id batman@$(TARGET_IP)
+patch-target-config:
+	@echo "Will patch a bunch of settings and permissions that are needed for the project to run. Check each specific project for details on what they do"
+	ssh "$(DEPLOY_TGT_HOST)" sudo raspi-config nonint do_spi 0
+	ssh "$(DEPLOY_TGT_HOST)" sudo dtparam spi=on
+	ssh "$(DEPLOY_TGT_HOST)" sudo usermod -aG gpio,spi '$$USER'
+	ssh "$(DEPLOY_TGT_HOST)" sudo usermod -aG video '$$USER'
+	ssh "$(DEPLOY_TGT_HOST)" sudo usermod -aG systemd-journal '$$USER'
+	ssh "$(DEPLOY_TGT_HOST)" sudo setcap cap_sys_admin+ep display-mgr
 

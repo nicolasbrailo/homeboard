@@ -1,18 +1,6 @@
-[submodule "wl-display-toggle"]
-	path = wl-display-toggle
-	url = git@github.com:nicolasbrailo/wl-display-toggle.git
-[submodule "pipresencemon"]
-	path = pipresencemonsvc
-	url = git@github.com:nicolasbrailo/pipresencemon.git
-[submodule "pi_gpio_mon"]
-	path = pigpiomon
-	url = git@github.com:nicolasbrailo/pi_gpio_mon.git
-[submodule "hackwaytext"]
-	path = hackswaytext
-	url = git@github.com:nicolasbrailo/hackwaytext.git
-[submodule "homeboard_ambience"]
-	path = ambiencesvc
-	url = git@github.com:nicolasbrailo/homeboard_ambience.git
-[submodule "mostlyhackswayimg/swayimg"]
-	path = mostlyhackswayimg/swayimg
-	url = https://github.com/artemsen/swayimg.git
+[submodule "rpiz-xcompile"]
+	path = rpiz-xcompile
+	url = git@github.com:nicolasbrailo/rpiz-xcompile.git
+[submodule "occupancy-sensor-ld2410s/debugScript"]
+	path = occupancy-sensor-ld2410s/debugScript
+	url = git@github.com:nicolasbrailo/ld2410s.git
