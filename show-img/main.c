@@ -17,16 +17,22 @@ static void sig_handler(int sig) {
 
 static void usage(const char *prog) {
   fprintf(stderr, "Usage: %s [options] <image.jpg>\n", prog);
-  fprintf(stderr, "  -r <0|90|180|270>      rotation (default: 0)\n");
-  fprintf(stderr, "  -i <nearest|bilinear>   interpolation (default: bilinear)\n");
+  fprintf(stderr, "  -r <0|90|180|270>           rotation (default: 0)\n");
+  fprintf(stderr, "  -i <nearest|bilinear>       interpolation (default: bilinear)\n");
+  fprintf(stderr, "  -h <left|center|right>      horizontal alignment (default: center)\n");
+  fprintf(stderr, "  -v <top|center|bottom>      vertical alignment (default: center)\n");
 }
 
 int main(int argc, char *argv[]) {
-  enum rotation rot = ROT_0;
-  enum interpolation interp = INTERP_BILINEAR;
+  struct img_render_cfg cfg = {
+      .rot = ROT_0,
+      .interp = INTERP_BILINEAR,
+      .h_align = HORIZONTAL_ALIGN_CENTER,
+      .v_align = VERTICAL_ALIGN_CENTER,
+  };
 
   int opt;
-  while ((opt = getopt(argc, argv, "r:i:")) != -1) {
+  while ((opt = getopt(argc, argv, "r:i:h:v:")) != -1) {
     switch (opt) {
     case 'r': {
       int deg = atoi(optarg);
@@ -34,16 +40,40 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "invalid rotation: %s\n", optarg);
         return 1;
       }
-      rot = (enum rotation)deg;
+      cfg.rot = (enum rotation)deg;
       break;
     }
     case 'i':
       if (strcmp(optarg, "nearest") == 0)
-        interp = INTERP_NEAREST;
+        cfg.interp = INTERP_NEAREST;
       else if (strcmp(optarg, "bilinear") == 0)
-        interp = INTERP_BILINEAR;
+        cfg.interp = INTERP_BILINEAR;
       else {
         fprintf(stderr, "invalid interpolation: %s\n", optarg);
+        return 1;
+      }
+      break;
+    case 'h':
+      if (strcmp(optarg, "left") == 0)
+        cfg.h_align = HORIZONTAL_ALIGN_LEFT;
+      else if (strcmp(optarg, "center") == 0)
+        cfg.h_align = HORIZONTAL_ALIGN_CENTER;
+      else if (strcmp(optarg, "right") == 0)
+        cfg.h_align = HORIZONTAL_ALIGN_RIGHT;
+      else {
+        fprintf(stderr, "invalid horizontal alignment: %s\n", optarg);
+        return 1;
+      }
+      break;
+    case 'v':
+      if (strcmp(optarg, "top") == 0)
+        cfg.v_align = VERTICAL_ALIGN_TOP;
+      else if (strcmp(optarg, "center") == 0)
+        cfg.v_align = VERTICAL_ALIGN_CENTER;
+      else if (strcmp(optarg, "bottom") == 0)
+        cfg.v_align = VERTICAL_ALIGN_BOTTOM;
+      else {
+        fprintf(stderr, "invalid vertical alignment: %s\n", optarg);
         return 1;
       }
       break;
@@ -84,7 +114,7 @@ int main(int argc, char *argv[]) {
 
   printf("loaded %s: %ux%u\n", image_path, img->width, img->height);
 
-  img_render(fb, fbi.width, fbi.height, fbi.stride, img->pixels, img->width, img->height, rot, interp);
+  img_render(fb, fbi.width, fbi.height, fbi.stride, img->pixels, img->width, img->height, &cfg);
   jpeg_free(img);
 
   while (!g_quit)

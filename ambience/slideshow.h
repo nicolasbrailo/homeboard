@@ -31,7 +31,7 @@ typedef void (*slideshow_overlay_fn)(void *ud, uint32_t *buf, uint32_t width, ui
 // between startup and the first photo arriving. NULL or empty leaves the
 // framebuffer untouched.
 struct Slideshow *slideshow_init(sd_bus *bus, uint32_t *fb, const struct fb_info *fbi, uint32_t transition_time_s,
-                                 uint32_t rotation_deg, bool embed_qr, bool use_eink_for_metadata,
+                                 const struct img_render_cfg *render_cfg, bool embed_qr, bool use_eink_for_metadata,
                                  const char *fallback_image, slideshow_overlay_fn overlay_cb, void *overlay_ud);
 
 // Free the slideshow. Stops the worker if running.

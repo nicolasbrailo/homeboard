@@ -183,3 +183,4 @@ calls `sd_bus_flush_close_unref` on the shared bus.
 - The Makefile's `build/%.o` rule uses `$(notdir ...)`, so source files with
   the same basename across directories would collide.
 - Cross-compile only: targets `arm-linux-gnueabihf`.
+- If display-mgr goes away, ambience will break (can't render but also won't crash)

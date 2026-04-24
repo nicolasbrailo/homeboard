@@ -1,6 +1,6 @@
 .PHONY: clean xcompile-start xcompile-end format
 
-DEPLOY_TGT_HOST=batman@10.0.0.114
+DEPLOY_TGT_HOST=batman@10.0.0.78
 DEPLOY_TGT_DIR=/home/batman/homeboard/
 DEPLOY_USER=batman
 SSH ?= ssh $(DEPLOY_TGT_HOST)

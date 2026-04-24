@@ -79,6 +79,9 @@ static void on_overlay(void *ud, uint32_t *buf, uint32_t width, uint32_t height,
   struct ambience_ctx *ctx = ud;
   (void)rot;
 
+  // XXX TODO
+  return;
+
   if (atomic_load_explicit(&ctx->announcement_pending, memory_order_acquire)) {
     cairo_surface_t *surface =
         cairo_image_surface_create_for_data((unsigned char *)buf, CAIRO_FORMAT_RGB24, width, height, stride);
@@ -148,7 +151,7 @@ int main(int argc, char *argv[]) {
 
   struct ambience_ctx ctx = {.bus = bus};
   atomic_init(&ctx.announcement_pending, false);
-  slideshow = slideshow_init(bus, fb, &fbi, cfg.transition_time_s, cfg.rotation, cfg.embed_qr,
+  slideshow = slideshow_init(bus, fb, &fbi, cfg.transition_time_s, &cfg.render, cfg.embed_qr,
                              cfg.use_eink_for_metadata, cfg.fallback_image, on_overlay, &ctx);
   ctx.slideshow = slideshow;
   display = display_init(bus, on_display_turned_on, on_display_turned_off, &ctx);

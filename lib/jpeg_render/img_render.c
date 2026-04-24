@@ -80,7 +80,10 @@ static inline uint32_t pixel_bilinear(const uint8_t *pixels, uint32_t w, uint32_
 }
 
 void img_render(uint32_t *dst, uint32_t fb_w, uint32_t fb_h, uint32_t fb_stride, const uint8_t *img_pixels,
-                uint32_t img_w, uint32_t img_h, enum rotation rot, enum interpolation interp) {
+                uint32_t img_w, uint32_t img_h, const struct img_render_cfg *cfg) {
+  const enum rotation rot = cfg->rot;
+  const enum interpolation interp = cfg->interp;
+
   // Rotated image dimensions
   uint32_t src_w = (rot == ROT_90 || rot == ROT_270) ? img_h : img_w;
   uint32_t src_h = (rot == ROT_90 || rot == ROT_270) ? img_w : img_h;
@@ -92,8 +95,34 @@ void img_render(uint32_t *dst, uint32_t fb_w, uint32_t fb_h, uint32_t fb_stride,
 
   uint32_t dst_w = (uint32_t)(src_w * scale);
   uint32_t dst_h = (uint32_t)(src_h * scale);
-  uint32_t off_x = (fb_w - dst_w) / 2;
-  uint32_t off_y = (fb_h - dst_h) / 2;
+
+  uint32_t off_x;
+  switch (cfg->h_align) {
+  case HORIZONTAL_ALIGN_LEFT:
+    off_x = 0;
+    break;
+  case HORIZONTAL_ALIGN_RIGHT:
+    off_x = fb_w - dst_w;
+    break;
+  case HORIZONTAL_ALIGN_CENTER:
+  default:
+    off_x = (fb_w - dst_w) / 2;
+    break;
+  }
+
+  uint32_t off_y;
+  switch (cfg->v_align) {
+  case VERTICAL_ALIGN_TOP:
+    off_y = 0;
+    break;
+  case VERTICAL_ALIGN_BOTTOM:
+    off_y = fb_h - dst_h;
+    break;
+  case VERTICAL_ALIGN_CENTER:
+  default:
+    off_y = (fb_h - dst_h) / 2;
+    break;
+  }
 
   // Clear dst to black
   for (uint32_t y = 0; y < fb_h; y++) {

@@ -42,7 +42,7 @@ struct Slideshow {
   void *overlay_ud;
   struct fb_info fbi;
   atomic_uint transition_time_s;
-  enum rotation rotation;
+  struct img_render_cfg render_cfg;
   uint32_t target_w;
   uint32_t target_h;
   bool embed_qr;
@@ -149,10 +149,10 @@ static bool render_fd(struct Slideshow *s, int fd) {
     return false;
   }
   img_render(s->compose_buf, s->fbi.width, s->fbi.height, s->fbi.stride, img->pixels, img->width, img->height,
-             s->rotation, INTERP_BILINEAR);
+             &s->render_cfg);
   jpeg_free(img);
   if (s->overlay_cb)
-    s->overlay_cb(s->overlay_ud, s->compose_buf, s->fbi.width, s->fbi.height, s->fbi.stride, s->rotation);
+    s->overlay_cb(s->overlay_ud, s->compose_buf, s->fbi.width, s->fbi.height, s->fbi.stride, s->render_cfg.rot);
   memcpy(s->fb, s->compose_buf, s->compose_buf_size);
   return true;
 }
@@ -166,7 +166,7 @@ static void render_fallback(struct Slideshow *s) {
     return;
   }
   img_render(s->compose_buf, s->fbi.width, s->fbi.height, s->fbi.stride, img->pixels, img->width, img->height,
-             s->rotation, INTERP_BILINEAR);
+             &s->render_cfg);
   jpeg_free(img);
   memcpy(s->fb, s->compose_buf, s->compose_buf_size);
   printf("Rendered fallback image: %s\n", s->fallback_image);
@@ -260,10 +260,11 @@ static void on_photo_svc_updown(void *ud, bool up) {
 }
 
 struct Slideshow *slideshow_init(sd_bus *bus, uint32_t *fb, const struct fb_info *fbi, uint32_t transition_time_s,
-                                 uint32_t rotation_deg, bool embed_qr, bool use_eink_for_metadata,
+                                 const struct img_render_cfg *render_cfg, bool embed_qr, bool use_eink_for_metadata,
                                  const char *fallback_image, slideshow_overlay_fn overlay_cb, void *overlay_ud) {
-  if (!bus || !fb || !fbi || transition_time_s == 0)
+  if (!bus || !fb || !fbi || !render_cfg || transition_time_s == 0)
     return NULL;
+  const uint32_t rotation_deg = (uint32_t)render_cfg->rot;
   if (rotation_deg != 0 && rotation_deg != 90 && rotation_deg != 180 && rotation_deg != 270) {
     fprintf(stderr, "slideshow_init: invalid rotation %u\n", rotation_deg);
     return NULL;
@@ -286,7 +287,7 @@ struct Slideshow *slideshow_init(sd_bus *bus, uint32_t *fb, const struct fb_info
   s->overlay_cb = overlay_cb;
   s->overlay_ud = overlay_ud;
   atomic_init(&s->transition_time_s, transition_time_s);
-  s->rotation = (enum rotation)rotation_deg;
+  s->render_cfg = *render_cfg;
   if (sem_init(&s->wake_sem, 0, 0) != 0) {
     perror("sem_init");
     free(s->compose_buf);

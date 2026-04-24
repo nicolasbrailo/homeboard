@@ -5,6 +5,30 @@
 #include <string.h>
 #include <unistd.h>
 
+static const char *h_align_name(enum horizontal_align a) {
+  switch (a) {
+  case HORIZONTAL_ALIGN_LEFT:
+    return "left";
+  case HORIZONTAL_ALIGN_RIGHT:
+    return "right";
+  case HORIZONTAL_ALIGN_CENTER:
+  default:
+    return "center";
+  }
+}
+
+static const char *v_align_name(enum vertical_align a) {
+  switch (a) {
+  case VERTICAL_ALIGN_TOP:
+    return "top";
+  case VERTICAL_ALIGN_BOTTOM:
+    return "bottom";
+  case VERTICAL_ALIGN_CENTER:
+  default:
+    return "center";
+  }
+}
+
 int ambience_config_load(const char *path, struct ambience_config *cfg) {
   struct json_object *root = json_object_from_file(path);
   if (!root) {
@@ -13,7 +37,10 @@ int ambience_config_load(const char *path, struct ambience_config *cfg) {
   }
 
   cfg->transition_time_s = 30;
-  cfg->rotation = 0;
+  cfg->render.rot = ROT_0;
+  cfg->render.interp = INTERP_BILINEAR;
+  cfg->render.h_align = HORIZONTAL_ALIGN_CENTER;
+  cfg->render.v_align = VERTICAL_ALIGN_CENTER;
   cfg->embed_qr = false;
   cfg->use_eink_for_metadata = false;
   cfg->fallback_image[0] = '\0';
@@ -33,7 +60,47 @@ int ambience_config_load(const char *path, struct ambience_config *cfg) {
       json_object_put(root);
       return -1;
     }
-    cfg->rotation = (uint32_t)n;
+    cfg->render.rot = (enum rotation)n;
+  }
+  if (json_object_object_get_ex(root, "interpolation", &val)) {
+    const char *s = json_object_get_string(val);
+    if (s && strcmp(s, "nearest") == 0)
+      cfg->render.interp = INTERP_NEAREST;
+    else if (s && strcmp(s, "bilinear") == 0)
+      cfg->render.interp = INTERP_BILINEAR;
+    else {
+      fprintf(stderr, "Invalid interpolation '%s' (must be nearest or bilinear)\n", s ? s : "");
+      json_object_put(root);
+      return -1;
+    }
+  }
+  if (json_object_object_get_ex(root, "horizontal_align", &val)) {
+    const char *s = json_object_get_string(val);
+    if (s && strcmp(s, "left") == 0)
+      cfg->render.h_align = HORIZONTAL_ALIGN_LEFT;
+    else if (s && strcmp(s, "center") == 0)
+      cfg->render.h_align = HORIZONTAL_ALIGN_CENTER;
+    else if (s && strcmp(s, "right") == 0)
+      cfg->render.h_align = HORIZONTAL_ALIGN_RIGHT;
+    else {
+      fprintf(stderr, "Invalid horizontal_align '%s' (must be left, center, right)\n", s ? s : "");
+      json_object_put(root);
+      return -1;
+    }
+  }
+  if (json_object_object_get_ex(root, "vertical_align", &val)) {
+    const char *s = json_object_get_string(val);
+    if (s && strcmp(s, "top") == 0)
+      cfg->render.v_align = VERTICAL_ALIGN_TOP;
+    else if (s && strcmp(s, "center") == 0)
+      cfg->render.v_align = VERTICAL_ALIGN_CENTER;
+    else if (s && strcmp(s, "bottom") == 0)
+      cfg->render.v_align = VERTICAL_ALIGN_BOTTOM;
+    else {
+      fprintf(stderr, "Invalid vertical_align '%s' (must be top, center, bottom)\n", s ? s : "");
+      json_object_put(root);
+      return -1;
+    }
   }
   if (json_object_object_get_ex(root, "embed_qr", &val))
     cfg->embed_qr = json_object_get_boolean(val);
@@ -51,7 +118,10 @@ int ambience_config_load(const char *path, struct ambience_config *cfg) {
   }
 
   json_object_put(root);
-  printf("Config loaded: transition_time_s=%u rotation=%u embed_qr=%d use_eink_for_metadata=%d fallback_image=%s\n",
-         cfg->transition_time_s, cfg->rotation, cfg->embed_qr, cfg->use_eink_for_metadata, cfg->fallback_image);
+  printf("Config loaded: transition_time_s=%u rotation=%u interpolation=%s h_align=%s v_align=%s embed_qr=%d "
+         "use_eink_for_metadata=%d fallback_image=%s\n",
+         cfg->transition_time_s, (uint32_t)cfg->render.rot,
+         cfg->render.interp == INTERP_BILINEAR ? "bilinear" : "nearest", h_align_name(cfg->render.h_align),
+         v_align_name(cfg->render.v_align), cfg->embed_qr, cfg->use_eink_for_metadata, cfg->fallback_image);
   return 0;
 }
