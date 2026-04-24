@@ -72,6 +72,9 @@ make next                   # trigger Ambience.Next() over SSH (for testing)
 {
   "transition_time_s": 30,
   "rotation": 0,
+  "interpolation": "bilinear",
+  "horizontal_align": "center",
+  "vertical_align": "center",
   "embed_qr": false
 }
 ```
@@ -81,6 +84,12 @@ make next                   # trigger Ambience.Next() over SSH (for testing)
 - `rotation` — one of `0`, `90`, `180`, `270`. Axes swap for 90/270 when
   requesting target size from `photo-provider` so the server renders at the
   correct aspect ratio.
+- `interpolation` — `nearest` or `bilinear`. Default `bilinear`.
+- `horizontal_align` — `left`, `center`, or `right`. How the scaled image is
+  placed inside the framebuffer when it doesn't fill the width. Default
+  `center`.
+- `vertical_align` — `top`, `center`, or `bottom`. Same idea for the vertical
+  axis. Default `center`.
 - `embed_qr` — if true, `photo-provider` overlays a QR code on each image.
 
 ## D-Bus interface
@@ -99,6 +108,7 @@ Methods (all take no arguments, return nothing):
 | `Next()` | Advance to the next picture immediately |
 | `ForceSlideshowOn()` | Turn the display on and start the slideshow as if `occupied=true` had been reported. Cleared by the next real occupancy report. |
 | `ForceSlideshowOff()` | Turn the display off and stop the slideshow. Latched: subsequent `occupied=true` reports are ignored until a real `occupied=false` report (or the occupancy service dropping out) releases it. After release, normal behavior resumes — the next `occupied=true` turns the display back on. `ForceSlideshowOn()` also releases the latch. |
+| `SetRenderConfig(u s s s)` | Update rotation / interpolation / horizontal-align / vertical-align at runtime. Args: `u` rotation (`0`/`90`/`180`/`270`), `s` interpolation (`nearest`/`bilinear`), `s` horizontal_align (`left`/`center`/`right`), `s` vertical_align (`top`/`center`/`bottom`). Re-renders the current picture in place. When rotation flips between portrait/landscape, the new target size is pushed to `photo-provider` so future photos arrive with the correct aspect ratio. Returns `org.freedesktop.DBus.Error.InvalidArgs` if any field is unrecognized. |
 
 Signals:
 
@@ -124,6 +134,8 @@ Shell invocation:
 busctl --system call io.homeboard.Ambience /io/homeboard/Ambience io.homeboard.Ambience1 Next
 busctl --system call io.homeboard.Ambience /io/homeboard/Ambience io.homeboard.Ambience1 ForceSlideshowOn
 busctl --system call io.homeboard.Ambience /io/homeboard/Ambience io.homeboard.Ambience1 ForceSlideshowOff
+busctl --system call io.homeboard.Ambience /io/homeboard/Ambience io.homeboard.Ambience1 \
+    SetRenderConfig usss 180 bilinear center center
 busctl --system monitor io.homeboard.Ambience     # watch DisplayingPhoto live
 ```
 

@@ -19,6 +19,7 @@ struct AmbienceDbus {
   ambience_force_cb on_force_off;
   ambience_set_transition_time_cb on_set_transition_time;
   ambience_announce_requested_cb on_announce_requested_cb;
+  ambience_set_render_config_cb on_set_render_config;
   void *ud;
 };
 
@@ -86,6 +87,25 @@ static int method_announce_requested(sd_bus_message *m, void *userdata, sd_bus_e
   return sd_bus_reply_method_return(m, NULL);
 }
 
+static int method_set_render_config(sd_bus_message *m, void *userdata, sd_bus_error *err) {
+  struct AmbienceDbus *d = userdata;
+  uint32_t rotation = 0;
+  const char *interp = NULL;
+  const char *h_align = NULL;
+  const char *v_align = NULL;
+  int r = sd_bus_message_read(m, "usss", &rotation, &interp, &h_align, &v_align);
+  if (r < 0)
+    return r;
+  r = d->on_set_render_config(d->ud, rotation, interp, h_align, v_align);
+  if (r < 0) {
+    sd_bus_error_setf(err, SD_BUS_ERROR_INVALID_ARGS,
+                      "invalid render config (rotation=%u interpolation=%s h_align=%s v_align=%s)", rotation,
+                      interp ? interp : "", h_align ? h_align : "", v_align ? v_align : "");
+    return r;
+  }
+  return sd_bus_reply_method_return(m, NULL);
+}
+
 static const sd_bus_vtable g_vtable[] = {
     SD_BUS_VTABLE_START(0),
     SD_BUS_METHOD("Next", "", "", method_next, SD_BUS_VTABLE_UNPRIVILEGED),
@@ -94,6 +114,7 @@ static const sd_bus_vtable g_vtable[] = {
     SD_BUS_METHOD("ForceSlideshowOff", "", "", method_force_off, SD_BUS_VTABLE_UNPRIVILEGED),
     SD_BUS_METHOD("SetTransitionTimeSecs", "u", "", method_set_transition_time, SD_BUS_VTABLE_UNPRIVILEGED),
     SD_BUS_METHOD("Announce", "us", "", method_announce_requested, SD_BUS_VTABLE_UNPRIVILEGED),
+    SD_BUS_METHOD("SetRenderConfig", "usss", "", method_set_render_config, SD_BUS_VTABLE_UNPRIVILEGED),
     SD_BUS_SIGNAL("DisplayingPhoto", "s", 0),
     SD_BUS_SIGNAL("SlideshowActive", "b", 0),
     SD_BUS_VTABLE_END,
@@ -120,7 +141,8 @@ int ambience_dbus_emit_slideshow_active(sd_bus *bus, bool active) {
 struct AmbienceDbus *ambience_dbus_init(sd_bus *bus, ambience_next_cb on_next, ambience_prev_cb on_prev,
                                         ambience_force_cb on_force_on, ambience_force_cb on_force_off,
                                         ambience_set_transition_time_cb on_set_transition_time,
-                                        ambience_announce_requested_cb on_announce_requested_cb, void *ud) {
+                                        ambience_announce_requested_cb on_announce_requested_cb,
+                                        ambience_set_render_config_cb on_set_render_config, void *ud) {
   if (!bus)
     return NULL;
   struct AmbienceDbus *d = calloc(1, sizeof(*d));
@@ -133,6 +155,7 @@ struct AmbienceDbus *ambience_dbus_init(sd_bus *bus, ambience_next_cb on_next, a
   d->on_force_off = on_force_off;
   d->on_set_transition_time = on_set_transition_time;
   d->on_announce_requested_cb = on_announce_requested_cb;
+  d->on_set_render_config = on_set_render_config;
   d->ud = ud;
 
   int r = sd_bus_add_object_vtable(d->bus, &d->vtable_slot, DBUS_PATH, DBUS_INTERFACE, g_vtable, d);

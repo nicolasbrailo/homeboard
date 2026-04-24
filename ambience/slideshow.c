@@ -42,10 +42,22 @@ struct Slideshow {
   void *overlay_ud;
   struct fb_info fbi;
   atomic_uint transition_time_s;
+  // render_cfg is touched by the worker (read) and the dbus dispatch thread
+  // (write via slideshow_set_render_config). Protect with cfg_mutex.
+  pthread_mutex_t cfg_mutex;
   struct img_render_cfg render_cfg;
   uint32_t target_w;
   uint32_t target_h;
   bool embed_qr;
+
+  // Last successfully decoded photo, cached so slideshow_set_render_config
+  // can trigger an in-place re-render without re-fetching. Owned by the
+  // worker thread while the worker is running; owned by the dispatch thread
+  // when the worker is stopped. NULL until the first successful render.
+  struct jpeg_image *last_img;
+  // Set by slideshow_set_render_config, cleared by the worker. When set, the
+  // worker re-renders last_img instead of fetching a new photo.
+  atomic_bool rerender_requested;
 
   // `bus` is shared with the main dispatch loop; only touched on the main
   // thread (monitor setup, push_initial_config, teardown). `worker_bus` is
@@ -142,18 +154,30 @@ static void render_meta(struct Slideshow *s, char *meta) {
     eink_meta_render(s->eink_meta, meta);
 }
 
+// Render `img` into the framebuffer under the current render_cfg (snapshotted
+// under cfg_mutex), then run the overlay and blit. Caller owns `img`.
+static void render_img(struct Slideshow *s, const struct jpeg_image *img) {
+  pthread_mutex_lock(&s->cfg_mutex);
+  struct img_render_cfg cfg = s->render_cfg;
+  pthread_mutex_unlock(&s->cfg_mutex);
+  img_render(s->compose_buf, s->fbi.width, s->fbi.height, s->fbi.stride, img->pixels, img->width, img->height, &cfg);
+  if (s->overlay_cb)
+    s->overlay_cb(s->overlay_ud, s->compose_buf, s->fbi.width, s->fbi.height, s->fbi.stride, cfg.rot);
+  memcpy(s->fb, s->compose_buf, s->compose_buf_size);
+}
+
+// Decode `fd`, render it, and cache it as last_img. Returns false on decode
+// failure (nothing is rendered in that case).
 static bool render_fd(struct Slideshow *s, int fd) {
   struct jpeg_image *img = jpeg_load_fd(fd, s->fbi.width, s->fbi.height);
   if (!img) {
     fprintf(stderr, "jpeg decode failed\n");
     return false;
   }
-  img_render(s->compose_buf, s->fbi.width, s->fbi.height, s->fbi.stride, img->pixels, img->width, img->height,
-             &s->render_cfg);
-  jpeg_free(img);
-  if (s->overlay_cb)
-    s->overlay_cb(s->overlay_ud, s->compose_buf, s->fbi.width, s->fbi.height, s->fbi.stride, s->render_cfg.rot);
-  memcpy(s->fb, s->compose_buf, s->compose_buf_size);
+  render_img(s, img);
+  if (s->last_img)
+    jpeg_free(s->last_img);
+  s->last_img = img;
   return true;
 }
 
@@ -165,10 +189,8 @@ static void render_fallback(struct Slideshow *s) {
     fprintf(stderr, "fallback image decode failed: %s\n", s->fallback_image);
     return;
   }
-  img_render(s->compose_buf, s->fbi.width, s->fbi.height, s->fbi.stride, img->pixels, img->width, img->height,
-             &s->render_cfg);
+  render_img(s, img);
   jpeg_free(img);
-  memcpy(s->fb, s->compose_buf, s->compose_buf_size);
   printf("Rendered fallback image: %s\n", s->fallback_image);
 }
 
@@ -198,6 +220,19 @@ static void *worker_main(void *ud) {
     while (sem_trywait(&s->wake_sem) == 0) {
     }
     int skip = atomic_exchange(&s->skip_count, 0);
+    bool rerender = atomic_exchange(&s->rerender_requested, false);
+
+    // Re-render path: config changed, and there's a cached photo we can repaint
+    // with the new config. Skip the fetch entirely. If a next/prev is queued we
+    // honor that first — the updated config will apply to the new photo anyway.
+    if (rerender && skip == 0 && s->last_img) {
+      printf("Re-rendering current picture with updated config\n");
+      render_img(s, s->last_img);
+      if (wait_or_stop(s, atomic_load(&s->transition_time_s)))
+        break;
+      continue;
+    }
+
     const char *method = (skip < 0) ? "GetPrevPhoto" : "GetPhoto";
 
     int fd = -1;
@@ -287,16 +322,25 @@ struct Slideshow *slideshow_init(sd_bus *bus, uint32_t *fb, const struct fb_info
   s->overlay_cb = overlay_cb;
   s->overlay_ud = overlay_ud;
   atomic_init(&s->transition_time_s, transition_time_s);
+  if (pthread_mutex_init(&s->cfg_mutex, NULL) != 0) {
+    perror("pthread_mutex_init");
+    free(s->compose_buf);
+    free(s);
+    return NULL;
+  }
   s->render_cfg = *render_cfg;
   if (sem_init(&s->wake_sem, 0, 0) != 0) {
     perror("sem_init");
+    pthread_mutex_destroy(&s->cfg_mutex);
     free(s->compose_buf);
     free(s);
     return NULL;
   }
   atomic_init(&s->skip_count, 0);
+  atomic_init(&s->rerender_requested, false);
   if (connect_worker_bus(s) < 0) {
     sem_destroy(&s->wake_sem);
+    pthread_mutex_destroy(&s->cfg_mutex);
     free(s->compose_buf);
     free(s);
     return NULL;
@@ -340,11 +384,14 @@ void slideshow_free(struct Slideshow *s) {
     return;
   slideshow_stop(s);
   sem_destroy(&s->wake_sem);
+  pthread_mutex_destroy(&s->cfg_mutex);
   if (s->photo_svc_monitor)
     sd_bus_slot_unref(s->photo_svc_monitor);
   if (s->worker_bus)
     sd_bus_flush_close_unref(s->worker_bus);
   eink_meta_free(s->eink_meta);
+  if (s->last_img)
+    jpeg_free(s->last_img);
   free(s->compose_buf);
   free(s->fallback_image);
   free(s);
@@ -402,5 +449,44 @@ bool slideshow_set_transition_time_s(struct Slideshow *s, uint32_t seconds) {
   }
   atomic_store(&s->transition_time_s, seconds);
   printf("Transition time updated to %u seconds\n", seconds);
+  return true;
+}
+
+bool slideshow_set_render_config(struct Slideshow *s, const struct img_render_cfg *cfg) {
+  if (!s || !cfg)
+    return false;
+  const uint32_t rotation_deg = (uint32_t)cfg->rot;
+  if (rotation_deg != 0 && rotation_deg != 90 && rotation_deg != 180 && rotation_deg != 270) {
+    fprintf(stderr, "slideshow_set_render_config: invalid rotation %u\n", rotation_deg);
+    return false;
+  }
+
+  pthread_mutex_lock(&s->cfg_mutex);
+  const enum rotation prev_rot = s->render_cfg.rot;
+  s->render_cfg = *cfg;
+  pthread_mutex_unlock(&s->cfg_mutex);
+
+  // photo-provider pre-scales to the configured target size. When rotation
+  // toggles between portrait/landscape the axes swap, so we re-push the target
+  // size so future photos arrive with the correct aspect ratio.
+  const bool axes_swapped_before = (prev_rot == ROT_90 || prev_rot == ROT_270);
+  const bool axes_swapped_now = (cfg->rot == ROT_90 || cfg->rot == ROT_270);
+  if (axes_swapped_before != axes_swapped_now) {
+    s->target_w = axes_swapped_now ? s->fbi.height : s->fbi.width;
+    s->target_h = axes_swapped_now ? s->fbi.width : s->fbi.height;
+    if (push_initial_config(s->bus, s->target_w, s->target_h, s->embed_qr) < 0)
+      fprintf(stderr, "WARNING: Failed to push new target size to %s\n", DBUS_PHOTO_SERVICE);
+  }
+
+  printf("Render config updated: rot=%u interp=%d h_align=%d v_align=%d\n", (uint32_t)cfg->rot, (int)cfg->interp,
+         (int)cfg->h_align, (int)cfg->v_align);
+
+  // Ask the worker to re-render the current picture with the new config. If
+  // the worker isn't running there's nothing on screen to repaint; the next
+  // slideshow_start will pick up the new cfg on the first fetch.
+  if (s->worker_running) {
+    atomic_store(&s->rerender_requested, true);
+    sem_post(&s->wake_sem);
+  }
   return true;
 }

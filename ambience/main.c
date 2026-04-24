@@ -20,7 +20,6 @@
 static volatile sig_atomic_t g_quit;
 
 static void sig_handler(int sig) {
-  (void)sig;
   g_quit = 1;
 }
 
@@ -54,6 +53,53 @@ static void on_force_off(void *ud) { display_force_off(((struct ambience_ctx *)u
 
 static bool on_set_transition_time(void *ud, uint32_t seconds) {
   return slideshow_set_transition_time_s(((struct ambience_ctx *)ud)->slideshow, seconds);
+}
+
+static int on_set_render_config(void *ud, uint32_t rotation, const char *interp_s, const char *h_align_s,
+                                const char *v_align_s) {
+  struct ambience_ctx *ctx = ud;
+  struct img_render_cfg cfg;
+
+  if (rotation != 0 && rotation != 90 && rotation != 180 && rotation != 270) {
+    fprintf(stderr, "SetRenderConfig: invalid rotation %u\n", rotation);
+    return -EINVAL;
+  }
+  cfg.rot = (enum rotation)rotation;
+
+  if (interp_s && strcmp(interp_s, "nearest") == 0)
+    cfg.interp = INTERP_NEAREST;
+  else if (interp_s && strcmp(interp_s, "bilinear") == 0)
+    cfg.interp = INTERP_BILINEAR;
+  else {
+    fprintf(stderr, "SetRenderConfig: invalid interpolation '%s'\n", interp_s ? interp_s : "");
+    return -EINVAL;
+  }
+
+  if (h_align_s && strcmp(h_align_s, "left") == 0)
+    cfg.h_align = HORIZONTAL_ALIGN_LEFT;
+  else if (h_align_s && strcmp(h_align_s, "center") == 0)
+    cfg.h_align = HORIZONTAL_ALIGN_CENTER;
+  else if (h_align_s && strcmp(h_align_s, "right") == 0)
+    cfg.h_align = HORIZONTAL_ALIGN_RIGHT;
+  else {
+    fprintf(stderr, "SetRenderConfig: invalid horizontal_align '%s'\n", h_align_s ? h_align_s : "");
+    return -EINVAL;
+  }
+
+  if (v_align_s && strcmp(v_align_s, "top") == 0)
+    cfg.v_align = VERTICAL_ALIGN_TOP;
+  else if (v_align_s && strcmp(v_align_s, "center") == 0)
+    cfg.v_align = VERTICAL_ALIGN_CENTER;
+  else if (v_align_s && strcmp(v_align_s, "bottom") == 0)
+    cfg.v_align = VERTICAL_ALIGN_BOTTOM;
+  else {
+    fprintf(stderr, "SetRenderConfig: invalid vertical_align '%s'\n", v_align_s ? v_align_s : "");
+    return -EINVAL;
+  }
+
+  if (!slideshow_set_render_config(ctx->slideshow, &cfg))
+    return -EINVAL;
+  return 0;
 }
 
 static int on_announce_requested_cb(void *ud, uint32_t timeout_seconds, const char* msg) {
@@ -141,6 +187,7 @@ int main(int argc, char *argv[]) {
     ret = 1;
     goto end;
   }
+
 
   drm_mgr = drm_mgr_init();
   fb = drm_mgr_acquire_fb(drm_mgr, &fbi);

@@ -9,6 +9,11 @@ typedef void (*ambience_prev_cb)(void *);
 typedef void (*ambience_force_cb)(void *);
 typedef bool (*ambience_set_transition_time_cb)(void *, uint32_t);
 typedef int (*ambience_announce_requested_cb)(void*, uint32_t, const char*);
+// Apply new rotation / interpolation / alignment at runtime. All four strings
+// are borrowed (unowned by the callee). Returns 0 on success, -EINVAL when a
+// field is unrecognized.
+typedef int (*ambience_set_render_config_cb)(void *, uint32_t rotation, const char *interpolation,
+                                             const char *horizontal_align, const char *vertical_align);
 
 struct AmbienceDbus;
 
@@ -19,6 +24,7 @@ struct AmbienceDbus *ambience_dbus_init(sd_bus *bus, ambience_next_cb on_next, a
                                         ambience_force_cb on_force_on, ambience_force_cb on_force_off,
                                         ambience_set_transition_time_cb on_set_transition_time,
                                         ambience_announce_requested_cb on_announce_requested_cb,
+                                        ambience_set_render_config_cb on_set_render_config,
                                         void *ud);
 void ambience_dbus_free(struct AmbienceDbus *d);
 

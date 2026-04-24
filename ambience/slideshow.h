@@ -55,3 +55,11 @@ void slideshow_prev(struct Slideshow *s);
 // a sleep already in progress is not interrupted. Returns false if `seconds`
 // is outside the supported range.
 bool slideshow_set_transition_time_s(struct Slideshow *s, uint32_t seconds);
+
+// Update rotation / interpolation / alignment at runtime. If the rotation
+// changed, the new target size is pushed to photo-provider so future photos
+// arrive with the correct aspect ratio. If the worker is running and a
+// previously rendered photo is cached, it is re-rendered on the spot with the
+// new config; otherwise the change takes effect on the next picture.
+// Returns false if the supplied config fails validation (invalid rotation).
+bool slideshow_set_render_config(struct Slideshow *s, const struct img_render_cfg *cfg);
