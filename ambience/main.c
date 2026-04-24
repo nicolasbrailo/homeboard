@@ -204,7 +204,7 @@ int main(int argc, char *argv[]) {
   display = display_init(bus, on_display_turned_on, on_display_turned_off, &ctx);
   ctx.display = display;
   dbus_mgr = ambience_dbus_init(bus, on_slideshow_next, on_slideshow_prev, on_force_on, on_force_off,
-                                on_set_transition_time, on_announce_requested_cb, &ctx);
+                                on_set_transition_time, on_announce_requested_cb, on_set_render_config, &ctx);
   if (!slideshow || !display || !dbus_mgr) {
     ret = 1;
     goto end;
