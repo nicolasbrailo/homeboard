@@ -1,4 +1,5 @@
 BIN_NAME = dbus-mqtt-bridge
+SERVICE_DEPS = ambience
 SRCS = main.c config.c mqtt.c dbus_client.c
 LDFLAGS += -Wl,-Bstatic -ljson-c \
            -Wl,-Bdynamic -lmosquitto -lsystemd

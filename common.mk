@@ -89,10 +89,20 @@ install-systemd:
 	else \
 		EXEC_CMD="$(DEPLOY_TGT_DIR)/bin/$(BIN_NAME)"; \
 	fi; \
+	DEP_UNITS=""; \
+	for dep in $(SERVICE_DEPS); do \
+		if [ -z "$$DEP_UNITS" ]; then DEP_UNITS="$$dep.service"; \
+		else DEP_UNITS="$$DEP_UNITS $$dep.service"; fi; \
+	done; \
 	{ \
 		echo "[Unit]"; \
 		echo "Description=homeboard $(BIN_NAME)"; \
-		echo "After=network.target dbus.service"; \
+		if [ -n "$$DEP_UNITS" ]; then \
+			echo "After=network.target dbus.service $$DEP_UNITS"; \
+			echo "Wants=$$DEP_UNITS"; \
+		else \
+			echo "After=network.target dbus.service"; \
+		fi; \
 		echo ""; \
 		echo "[Service]"; \
 		echo "Type=simple"; \

@@ -8,6 +8,7 @@ DEPLOY_TGT_DIR=/home/batman/homeboard
 .PHONY: all clean format $(SUBDIRS)
 
 all:
+	@for dir in $(SUBDIRS); do $(MAKE) -C $$dir ; done
 
 clean:
 	@for dir in $(SUBDIRS); do $(MAKE) -C $$dir clean; done

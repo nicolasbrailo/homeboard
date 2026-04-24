@@ -1,5 +1,6 @@
 BIN_NAME = ambience
 DBUS_POLICY = io.homeboard.Ambience.conf
+SERVICE_DEPS = display-mgr photo-provider occupancy-sensor
 SRCS = main.c config.c dbus.c dbus_helpers.c display.c slideshow.c eink_meta.c \
        ../lib/drm_mgr/drm_mgr.c \
        ../lib/jpeg_render/jpeg_loader.c \

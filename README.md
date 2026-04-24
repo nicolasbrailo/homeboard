@@ -52,4 +52,5 @@ This should verify the full dev cycle works (cross compile, deploy to target). T
 * Add announcement overlay (overlay text on top of picture, with timeout)
 * Use sides of the display for info, eg weather service
 * Refactor ambience service to use a single dbus interface, to clean up the NULL sender from the mqtt bridge
+* eInk fails on startup -> Should retry a few times
 
