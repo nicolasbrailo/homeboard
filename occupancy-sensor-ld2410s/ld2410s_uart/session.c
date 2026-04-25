@@ -33,11 +33,13 @@ struct session {
 
 /* --- Transport-layer callbacks (reader thread) --- */
 
-static void on_cmd_response(void *ctx, uint16_t resp_cmd, uint16_t status, const uint8_t *data, size_t data_len) {
+static void on_cmd_response(void *ctx, uint16_t resp_cmd, uint16_t status,
+                            const uint8_t *data, size_t data_len) {
   struct session *s = ctx;
 
   if (status != 0)
-    fprintf(stderr, "[CMD] error: resp=0x%04x status=0x%04x\n", resp_cmd, status);
+    fprintf(stderr, "[CMD] error: resp=0x%04x status=0x%04x\n", resp_cmd,
+            status);
 
   if (s->debug)
     printf("LD2410S UART session: received response 0x%04X\n", resp_cmd);
@@ -45,7 +47,8 @@ static void on_cmd_response(void *ctx, uint16_t resp_cmd, uint16_t status, const
   pthread_mutex_lock(&s->resp_mutex);
   s->resp_cmd = resp_cmd;
   s->resp_status = status;
-  size_t copy = data_len < sizeof(s->resp_data) ? data_len : sizeof(s->resp_data);
+  size_t copy =
+      data_len < sizeof(s->resp_data) ? data_len : sizeof(s->resp_data);
   memcpy(s->resp_data, data, copy);
   s->resp_len = copy;
   s->resp_pending = true;
@@ -59,8 +62,9 @@ static void on_cmd_response(void *ctx, uint16_t resp_cmd, uint16_t status, const
  * transaction can be outstanding from enqueue through response.
  * Non-matching responses that arrive during the wait are discarded, mirroring
  * the Python driver's tolerance for stray/late/out-of-order frames. */
-static int send_and_wait(struct session *s, uint16_t cmd_word, const void *data, size_t data_len, uint8_t *out_buf,
-                         size_t out_cap, size_t *out_len) {
+static int send_and_wait(struct session *s, uint16_t cmd_word, const void *data,
+                         size_t data_len, uint8_t *out_buf, size_t out_cap,
+                         size_t *out_len) {
   uint16_t expected = cmd_word + RESP_OFFSET;
 
   pthread_mutex_lock(&s->resp_mutex);
@@ -81,20 +85,27 @@ static int send_and_wait(struct session *s, uint16_t cmd_word, const void *data,
   pthread_mutex_lock(&s->resp_mutex);
   for (;;) {
     if (s->debug)
-      printf("LD2410S UART Session: waiting for response to 0x%04X...\n", cmd_word);
+      printf("LD2410S UART Session: waiting for response to 0x%04X...\n",
+             cmd_word);
     while (!s->resp_pending) {
-      if (pthread_cond_timedwait(&s->resp_cond, &s->resp_mutex, &deadline) == ETIMEDOUT) {
+      if (pthread_cond_timedwait(&s->resp_cond, &s->resp_mutex, &deadline) ==
+          ETIMEDOUT) {
         pthread_mutex_unlock(&s->resp_mutex);
-        fprintf(stderr, "Err: timeout waiting for response to 0x%04x\n", cmd_word);
+        fprintf(stderr, "Err: timeout waiting for response to 0x%04x\n",
+                cmd_word);
         return -1;
       }
     }
     s->resp_pending = false;
     if (s->resp_cmd == expected) {
       if (s->debug)
-        printf("LD2410S UART Session: received response to 0x%04X...\n", cmd_word);
+        printf("LD2410S UART Session: received response to 0x%04X...\n",
+               cmd_word);
     } else {
-      fprintf(stderr, "LD2410S UART Session: expected response=0x%04x, received=0x%04X...\n", expected, s->resp_cmd);
+      fprintf(stderr,
+              "LD2410S UART Session: expected response=0x%04x, "
+              "received=0x%04X...\n",
+              expected, s->resp_cmd);
     }
     break;
   }
@@ -111,14 +122,16 @@ static int send_and_wait(struct session *s, uint16_t cmd_word, const void *data,
 
 /* --- Public API --- */
 
-struct session *session_init(const char *dev_path, bool debug, session_frame_cb report_cb, void *report_ctx,
+struct session *session_init(const char *dev_path, bool debug,
+                             session_frame_cb report_cb, void *report_ctx,
                              session_frame_cb cal_cb, void *cal_ctx) {
   struct session *s = calloc(1, sizeof(*s));
   if (!s)
     return NULL;
 
   s->debug = debug;
-  s->transport = transport_init(dev_path, debug, on_cmd_response, s, report_cb, report_ctx, cal_cb, cal_ctx);
+  s->transport = transport_init(dev_path, debug, on_cmd_response, s, report_cb,
+                                report_ctx, cal_cb, cal_ctx);
   if (!s->transport) {
     free(s);
     return NULL;
@@ -146,14 +159,16 @@ void session_free(struct session *s) {
 
 int session_start(struct session *s) { return transport_start(s->transport); }
 
-int session_cmd(struct session *s, uint16_t cmd_word, const void *in, size_t in_len, uint8_t *out_buf, size_t out_cap,
+int session_cmd(struct session *s, uint16_t cmd_word, const void *in,
+                size_t in_len, uint8_t *out_buf, size_t out_cap,
                 size_t *out_len) {
   pthread_mutex_lock(&s->cmd_mutex);
 
   if (s->debug)
     printf("LD2410S UART Session: config enable\n");
   uint8_t enable_data[2] = {0x01, 0x00};
-  int ret = send_and_wait(s, CMD_ENABLE_CONFIG, enable_data, sizeof(enable_data), NULL, 0, NULL);
+  int ret = send_and_wait(s, CMD_ENABLE_CONFIG, enable_data,
+                          sizeof(enable_data), NULL, 0, NULL);
 
   if (ret == 0) {
     if (s->debug)

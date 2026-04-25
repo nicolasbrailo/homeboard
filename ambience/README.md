@@ -1,55 +1,40 @@
 # ambience
 
-A C service that renders a slideshow of images onto a display using DRM/KMS on
-a Raspberry Pi. It reacts to room occupancy (starting/stopping the slideshow
-as people come and go), fetches photos from a sibling service, and exposes a
-D-Bus interface for manual control.
+A C service that renders a slideshow of images onto a display using DRM/KMS
+on a Raspberry Pi. The slideshow's lifecycle is driven by `presence-service`
+(start when present, stop when not); ambience itself is the rendering layer
+and exposes a D-Bus interface for manual control of the slideshow.
 
 ## What it does
 
 - Acquires a DRM framebuffer via `display-mgr` and draws JPEGs directly into it.
-- Subscribes to occupancy signals from `occupancy-sensor`; when the room is
-  occupied it calls `display-mgr` to turn the panel on and starts the
-  slideshow; when vacant it does the inverse.
-- Runs a background worker that pulls photos from `photo-provider` and renders
-  them at the configured interval with optional rotation and QR-code overlay.
-- Exposes `io.homeboard.Ambience1` for external triggers (buttons,
-  automations): `Next()` to skip to the next picture, `Prev()` for previous, and
-  `ForceSlideshowOn()` / `ForceSlideshowOff()` to override the occupancy
-  gate until the next real occupancy report arrives.
-- Transition time between pictures can be configured over dbus with `SetTransitionTimeSecs`
-- Emits a `DisplayingPhoto(s)` signal on the same interface every time a new
-  photo is rendered; the payload is the opaque metadata string supplied by
-  `photo-provider`.
-- Emits a `SlideshowActive(b)` signal when the screen transitions on/off
-  (occupancy-driven or forced); `true` means the slideshow is now running and
-  the display is on, `false` means it has stopped.
+- Subscribes to `io.homeboard.Presence1.PresenceChanged`. On `true` it starts
+  the render loop and emits `SlideshowActive(true)`; on `false` it stops the
+  loop and emits `SlideshowActive(false)`. Display power is not ambience's
+  concern — `presence-service` owns `Display.On/Off`.
+- Drives a slideshow off the dispatch event loop: an `sd_event` timer fires
+  the next transition, an async `GetPhoto` returns via callback, the photo
+  is decoded, scaled/rotated/aligned into the framebuffer, and the timer is
+  re-armed. Single thread, no synchronization.
+- Exposes `io.homeboard.Ambience1` for external triggers: `Next` / `Prev` to
+  advance, `SetTransitionTimeSecs(u)` to retune the wait, `SetRenderConfig`
+  to reconfigure rotation/interpolation/alignment at runtime, and `Announce`
+  to overlay a transient message on the current photo.
+- Optional e-ink metadata strip: when `use_eink_for_metadata` is true, photo
+  metadata is rendered to a secondary e-ink panel via the `eink` lib.
+- Emits `DisplayingPhoto(s)` after each successful render (carrying the
+  opaque metadata blob from `photo-provider`) and `SlideshowActive(b)` on
+  start/stop transitions.
 
 ## Dependencies
 
-Ambience is the presentation layer and relies on three other services:
-
 | Service | Role |
 |---|---|
-| `display-mgr` | Owns the DRM device; ambience gets its framebuffer through it and calls `io.homeboard.Display1.On/Off` to control panel power. |
-| `photo-provider` | Caches and serves JPEGs; ambience calls `io.homeboard.PhotoProvider1.GetPhoto` for each transition, plus `SetTargetSize` / `SetEmbedQr` at startup. |
-| `occupancy-sensor` | Emits `io.homeboard.Occupancy1.StateChanged`; ambience uses it to decide when to run. |
+| `display-mgr` | Owns the DRM device. Ambience acquires its framebuffer through `drm_mgr`. Ambience does not call `Display.On/Off` — `presence-service` does. |
+| `photo-provider` | Caches and serves JPEGs. Ambience calls `GetPhoto`/`GetPrevPhoto` for each transition, plus `SetTargetSize` / `SetEmbedQr` at startup. |
+| `presence-service` | Emits `io.homeboard.Presence1.PresenceChanged(b)`. Ambience starts/stops the slideshow on this signal. |
 
 All three must be reachable on the **system** bus.
-
-## Features
-
-- DRM/KMS rendering via the shared `drm_mgr` library
-- JPEG decode and scale (bilinear) to the framebuffer, with 0/90/180/270°
-  rotation
-- Occupancy-gated lifecycle: slideshow only runs when someone is in the room
-- Manual override: `ForceSlideshowOn` acts like a synthetic `occupied=true`
-  (any real report then wins). `ForceSlideshowOff` latches the display off
-  and ignores `occupied=true` reports until a real `occupied=false` releases
-  the latch — needed because the occupancy sensor re-publishes on distance
-  changes, not just state transitions.
-- Worker can be interrupted mid-wait for immediate advance (`Next`)
-- Single sd_bus event loop shared between all D-Bus consumers
 
 ## Build & deploy
 
@@ -58,10 +43,10 @@ Cross-compiled for ARMv6 using `rpiz-xcompile`:
 ```sh
 make xcompile-start         # mount sysroot
 make                        # build/ambience
-make deploy                 # scp binary to DEPLOY_TGT_HOST
+make deploy-bin             # scp binary to DEPLOY_TGT_HOST
 make deploy-config          # scp config.json
 make deploy-dbus-policy     # install D-Bus policy (required, one-time)
-make next                   # trigger Ambience.Next() over SSH (for testing)
+make tgt-next               # trigger Ambience.Next() over SSH (for testing)
 ```
 
 ## Config
@@ -75,7 +60,9 @@ make next                   # trigger Ambience.Next() over SSH (for testing)
   "interpolation": "bilinear",
   "horizontal_align": "center",
   "vertical_align": "center",
-  "embed_qr": false
+  "embed_qr": false,
+  "use_eink_for_metadata": true,
+  "fallback_image": "/home/batman/homeboard/stockimgs/starry-night.jpg"
 }
 ```
 
@@ -91,6 +78,10 @@ make next                   # trigger Ambience.Next() over SSH (for testing)
 - `vertical_align` — `top`, `center`, or `bottom`. Same idea for the vertical
   axis. Default `center`.
 - `embed_qr` — if true, `photo-provider` overlays a QR code on each image.
+- `use_eink_for_metadata` — if true, photo metadata is rendered on the e-ink
+  panel (via the shared `eink` lib).
+- `fallback_image` — path to a JPEG drawn whenever fetch/decode fails so the
+  screen never goes blank. Optional; ignored if not readable.
 
 ## D-Bus interface
 
@@ -101,98 +92,113 @@ make next                   # trigger Ambience.Next() over SSH (for testing)
 | Object | `/io/homeboard/Ambience` |
 | Interface | `io.homeboard.Ambience1` |
 
-Methods (all take no arguments, return nothing):
+Methods:
 
-| Method | Effect |
-|---|---|
-| `Next()` | Advance to the next picture immediately |
-| `ForceSlideshowOn()` | Turn the display on and start the slideshow as if `occupied=true` had been reported. Cleared by the next real occupancy report. |
-| `ForceSlideshowOff()` | Turn the display off and stop the slideshow. Latched: subsequent `occupied=true` reports are ignored until a real `occupied=false` report (or the occupancy service dropping out) releases it. After release, normal behavior resumes — the next `occupied=true` turns the display back on. `ForceSlideshowOn()` also releases the latch. |
-| `SetRenderConfig(u s s s)` | Update rotation / interpolation / horizontal-align / vertical-align at runtime. Args: `u` rotation (`0`/`90`/`180`/`270`), `s` interpolation (`nearest`/`bilinear`), `s` horizontal_align (`left`/`center`/`right`), `s` vertical_align (`top`/`center`/`bottom`). Re-renders the current picture in place. When rotation flips between portrait/landscape, the new target size is pushed to `photo-provider` so future photos arrive with the correct aspect ratio. Returns `org.freedesktop.DBus.Error.InvalidArgs` if any field is unrecognized. |
+| Method | Signature | Effect |
+|---|---|---|
+| `Next` | `()` → `()` | Advance to the next picture immediately. |
+| `Prev` | `()` → `()` | Step backward to the previous picture. |
+| `SetTransitionTimeSecs` | `(u)` → `()` | Update the wait between pictures. Returns `InvalidArgs` if outside the supported range. |
+| `SetRenderConfig` | `(usss)` → `()` | Update rotation / interpolation / horizontal-align / vertical-align at runtime. Args: `u` rotation (`0`/`90`/`180`/`270`), `s` interpolation (`nearest`/`bilinear`), `s` horizontal_align (`left`/`center`/`right`), `s` vertical_align (`top`/`center`/`bottom`). Re-renders the current picture in place. When rotation flips between portrait/landscape, the new target size is pushed to `photo-provider` so future photos arrive with the correct aspect ratio. Returns `InvalidArgs` if any field is unrecognized. |
+| `Announce` | `(us)` → `()` | Overlay a string on top of the current picture for `u` seconds. Returns `InvalidArgs` if the timeout is invalid or an announcement is already active. |
+
+Slideshow on/off control lives on `io.homeboard.Presence1.ForceOn` /
+`ForceOff` — there are no equivalent methods on Ambience.
 
 Signals:
 
 | Signal | Signature | When |
 |---|---|---|
-| `DisplayingPhoto` | `s` (metadata string) | Emitted from the slideshow worker after each successful render, carrying the metadata blob `photo-provider` returned alongside the image. |
-| `SlideshowActive` | `b` | Emitted from the main dispatch thread on screen on/off transitions. `true` when the display is turned on and the slideshow starts; `false` when it is turned off and the slideshow stops. No signal is emitted on service shutdown. |
+| `DisplayingPhoto` | `s` (metadata string) | Emitted after each successful render, carrying the metadata blob `photo-provider` returned alongside the image. |
+| `SlideshowActive` | `b` | Emitted on slideshow start/stop. `true` when a `PresenceChanged(true)` starts the loop; `false` when `PresenceChanged(false)` stops it (or the presence service drops off the bus). No signal is emitted on service shutdown. |
 
-Subscriber caveat: `DisplayingPhoto` is emitted from the slideshow worker's
-private bus connection, whose unique name does **not** own
-`io.homeboard.Ambience` (the main dispatch bus does). dbus-daemon resolves a
-well-known sender in a match rule to the current owner's unique name at
-install time, so a match filtering on `sender=io.homeboard.Ambience` will
-silently drop these signals. Subscribers must pass `NULL` (no sender filter)
-to `sd_bus_match_signal` and identify the signal by path + interface + member.
-`SlideshowActive` is emitted from the name-owning connection and is not
-subject to this quirk, but subscribers are encouraged to use `NULL` sender
-uniformly for both signals.
+Both signals are emitted on the same bus connection (the one owning
+`io.homeboard.Ambience`), so a match filter on
+`sender=io.homeboard.Ambience` works for both — no NULL-sender quirk.
 
 Shell invocation:
 
 ```sh
 busctl --system call io.homeboard.Ambience /io/homeboard/Ambience io.homeboard.Ambience1 Next
-busctl --system call io.homeboard.Ambience /io/homeboard/Ambience io.homeboard.Ambience1 ForceSlideshowOn
-busctl --system call io.homeboard.Ambience /io/homeboard/Ambience io.homeboard.Ambience1 ForceSlideshowOff
 busctl --system call io.homeboard.Ambience /io/homeboard/Ambience io.homeboard.Ambience1 \
     SetRenderConfig usss 180 bilinear center center
+busctl --system call io.homeboard.Ambience /io/homeboard/Ambience io.homeboard.Ambience1 \
+    Announce us 10 "HOLA MUNDO"
 busctl --system monitor io.homeboard.Ambience     # watch DisplayingPhoto live
 ```
 
-The policy file `io.homeboard.Ambience.conf` grants `own` to the running user
-and send/receive access to everyone else. Without it,
+The policy file `io.homeboard.Ambience.conf` grants `own` to the running
+user and send/receive access to everyone else. Without it,
 `sd_bus_request_name` returns `EACCES`.
 
 ## Layer map
 
 ```
-main.c             thin: opens the shared sd_bus, loads config, wires modules,
-                   runs the dispatch loop
-config.{c,h}       json-c config parsing
-dbus.{c,h}         borrows the shared sd_bus; hosts io.homeboard.Ambience1
-                   (Next, ForceSlideshowOn, ForceSlideshowOff)
-display.{c,h}      borrows the shared sd_bus; subscribes to
-                   Occupancy1.StateChanged, calls Display1.On/Off, invokes
-                   caller callbacks on toggle. Exposes display_force_on /
-                   display_force_off for manual overrides that synthesise an
-                   occupancy report.
-slideshow.{c,h}    borrows the shared sd_bus for service up/down monitoring
-                   and startup config. Worker thread: fetches from
-                   PhotoProvider, decodes, renders. Holds a dedicated
-                   sd_bus connection for GetPhoto so the synchronous call
-                   never touches the dispatch bus from another thread.
-../lib/drm_mgr/              framebuffer acquisition via display-mgr
-../lib/jpeg_render/          libjpeg-based decode + scaler
+main.c                thin: creates sd_event, wires modules, runs
+                      sd_event_loop. Owns no D-Bus connection itself.
+config.{c,h}          json-c config parsing
+dbus_helpers.{c,h}    is_service_up + NameOwnerChanged subscription helper
+dbus_listeners.{c,h}  owns its own sd_bus (attached to sd_event) and the
+                      well-known name io.homeboard.Ambience. Hosts the
+                      Ambience1 vtable (Next / Prev / SetTransitionTimeSecs
+                      / SetRenderConfig / Announce), subscribes to
+                      Presence.PresenceChanged and presence/photo service
+                      up/down, and emits SlideshowActive + DisplayingPhoto.
+                      Single dispatch surface for the Ambience interface.
+render_loop.{c,h}     framebuffer side of the slideshow. Drives an
+                      sd_event one-shot timer for transitions; on fire
+                      issues photo_client_fetch_async and renders in the
+                      reply callback. JPEG decode + scale/rotate/align,
+                      blit, fallback image, cached last-decoded image for
+                      in-place re-render on render-config change. Touches
+                      no D-Bus directly.
+photo_client.{c,h}    outbound PhotoProvider client. Owns its own sd_bus
+                      (attached to sd_event). Async GetPhoto/GetPrevPhoto
+                      via sd_bus_call_method_async (single in-flight slot,
+                      cancellable); synchronous SetTargetSize/SetEmbedQr.
+overlay.{c,h}         transient on-screen announcements; supplies a draw
+                      callback the render loop calls after img_render but
+                      before the blit.
+eink_meta.{c,h}       optional e-ink metadata strip; rendered after each
+                      photo from the dispatch thread.
+../lib/drm_mgr/                framebuffer acquisition via display-mgr
+../lib/jpeg_render/            libjpeg-based decode + scaler
+../lib/eink/                   cairo-based e-ink renderer
+../lib/rpigpio/                GPIO wrapper used by eink lib
 ```
 
 ### Threading
 
-- Main thread runs a single `sd_bus_process` / `sd_bus_wait` loop via
-  `ambience_dbus_run_once`. `dbus.c` (server vtable), `display.c` (Occupancy
-  match + Display1.On/Off calls), and `slideshow.c` (PhotoProvider
-  name-owner match + initial `SetTargetSize`/`SetEmbedQr`) all share that
-  bus. `Next`, `ForceSlideshowOn`, `ForceSlideshowOff`, and the occupancy
-  signal handler all dispatch on this thread.
-- Slideshow worker thread: fetches one photo (`GetPhoto`), decodes, renders,
-  then waits on `wake_sem` up to `transition_time_s`. `slideshow_stop()` and
-  `slideshow_next()` both post the sem; `stop_requested` (plain bool,
-  synchronised by the sem) disambiguates. The worker uses a dedicated
-  `sd_bus` connection (`worker_bus`) so its synchronous `GetPhoto` calls
-  never touch the dispatch bus from another thread — `sd_bus` is not
-  thread-safe.
+Single-threaded by design. Everything runs on the `sd_event` dispatch loop:
+D-Bus method handlers, signal listeners, the transition timer, the
+`GetPhoto` reply callback, JPEG decode, the blit, and the eink_meta render.
+No worker threads, no mutexes, no atomics (apart from a vestigial flag in
+`overlay`).
+
+The one CPU-bound step is JPEG decode + scale; on a Pi Zero a high-res
+image can stall the loop for ~100ms. If that becomes user-visible, push
+*just decode* off-thread (with a result queue back to dispatch) — but
+that's a localized fix in `render_loop`, not a structural change.
 
 ### Startup ordering
 
-`main.c` opens the shared `sd_bus` up front and passes it as a borrowed
-pointer to `slideshow_init`, `display_init`, and `ambience_dbus_init`. The
-three modules can be created in any order; they keep only a borrowed
-reference. Teardown frees each module (unrefs its slots) before `main.c`
-calls `sd_bus_flush_close_unref` on the shared bus.
+`main.c` creates `sd_event`, registers `SIGINT`/`SIGTERM` via
+`sd_event_add_signal`, loads config, then wires
+`overlay → eink_meta → photo_client → render_loop → dbus_listeners` and
+calls `sd_event_loop`. Each D-Bus-aware module opens and attaches its own
+bus during init; main never holds an `sd_bus *`. Teardown frees the
+modules in reverse before unref'ing the event loop.
 
 ## Build gotchas
 
-- `json-c` is statically linked; `libsystemd` and `libjpeg` are dynamic.
+- `json-c` is statically linked; `libsystemd`, `libjpeg`, `libcairo`,
+  `libpixman`, `libpng`, etc. are linked dynamically (no static builds on
+  Debian/Raspbian).
 - The Makefile's `build/%.o` rule uses `$(notdir ...)`, so source files with
   the same basename across directories would collide.
-- Cross-compile only: targets `arm-linux-gnueabihf`.
-- If display-mgr goes away, ambience will break (can't render but also won't crash)
+- Cross-compile only: targets `arm-linux-gnueabihf`. `make
+  install_sysroot_deps` pulls the needed `.deb`s into the rpiz-xcompile
+  sysroot.
+- If `display-mgr` goes away ambience can't acquire a framebuffer at startup
+  and exits; once running, render keeps drawing into the existing
+  framebuffer regardless.

@@ -12,11 +12,8 @@ script stays as an interactive debugger; this service is the production daemon.
 - Reads occupancy + distance over UART (115200 baud binary protocol)
 - Optionally reads a simple occupancy boolean from a GPIO pin, OR-combined with
   the UART signal so either interface can trigger "occupied"
-- Configurable startup grace period (first event held for N seconds, then
-  forced) and per-direction hysteresis on occupancy transitions; distance
-  updates emit only during a committed/stable occupancy period
-- Broadcasts `io.homeboard.Occupancy1.StateChanged(b occupied, u distance)` on
-  the system D-Bus
+- Broadcasts `io.homeboard.Occupancy1.Report(b occupied, u distance)` on the
+  system D-Bus once per second
 - Auto-calibration at 03:00 each day (only fires once the room has been vacant
   long enough to be safe), or `--calibrate` to force on next idle period
 - Applies per-gate thresholds and common parameters from a JSON config file
@@ -32,7 +29,7 @@ make                        # build/occupancy-sensor
 make deploy                 # scp binary to DEPLOY_TGT_HOST
 make deploy-config          # scp config.json
 make deploy-dbus-policy     # install D-Bus policy (required, one-time)
-make dbus-listen            # tail StateChanged signals over SSH
+make dbus-listen            # tail Report signals over SSH
 ```
 
 ## D-Bus interface
@@ -43,7 +40,7 @@ make dbus-listen            # tail StateChanged signals over SSH
 | Service | `io.homeboard.Occupancy` |
 | Object | `/io/homeboard/Occupancy` |
 | Interface | `io.homeboard.Occupancy1` |
-| Signal | `StateChanged(b occupied, u distance)` |
+| Signal | `Report(b occupied, u distance)` — fires once per second |
 
 Subscribe from any language with a D-Bus binding, or from the shell:
 

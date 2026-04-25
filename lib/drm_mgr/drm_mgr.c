@@ -56,15 +56,18 @@ uint32_t *drm_mgr_acquire_fb(struct DRM_Mgr *self, struct fb_info *info) {
   sd_bus_error err = SD_BUS_ERROR_NULL;
   sd_bus_message *reply = NULL;
 
-  int r = sd_bus_call_method(self->bus, DBUS_SERVICE, DBUS_PATH, DBUS_INTERFACE, "AcquireLease", &err, &reply, "");
+  int r = sd_bus_call_method(self->bus, DBUS_SERVICE, DBUS_PATH, DBUS_INTERFACE,
+                             "AcquireLease", &err, &reply, "");
   if (r < 0) {
-    fprintf(stderr, "AcquireLease: %s\n", err.message ? err.message : strerror(-r));
+    fprintf(stderr, "AcquireLease: %s\n",
+            err.message ? err.message : strerror(-r));
     sd_bus_error_free(&err);
     return NULL;
   }
 
   int fd = -1;
-  r = sd_bus_message_read(reply, "huuuuu", &fd, &info->width, &info->height, &info->stride, &info->format, &info->size);
+  r = sd_bus_message_read(reply, "huuuuu", &fd, &info->width, &info->height,
+                          &info->stride, &info->format, &info->size);
   if (r < 0) {
     fprintf(stderr, "AcquireLease: bad reply: %s\n", strerror(-r));
     sd_bus_message_unref(reply);
@@ -81,7 +84,8 @@ uint32_t *drm_mgr_acquire_fb(struct DRM_Mgr *self, struct fb_info *info) {
     return NULL;
   }
 
-  void *fb = mmap(NULL, info->size, PROT_READ | PROT_WRITE, MAP_SHARED, owned_fd, 0);
+  void *fb =
+      mmap(NULL, info->size, PROT_READ | PROT_WRITE, MAP_SHARED, owned_fd, 0);
   if (fb == MAP_FAILED) {
     perror("mmap");
     close(owned_fd);
@@ -111,9 +115,11 @@ void drm_mgr_release_fb(struct DRM_Mgr *self) {
   }
 
   sd_bus_error err = SD_BUS_ERROR_NULL;
-  int r = sd_bus_call_method(self->bus, DBUS_SERVICE, DBUS_PATH, DBUS_INTERFACE, "ReleaseLease", &err, NULL, "");
+  int r = sd_bus_call_method(self->bus, DBUS_SERVICE, DBUS_PATH, DBUS_INTERFACE,
+                             "ReleaseLease", &err, NULL, "");
   if (r < 0)
-    fprintf(stderr, "ReleaseLease: %s\n", err.message ? err.message : strerror(-r));
+    fprintf(stderr, "ReleaseLease: %s\n",
+            err.message ? err.message : strerror(-r));
   sd_bus_error_free(&err);
   self->holds_drm = false;
 }

@@ -23,7 +23,8 @@ static void jpeg_err_exit(j_common_ptr cinfo) {
   longjmp(e->jmp, 1);
 }
 
-static struct jpeg_image *jpeg_load_file(FILE *f, const char *src_name, uint32_t target_w, uint32_t target_h) {
+static struct jpeg_image *jpeg_load_file(FILE *f, const char *src_name,
+                                         uint32_t target_w, uint32_t target_h) {
   struct jpeg_image *img = malloc(sizeof(struct jpeg_image));
   if (!img) {
     fclose(f);
@@ -36,7 +37,8 @@ static struct jpeg_image *jpeg_load_file(FILE *f, const char *src_name, uint32_t
   cinfo.err = jpeg_std_error(&jerr.pub);
   jerr.pub.error_exit = jpeg_err_exit;
 
-  // libjpeg errors seem to call abort in some situations, this should override it and make it recoverable
+  // libjpeg errors seem to call abort in some situations, this should override
+  // it and make it recoverable
   if (setjmp(jerr.jmp)) {
     // libjpeg signaled a fatal error; clean up and bail instead of exit()ing.
     fprintf(stderr, "jpeg decode aborted: %s\n", src_name);
@@ -60,13 +62,14 @@ static struct jpeg_image *jpeg_load_file(FILE *f, const char *src_name, uint32_t
 
   cinfo.out_color_space = JCS_RGB;
 
-  // Decode to the size that's closest to our display by picking the largest denominator where output still covers the
-  // target
+  // Decode to the size that's closest to our display by picking the largest
+  // denominator where output still covers the target
   if (target_w > 0 && target_h > 0) {
     static const unsigned denoms[] = {8, 4, 2, 1};
     for (int i = 0; i < 4; i++) {
       unsigned d = denoms[i];
-      if (cinfo.image_width / d >= target_w && cinfo.image_height / d >= target_h) {
+      if (cinfo.image_width / d >= target_w &&
+          cinfo.image_height / d >= target_h) {
         cinfo.scale_num = 1;
         cinfo.scale_denom = d;
         break;
@@ -98,7 +101,8 @@ static struct jpeg_image *jpeg_load_file(FILE *f, const char *src_name, uint32_t
   return img;
 }
 
-struct jpeg_image *jpeg_load(const char *path, uint32_t target_w, uint32_t target_h) {
+struct jpeg_image *jpeg_load(const char *path, uint32_t target_w,
+                             uint32_t target_h) {
   FILE *f = fopen(path, "rb");
   if (!f) {
     perror(path);

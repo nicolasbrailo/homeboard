@@ -12,23 +12,20 @@ bool is_service_up(sd_bus *bus, const char *svc_name) {
                              "/org/freedesktop/DBus", "org.freedesktop.DBus",
                              "GetNameOwner", &err, &reply, "s", svc_name);
   if (r < 0) {
-    if (sd_bus_error_has_name(&err,
-                              "org.freedesktop.DBus.Error.NameHasNoOwner")) {
-      return 0;
-    } else {
+    if (!sd_bus_error_has_name(&err,
+                               "org.freedesktop.DBus.Error.NameHasNoOwner"))
       fprintf(stderr, "GetNameOwner(%s) failed: %s\n", svc_name,
               err.message ? err.message : strerror(-r));
-      return 0;
-    }
-  } else {
-    r = sd_bus_message_read(reply, "s", &owner);
-    if (r >= 0) {
-      printf("Service %s offered by %s\n", svc_name, owner);
-    }
-    return true;
+    sd_bus_error_free(&err);
+    sd_bus_message_unref(reply);
+    return false;
   }
+  r = sd_bus_message_read(reply, "s", &owner);
+  if (r >= 0)
+    printf("Service %s offered by %s\n", svc_name, owner);
   sd_bus_error_free(&err);
   sd_bus_message_unref(reply);
+  return true;
 }
 
 struct updown_ctx {

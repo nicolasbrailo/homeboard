@@ -53,7 +53,9 @@ static const uint8_t CAL_FOOTER[] = {0xF8, 0xF7, 0xF6, 0xF5};
 
 /* --- Helpers --- */
 
-static uint16_t read_u16_le(const uint8_t *p) { return (uint16_t)p[0] | ((uint16_t)p[1] << 8); }
+static uint16_t read_u16_le(const uint8_t *p) {
+  return (uint16_t)p[0] | ((uint16_t)p[1] << 8);
+}
 
 static void write_u16_le(uint8_t *p, uint16_t v) {
   p[0] = v & 0xFF;
@@ -67,7 +69,8 @@ static double monotonic_now(void) {
 }
 
 /* Scan backward through buf[0..buf_len) for a 4-byte pattern. */
-static const uint8_t *memrfind4(const uint8_t *buf, size_t buf_len, const uint8_t pattern[4]) {
+static const uint8_t *memrfind4(const uint8_t *buf, size_t buf_len,
+                                const uint8_t pattern[4]) {
   if (buf_len < 4)
     return NULL;
   for (size_t i = buf_len - 4;; i--) {
@@ -79,7 +82,8 @@ static const uint8_t *memrfind4(const uint8_t *buf, size_t buf_len, const uint8_
   return NULL;
 }
 
-static void debug_hex(const struct transport *f, const char *prefix, const uint8_t *data, size_t len) {
+static void debug_hex(const struct transport *f, const char *prefix,
+                      const uint8_t *data, size_t len) {
   if (!f->debug || !data || (len == 0))
     return;
   printf("%s", prefix);
@@ -146,13 +150,15 @@ static int open_serial(const char *dev_path) {
 
 /* --- Frame building --- */
 
-static int send_cmd(struct transport *f, uint16_t cmd_word, const void *data, size_t data_len) {
+static int send_cmd(struct transport *f, uint16_t cmd_word, const void *data,
+                    size_t data_len) {
   /* [header 4] [payload_len 2] [cmd_word 2] [data ...] [footer 4] */
   uint8_t frame[4 + 2 + 2 + TRANSPORT_MAX_DATA + 4];
   size_t payload_len = 2 + data_len;
 
   if (payload_len > TRANSPORT_MAX_DATA) {
-    fprintf(stderr, "Err: payload too large (%zu, max is %zu\n", payload_len, TRANSPORT_MAX_DATA);
+    fprintf(stderr, "Err: payload too large (%zu, max is %zu\n", payload_len,
+            TRANSPORT_MAX_DATA);
     return -1;
   }
 
@@ -180,18 +186,22 @@ static int send_cmd(struct transport *f, uint16_t cmd_word, const void *data, si
 
 /* --- Frame parsing --- */
 
-static void handle_report_frame(struct transport *f, const uint8_t *frame, size_t len) {
+static void handle_report_frame(struct transport *f, const uint8_t *frame,
+                                size_t len) {
   if (f->on_report)
     f->on_report(f->report_ctx, frame, len);
 }
 
-static void handle_calibration_frame(struct transport *f, const uint8_t *frame, size_t len) {
+static void handle_calibration_frame(struct transport *f, const uint8_t *frame,
+                                     size_t len) {
   if (f->on_calibration)
     f->on_calibration(f->calibration_ctx, frame, len);
 }
 
-static void handle_cmd_response(struct transport *f, const uint8_t *frame, size_t len) {
-  /* frame: [header 4] [payload_len 2] [resp_cmd 2] [status 2] [data...] [footer 4] */
+static void handle_cmd_response(struct transport *f, const uint8_t *frame,
+                                size_t len) {
+  /* frame: [header 4] [payload_len 2] [resp_cmd 2] [status 2] [data...] [footer
+   * 4] */
   if (len < 4 + 2 + 2 + 2 + 4) {
     fprintf(stderr, "Err: cmd response too short (%zu)\n", len);
     return;
@@ -202,7 +212,8 @@ static void handle_cmd_response(struct transport *f, const uint8_t *frame, size_
   size_t actual_payload = len - 4 - 2 - 4;
 
   if (actual_payload != payload_len)
-    fprintf(stderr, "Err: bad cmd response len=%zu expected=%zu\n", actual_payload, payload_len);
+    fprintf(stderr, "Err: bad cmd response len=%zu expected=%zu\n",
+            actual_payload, payload_len);
 
   if (actual_payload < 4) {
     fprintf(stderr, "Err: cmd response short payload\n");
@@ -229,7 +240,8 @@ enum parse_result {
 };
 
 /* Try to parse a complete frame from buf. */
-static enum parse_result parse_buffer(struct transport *f, uint8_t *buf, size_t n) {
+static enum parse_result parse_buffer(struct transport *f, uint8_t *buf,
+                                      size_t n) {
   /* Short report frame: 6E [state] [dist_lo] [dist_hi] 62 */
   if (n >= 5 && buf[n - 5] == 0x6E && buf[n - 1] == 0x62) {
     if (n > 5)
@@ -293,7 +305,8 @@ static void *reader_thread_fn(void *arg) {
       struct transport_cmd cmd;
       if (spsc_dequeue(f, &cmd)) {
         if (f->debug)
-          printf("LD2410S UART transport: dequed command 0x%04X\n", cmd.cmd_word);
+          printf("LD2410S UART transport: dequed command 0x%04X\n",
+                 cmd.cmd_word);
         send_cmd(f, cmd.cmd_word, cmd.data, cmd.data_len);
         waiting_for_response = true;
         response_timeout = monotonic_now() + CMD_TIMEOUT_SEC;
@@ -310,10 +323,11 @@ static void *reader_thread_fn(void *arg) {
 
     enum parse_result r = parse_buffer(f, buf, buf_len);
     /* A command response clears the ack wait; reports and
-     * calibration frames can arrive interleaved with the wait, so we ignore them.
-     * In theory, this may ACK a different command that the user expects, but in practice
-     * the device will only work on a single command at a time, if we send multiple commands
-     * without waiting for the first to ACK, the client is broken */
+     * calibration frames can arrive interleaved with the wait, so we ignore
+     * them. In theory, this may ACK a different command that the user expects,
+     * but in practice the device will only work on a single command at a time,
+     * if we send multiple commands without waiting for the first to ACK, the
+     * client is broken */
     if (r == PARSE_CMD_RESPONSE) {
       waiting_for_response = false;
     }
@@ -334,9 +348,10 @@ static void *reader_thread_fn(void *arg) {
 
 /* --- Public API --- */
 
-struct transport *transport_init(const char *dev_path, bool debug, transport_cmd_response_cb on_cmd_response,
-                                 void *cmd_response_ctx, transport_report_cb on_report, void *report_ctx,
-                                 transport_calibration_cb on_calibration, void *calibration_ctx) {
+struct transport *transport_init(
+    const char *dev_path, bool debug, transport_cmd_response_cb on_cmd_response,
+    void *cmd_response_ctx, transport_report_cb on_report, void *report_ctx,
+    transport_calibration_cb on_calibration, void *calibration_ctx) {
   struct transport *f = calloc(1, sizeof(*f));
   if (!f)
     return NULL;
@@ -387,7 +402,8 @@ int transport_start(struct transport *f) {
   return 0;
 }
 
-bool transport_enqueue(struct transport *f, uint16_t cmd_word, const void *data, size_t data_len) {
+bool transport_enqueue(struct transport *f, uint16_t cmd_word, const void *data,
+                       size_t data_len) {
   if (data_len > TRANSPORT_MAX_DATA) {
     fprintf(stderr, "Err: enqueue data too large (%zu)\n", data_len);
     return false;

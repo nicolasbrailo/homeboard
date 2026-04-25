@@ -16,7 +16,7 @@ If the broker or a web UI in front of it is compromised, the blast radius on the
 
 - Connects to an MQTT broker as a client, with Last-Will-and-Testament set to `<prefix>state/bridge` = `"offline"` (retained).
 - Subscribes to `<prefix>cmd/#`. Each known topic suffix maps to one D-Bus method call.
-- Listens for `io.homeboard.Occupancy1.StateChanged` on the system bus and republishes it as retained JSON on `<prefix>state/occupancy`.
+- Listens for `io.homeboard.Occupancy1.Report` on the system bus and republishes it as retained JSON on `<prefix>state/occupancy` (every second; retained).
 - Listens for `io.homeboard.Ambience1.DisplayingPhoto` and republishes the raw metadata string as a retained message on `<prefix>state/displayed_photo`.
 - Listens for `io.homeboard.Ambience1.SlideshowActive` and republishes `"true"` / `"false"` as a retained message on `<prefix>state/slideshow_active`.
 - Auto-reconnects to both the broker and (implicitly) D-Bus on failure.
@@ -42,7 +42,7 @@ No worker threads. No `mosquitto_loop_start`. We own the loop explicitly because
 | `main.c` | Entry point, event loop, command dispatch table, payload parsers |
 | `config.c/h` | JSON config loader (json-c), defaults, `topic_prefix` validation |
 | `mqtt.c/h` | libmosquitto wrapper: connect, LWT, subscribe/publish, non-blocking loop primitives |
-| `dbus_client.c/h` | sd-bus client: method-call helpers for Ambience/PhotoProvider, signal subscribers for Occupancy and Ambience |
+| `dbus_client.c/h` | sd-bus client: method-call helpers for Ambience/Presence/PhotoProvider, signal subscribers for Occupancy and Ambience |
 | `config.json` | Broker host/port, credentials, keepalive, topic prefix |
 
 ## MQTT interface
@@ -55,8 +55,8 @@ Default topic prefix `homeboard/` (configurable). Every topic below is relative 
 |-------|--------------|---------|-------|
 | `cmd/ambience/next` | `Ambience.Next` | ignored | advance slideshow |
 | `cmd/ambience/prev` | `Ambience.Prev` | ignored | previous picture |
-| `cmd/ambience/force_on` | `Ambience.ForceSlideshowOn` | ignored | |
-| `cmd/ambience/force_off` | `Ambience.ForceSlideshowOff` | ignored | |
+| `cmd/presence/force_on` | `Presence.ForceOn` | ignored | force presence=true |
+| `cmd/presence/force_off` | `Presence.ForceOff` | ignored | latch presence=false until next genuine vacancy |
 | `cmd/ambience/set_transition_time_secs` | `Ambience.SetTransitionTimeSecs` (`u`) | decimal string, e.g. `"30"` | |
 | `cmd/photo_provider/set_embed_qr` | `PhotoProvider.SetEmbedQr` (`b`) | `"0"`/`"1"` or `"true"`/`"false"` (case-insensitive) | |
 | `cmd/photo_provider/set_target_size` | `PhotoProvider.SetTargetSize` (`uu`) | `"<W>x<H>"`, e.g. `"1024x768"` | |
@@ -78,11 +78,12 @@ All publishes are QoS 0.
 
 No name is owned on the bus, so no `.conf` policy file is needed for this service. Each of the target services' existing `<policy context="default">` already permits `send_destination` and `receive_sender` for unprivileged callers, which is all the bridge needs.
 
-The bridge talks to three services:
+The bridge talks to four services:
 
 - `io.homeboard.Ambience` @ `/io/homeboard/Ambience` (interface `io.homeboard.Ambience1`) — method calls, plus signal subscriptions (`DisplayingPhoto s`, `SlideshowActive b`). Both subscriptions use `NULL` sender: `DisplayingPhoto` requires it (worker-thread bus doesn't own the well-known name — see the Ambience README), and `SlideshowActive` uses it for uniformity so the rule shape is robust if the emit side ever moves.
+- `io.homeboard.Presence` @ `/io/homeboard/Presence` (interface `io.homeboard.Presence1`) — method calls (`ForceOn`, `ForceOff`)
 - `io.homeboard.PhotoProvider` @ `/io/homeboard/PhotoProvider` (interface `io.homeboard.PhotoProvider1`) — method calls only
-- `io.homeboard.Occupancy` @ `/io/homeboard/Occupancy` (interface `io.homeboard.Occupancy1`) — signal subscription (`StateChanged bu`)
+- `io.homeboard.Occupancy` @ `/io/homeboard/Occupancy` (interface `io.homeboard.Occupancy1`) — signal subscription (`Report bu`)
 
 If a target service is down when a command arrives, `sd_bus_call_method` fails and the bridge logs the error; nothing crashes.
 

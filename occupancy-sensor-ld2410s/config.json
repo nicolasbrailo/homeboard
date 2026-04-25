@@ -6,15 +6,6 @@
   "COMMENT_sensor_report_gpio": "Pin used by the sensor. Use -1 to disable GPIO monitoring.",
   "sensor_report_gpio": 2,
 
-  "COMMENT_startup_delay_secs": "seconds to wait after startup before the first event is emitted; one event is always published once the delay elapses",
-  "startup_delay_secs": 10,
-
-  "COMMENT_hysteresis_occupied": "consecutive occupied reads required before an occupied event is emitted",
-  "hysteresis_occupied": 5,
-
-  "COMMENT_hysteresis_vacant": "consecutive vacant reads required before a vacant event is emitted",
-  "hysteresis_vacant": 9,
-
   "COMMENT_farthest_gate": "gate index 0-15; each gate ~0.7 m range bin",
   "farthest_gate": 6,
 

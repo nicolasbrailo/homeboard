@@ -69,7 +69,9 @@ int ambience_config_load(const char *path, struct ambience_config *cfg) {
     else if (s && strcmp(s, "bilinear") == 0)
       cfg->render.interp = INTERP_BILINEAR;
     else {
-      fprintf(stderr, "Invalid interpolation '%s' (must be nearest or bilinear)\n", s ? s : "");
+      fprintf(stderr,
+              "Invalid interpolation '%s' (must be nearest or bilinear)\n",
+              s ? s : "");
       json_object_put(root);
       return -1;
     }
@@ -83,7 +85,9 @@ int ambience_config_load(const char *path, struct ambience_config *cfg) {
     else if (s && strcmp(s, "right") == 0)
       cfg->render.h_align = HORIZONTAL_ALIGN_RIGHT;
     else {
-      fprintf(stderr, "Invalid horizontal_align '%s' (must be left, center, right)\n", s ? s : "");
+      fprintf(stderr,
+              "Invalid horizontal_align '%s' (must be left, center, right)\n",
+              s ? s : "");
       json_object_put(root);
       return -1;
     }
@@ -97,7 +101,9 @@ int ambience_config_load(const char *path, struct ambience_config *cfg) {
     else if (s && strcmp(s, "bottom") == 0)
       cfg->render.v_align = VERTICAL_ALIGN_BOTTOM;
     else {
-      fprintf(stderr, "Invalid vertical_align '%s' (must be top, center, bottom)\n", s ? s : "");
+      fprintf(stderr,
+              "Invalid vertical_align '%s' (must be top, center, bottom)\n",
+              s ? s : "");
       json_object_put(root);
       return -1;
     }
@@ -118,10 +124,12 @@ int ambience_config_load(const char *path, struct ambience_config *cfg) {
   }
 
   json_object_put(root);
-  printf("Config loaded: transition_time_s=%u rotation=%u interpolation=%s h_align=%s v_align=%s embed_qr=%d "
+  printf("Config loaded: transition_time_s=%u rotation=%u interpolation=%s "
+         "h_align=%s v_align=%s embed_qr=%d "
          "use_eink_for_metadata=%d fallback_image=%s\n",
          cfg->transition_time_s, (uint32_t)cfg->render.rot,
-         cfg->render.interp == INTERP_BILINEAR ? "bilinear" : "nearest", h_align_name(cfg->render.h_align),
-         v_align_name(cfg->render.v_align), cfg->embed_qr, cfg->use_eink_for_metadata, cfg->fallback_image);
+         cfg->render.interp == INTERP_BILINEAR ? "bilinear" : "nearest",
+         h_align_name(cfg->render.h_align), v_align_name(cfg->render.v_align),
+         cfg->embed_qr, cfg->use_eink_for_metadata, cfg->fallback_image);
   return 0;
 }

@@ -23,11 +23,11 @@ ld2410s_uart/
 
 The combined `LD2410S` class is what `main.c` talks to. It runs its own poller
 thread that merges GPIO polling with the latest UART-reported state (OR on
-`occupied`) and fires the user-supplied callback **only on state change**. UART
-reports arrive via `on_uart_report` from the transport's reader thread and land
-in atomics; the poller reads them. There is no direct callback from UART to the
-user — everything funnels through the poller so GPIO and UART changes are
-reported uniformly.
+`occupied`) and fires the user-supplied callback **once per second
+unconditionally**. UART reports arrive via `on_uart_report` from the
+transport's reader thread and land in atomics; the poller reads them. There is
+no direct callback from UART to the user — everything funnels through the
+poller so GPIO and UART changes are reported uniformly.
 
 ## Threading
 

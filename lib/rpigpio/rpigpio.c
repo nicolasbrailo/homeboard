@@ -25,7 +25,8 @@ struct RpiGpio {
   int num_lines;
 };
 
-static int claim_line(struct RpiGpio *gpio, const char *consumer, int pin, uint64_t flags, int *value) {
+static int claim_line(struct RpiGpio *gpio, const char *consumer, int pin,
+                      uint64_t flags, int *value) {
   if (pin < 0 || pin >= gpio->num_lines) {
     return -1;
   }
@@ -58,7 +59,8 @@ static int claim_line(struct RpiGpio *gpio, const char *consumer, int pin, uint6
   return 0;
 }
 
-struct RpiGpio *rpigpio_open(int chip_num, const char *consumer, const struct RpiGpioPin *pins, int num_pins) {
+struct RpiGpio *rpigpio_open(int chip_num, const char *consumer,
+                             const struct RpiGpioPin *pins, int num_pins) {
   char path[64];
   sprintf(path, "/dev/gpiochip%d", chip_num);
 
@@ -89,11 +91,14 @@ struct RpiGpio *rpigpio_open(int chip_num, const char *consumer, const struct Rp
   }
 
   for (int i = 0; i < num_pins; i++) {
-    uint64_t flags = (pins[i].direction == RPIGPIO_INPUT) ? GPIO_V2_LINE_FLAG_INPUT : GPIO_V2_LINE_FLAG_OUTPUT;
+    uint64_t flags = (pins[i].direction == RPIGPIO_INPUT)
+                         ? GPIO_V2_LINE_FLAG_INPUT
+                         : GPIO_V2_LINE_FLAG_OUTPUT;
     int val = pins[i].initial_value;
     int *val_p = (pins[i].direction == RPIGPIO_OUTPUT) ? &val : NULL;
     if (claim_line(gpio, consumer, pins[i].pin, flags, val_p)) {
-      fprintf(stderr, "%s: failed to claim pin %d: %s\n", path, pins[i].pin, strerror(errno));
+      fprintf(stderr, "%s: failed to claim pin %d: %s\n", path, pins[i].pin,
+              strerror(errno));
       rpigpio_close(gpio);
       return NULL;
     }
@@ -170,7 +175,8 @@ struct RpiSpi *rpispi_open(int dev, int channel, int baud) {
   char mode = 0;
   char bits = 8;
 
-  if (ioctl(fd, SPI_IOC_WR_MODE, &mode) < 0 || ioctl(fd, SPI_IOC_WR_BITS_PER_WORD, &bits) < 0 ||
+  if (ioctl(fd, SPI_IOC_WR_MODE, &mode) < 0 ||
+      ioctl(fd, SPI_IOC_WR_BITS_PER_WORD, &bits) < 0 ||
       ioctl(fd, SPI_IOC_WR_MAX_SPEED_HZ, &baud) < 0) {
     perror("SPI ioctl setup");
     close(fd);

@@ -44,9 +44,9 @@ struct EInkDisplay {
 #define EPD_PWR_PIN 18
 #define EPD_BUSY_PIN 24
 
-// On the manual (https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT_Manual), this is connected
-// to GPIO 17, but 9 is nicer (all of the pins are bunched together)
-// #define EPD_RST_PIN 17
+// On the manual (https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT_Manual),
+// this is connected to GPIO 17, but 9 is nicer (all of the pins are bunched
+// together) #define EPD_RST_PIN 17
 #define EPD_RST_PIN 9
 
 static void sleep_ms(size_t xms) {
@@ -73,7 +73,8 @@ static void dev_sleep_until_ready(struct EInkDisplay *display) {
   sleep_ms(10);
 
   if (!ready) {
-    fprintf(stderr, "Warning: timeout while waiting for device to become ready\n");
+    fprintf(stderr,
+            "Warning: timeout while waiting for device to become ready\n");
   }
 }
 
@@ -82,7 +83,8 @@ enum Cmd_Or_Data {
   TX_DATA,
 };
 
-static void dev_tx(struct EInkDisplay *display, enum Cmd_Or_Data is_cmd, uint8_t d) {
+static void dev_tx(struct EInkDisplay *display, enum Cmd_Or_Data is_cmd,
+                   uint8_t d) {
   const int v = (is_cmd == TX_CMD) ? 0 : 1;
   rpigpio_write(display->gpio, EPD_DC_PIN, v);
   rpigpio_write(display->gpio, EPD_CS_PIN, 0);
@@ -162,7 +164,8 @@ static void dev_shutdown(struct EInkDisplay *display) {
   sleep_ms(2000); // important, at least 2s
 }
 
-static void dev_render(struct EInkDisplay *display, uint8_t *Image, bool is_partial_update) {
+static void dev_render(struct EInkDisplay *display, uint8_t *Image,
+                       bool is_partial_update) {
   if (is_partial_update) {
     // Reset
     rpigpio_write(display->gpio, EPD_RST_PIN, 0);
@@ -207,7 +210,9 @@ struct EInkDisplay *eink_init(struct EInkConfig *cfg) {
   }
 
   display->cfg.mock_display = cfg->mock_display;
-  display->cfg.save_render_to_png_file = cfg->save_render_to_png_file ? strdup(cfg->save_render_to_png_file) : NULL;
+  display->cfg.save_render_to_png_file =
+      cfg->save_render_to_png_file ? strdup(cfg->save_render_to_png_file)
+                                   : NULL;
   if (cfg->save_render_to_png_file && !display->cfg.save_render_to_png_file) {
     fprintf(stderr, "bad_alloc: save_render_to_png_file\n");
     goto err;
@@ -222,7 +227,8 @@ struct EInkDisplay *eink_init(struct EInkConfig *cfg) {
   display->cairo_bg_color = 0;
 
   // Create a monochrome (1-bit) surface
-  display->surface = cairo_image_surface_create(CAIRO_FORMAT_A1, display->width, display->height);
+  display->surface = cairo_image_surface_create(CAIRO_FORMAT_A1, display->width,
+                                                display->height);
 
   display->byte_height = (display->height + 7) / 8;
   display->render_buff_sz = display->byte_height * display->width;
@@ -242,13 +248,15 @@ struct EInkDisplay *eink_init(struct EInkConfig *cfg) {
 
   if (display->cfg.mock_display) {
     if (display->cfg.save_render_to_png_file) {
-      printf("Skip eInk display render, saving to %s instead\n", display->cfg.save_render_to_png_file);
+      printf("Skip eInk display render, saving to %s instead\n",
+             display->cfg.save_render_to_png_file);
     } else {
       printf("Skip eInk display render\n");
     }
   } else {
     if (access("/dev/spidev0.0", F_OK) != 0) {
-      fprintf(stderr, "SPI is not enabled. Run 'dtparam spi=on' to enable it, make it persistent with 'raspi-config "
+      fprintf(stderr, "SPI is not enabled. Run 'dtparam spi=on' to enable it, "
+                      "make it persistent with 'raspi-config "
                       "nonint do_spi 0'.\n");
       goto err;
     }
@@ -352,13 +360,18 @@ static void eink_render_impl(struct EInkDisplay *display, bool is_partial) {
   }
 
   if (display->cfg.save_render_to_png_file) {
-    cairo_surface_write_to_png(display->surface, display->cfg.save_render_to_png_file);
+    cairo_surface_write_to_png(display->surface,
+                               display->cfg.save_render_to_png_file);
   }
 }
 
-void eink_render(struct EInkDisplay *display) { eink_render_impl(display, false); }
+void eink_render(struct EInkDisplay *display) {
+  eink_render_impl(display, false);
+}
 
-void eink_render_partial(struct EInkDisplay *display) { eink_render_impl(display, true); }
+void eink_render_partial(struct EInkDisplay *display) {
+  eink_render_impl(display, true);
+}
 
 static int cairo_get_last_set_color(struct EInkDisplay *display) {
   cairo_pattern_t *pattern = cairo_get_source(display->cr);
@@ -369,7 +382,8 @@ static int cairo_get_last_set_color(struct EInkDisplay *display) {
   return a < 0.1 ? 0 : 1;
 }
 
-void eink_invalidate_rect(struct EInkDisplay *display, size_t x_start, size_t y_start, size_t x_end, size_t y_end) {
+void eink_invalidate_rect(struct EInkDisplay *display, size_t x_start,
+                          size_t y_start, size_t x_end, size_t y_end) {
   const int user_set_color = cairo_get_last_set_color(display);
 
   // Resetting to fg color and then to bg color may have better results?
@@ -426,7 +440,8 @@ void eink_quick_announce(struct EInkDisplay *display, const char *msg) {
   cairo_surface_t *surface = cairo_get_target(cr);
   const double height = cairo_image_surface_get_height(surface);
 
-  cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+  cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL,
+                         CAIRO_FONT_WEIGHT_BOLD);
 
   // Binary search for the largest font size where word-wrapped text fits.
   // cairo_render_text uses ln_offset=1, so lines render at y positions:
@@ -458,7 +473,8 @@ void eink_quick_announce(struct EInkDisplay *display, const char *msg) {
   cairo_paint(cr);
 
   cairo_set_source_rgba(cr, 0, 0, 0, 1);
-  cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+  cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL,
+                         CAIRO_FONT_WEIGHT_BOLD);
   cairo_set_font_size(cr, lo);
   cairo_render_text(cr, msg, 1);
 

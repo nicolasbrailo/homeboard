@@ -70,8 +70,10 @@ static const struct param_entry PARAM_TABLE[] = {
     {NULL, 0, 0},
 };
 
-/* Common param read order (must match struct LD2410S_common_params field order) */
-static const uint16_t COMMON_PARAM_WORDS[] = {0x05, 0x0A, 0x06, 0x02, 0x0C, 0x0B};
+/* Common param read order (must match struct LD2410S_common_params field order)
+ */
+static const uint16_t COMMON_PARAM_WORDS[] = {0x05, 0x0A, 0x06,
+                                              0x02, 0x0C, 0x0B};
 #define NUM_COMMON_PARAMS 6
 
 /* --- Internal state --- */
@@ -88,10 +90,13 @@ struct LD2410S_uart {
 
 /* --- Helpers --- */
 
-static uint16_t read_u16_le(const uint8_t *p) { return (uint16_t)p[0] | ((uint16_t)p[1] << 8); }
+static uint16_t read_u16_le(const uint8_t *p) {
+  return (uint16_t)p[0] | ((uint16_t)p[1] << 8);
+}
 
 static uint32_t read_u32_le(const uint8_t *p) {
-  return (uint32_t)p[0] | ((uint32_t)p[1] << 8) | ((uint32_t)p[2] << 16) | ((uint32_t)p[3] << 24);
+  return (uint32_t)p[0] | ((uint32_t)p[1] << 8) | ((uint32_t)p[2] << 16) |
+         ((uint32_t)p[3] << 24);
 }
 
 static void write_u16_le(uint8_t *p, uint16_t v) {
@@ -144,8 +149,11 @@ static void decode_calibration(void *ctx, const uint8_t *frame, size_t len) {
 
 /* --- Public API: Lifecycle --- */
 
-struct LD2410S_uart *ld2410s_uart_init(const char *dev_path, bool debug, ld2410s_report_cb report_cb,
-                                       void *report_user_data, ld2410s_calibration_cb cal_cb, void *cal_user_data) {
+struct LD2410S_uart *ld2410s_uart_init(const char *dev_path, bool debug,
+                                       ld2410s_report_cb report_cb,
+                                       void *report_user_data,
+                                       ld2410s_calibration_cb cal_cb,
+                                       void *cal_user_data) {
   struct LD2410S_uart *s = calloc(1, sizeof(*s));
   if (!s)
     return NULL;
@@ -157,7 +165,8 @@ struct LD2410S_uart *ld2410s_uart_init(const char *dev_path, bool debug, ld2410s
   s->cal_cb = cal_cb;
   s->cal_ctx = cal_user_data;
 
-  s->session = session_init(dev_path, debug, decode_report, s, decode_calibration, s);
+  s->session =
+      session_init(dev_path, debug, decode_report, s, decode_calibration, s);
   if (!s->session) {
     free(s);
     return NULL;
@@ -172,14 +181,18 @@ void ld2410s_uart_free(struct LD2410S_uart *s) {
   free(s);
 }
 
-int ld2410s_uart_start(struct LD2410S_uart *s) { return session_start(s->session); }
+int ld2410s_uart_start(struct LD2410S_uart *s) {
+  return session_start(s->session);
+}
 
 /* --- Public API: Getters --- */
 
-int ld2410s_uart_get_firmware(struct LD2410S_uart *s, uint8_t *out, size_t out_len, size_t *actual_len) {
+int ld2410s_uart_get_firmware(struct LD2410S_uart *s, uint8_t *out,
+                              size_t out_len, size_t *actual_len) {
   if (s->debug)
     printf("Retrieving device firmware...\n");
-  return session_cmd(s->session, CMD_READ_FIRMWARE, NULL, 0, out, out_len, actual_len);
+  return session_cmd(s->session, CMD_READ_FIRMWARE, NULL, 0, out, out_len,
+                     actual_len);
 }
 
 int ld2410s_uart_get_serial(struct LD2410S_uart *s, char *out, size_t out_len) {
@@ -188,7 +201,8 @@ int ld2410s_uart_get_serial(struct LD2410S_uart *s, char *out, size_t out_len) {
 
   uint8_t buf[TRANSPORT_MAX_DATA];
   size_t n = 0;
-  if (session_cmd(s->session, CMD_READ_SERIAL, NULL, 0, buf, sizeof(buf), &n) < 0)
+  if (session_cmd(s->session, CMD_READ_SERIAL, NULL, 0, buf, sizeof(buf), &n) <
+      0)
     return -1;
 
   if (n < 2) {
@@ -212,7 +226,8 @@ int ld2410s_uart_get_serial(struct LD2410S_uart *s, char *out, size_t out_len) {
   return 0;
 }
 
-int ld2410s_uart_get_common_params(struct LD2410S_uart *s, struct LD2410S_common_params *out) {
+int ld2410s_uart_get_common_params(struct LD2410S_uart *s,
+                                   struct LD2410S_common_params *out) {
   if (s->debug)
     printf("Retrieving device common params...\n");
 
@@ -222,7 +237,8 @@ int ld2410s_uart_get_common_params(struct LD2410S_uart *s, struct LD2410S_common
 
   uint8_t buf[NUM_COMMON_PARAMS * 4];
   size_t n = 0;
-  if (session_cmd(s->session, CMD_READ_COMMON, payload, sizeof(payload), buf, sizeof(buf), &n) < 0)
+  if (session_cmd(s->session, CMD_READ_COMMON, payload, sizeof(payload), buf,
+                  sizeof(buf), &n) < 0)
     return -1;
 
   if (n < sizeof(buf)) {
@@ -239,7 +255,8 @@ int ld2410s_uart_get_common_params(struct LD2410S_uart *s, struct LD2410S_common
   return 0;
 }
 
-int ld2410s_uart_get_threshold(struct LD2410S_uart *s, struct LD2410S_threshold_params *out) {
+int ld2410s_uart_get_threshold(struct LD2410S_uart *s,
+                               struct LD2410S_threshold_params *out) {
   if (s->debug)
     printf("Retrieving device config thresholds...\n");
 
@@ -249,7 +266,8 @@ int ld2410s_uart_get_threshold(struct LD2410S_uart *s, struct LD2410S_threshold_
 
   uint8_t buf[16 * 4];
   size_t n = 0;
-  if (session_cmd(s->session, CMD_READ_THRESHOLD, payload, sizeof(payload), buf, sizeof(buf), &n) < 0)
+  if (session_cmd(s->session, CMD_READ_THRESHOLD, payload, sizeof(payload), buf,
+                  sizeof(buf), &n) < 0)
     return -1;
 
   if (n < sizeof(buf)) {
@@ -264,7 +282,8 @@ int ld2410s_uart_get_threshold(struct LD2410S_uart *s, struct LD2410S_threshold_
   return 0;
 }
 
-int ld2410s_uart_get_snr(struct LD2410S_uart *s, struct LD2410S_snr_params *out) {
+int ld2410s_uart_get_snr(struct LD2410S_uart *s,
+                         struct LD2410S_snr_params *out) {
   if (s->debug)
     printf("Retrieving device config snr's...\n");
 
@@ -274,7 +293,8 @@ int ld2410s_uart_get_snr(struct LD2410S_uart *s, struct LD2410S_snr_params *out)
 
   uint8_t buf[16 * 4];
   size_t n = 0;
-  if (session_cmd(s->session, CMD_READ_SNR, payload, sizeof(payload), buf, sizeof(buf), &n) < 0)
+  if (session_cmd(s->session, CMD_READ_SNR, payload, sizeof(payload), buf,
+                  sizeof(buf), &n) < 0)
     return -1;
 
   if (n < sizeof(buf)) {
@@ -303,10 +323,12 @@ int ld2410s_uart_set_serial(struct LD2410S_uart *s, const char *serial) {
     len = 8;
   memcpy(payload + 2, serial, len);
 
-  return session_cmd(s->session, CMD_WRITE_SERIAL, payload, sizeof(payload), NULL, 0, NULL);
+  return session_cmd(s->session, CMD_WRITE_SERIAL, payload, sizeof(payload),
+                     NULL, 0, NULL);
 }
 
-int ld2410s_uart_set_param(struct LD2410S_uart *s, const char *name, uint32_t value) {
+int ld2410s_uart_set_param(struct LD2410S_uart *s, const char *name,
+                           uint32_t value) {
   if (s->debug)
     printf("Set device config %s=%d...\n", name, value);
 
@@ -315,7 +337,8 @@ int ld2410s_uart_set_param(struct LD2410S_uart *s, const char *name, uint32_t va
       uint8_t payload[6];
       write_u16_le(payload, p->param_word);
       write_u32_le(payload + 2, value);
-      return session_cmd(s->session, p->write_cmd, payload, sizeof(payload), NULL, 0, NULL);
+      return session_cmd(s->session, p->write_cmd, payload, sizeof(payload),
+                         NULL, 0, NULL);
     }
   }
   fprintf(stderr, "Err: unknown param '%s'\n", name);
@@ -324,13 +347,14 @@ int ld2410s_uart_set_param(struct LD2410S_uart *s, const char *name, uint32_t va
 
 /* --- Public API: Calibration --- */
 
-int ld2410s_uart_start_calibration(struct LD2410S_uart *s, uint16_t trigger, uint16_t retention,
-                                   uint16_t duration_secs) {
+int ld2410s_uart_start_calibration(struct LD2410S_uart *s, uint16_t trigger,
+                                   uint16_t retention, uint16_t duration_secs) {
   uint8_t cal_data[6];
   write_u16_le(cal_data + 0, trigger);
   write_u16_le(cal_data + 2, retention);
   write_u16_le(cal_data + 4, duration_secs);
-  return session_cmd(s->session, CMD_CALIBRATE, cal_data, sizeof(cal_data), NULL, 0, NULL);
+  return session_cmd(s->session, CMD_CALIBRATE, cal_data, sizeof(cal_data),
+                     NULL, 0, NULL);
 }
 
 size_t ld2410s_uart_get_vacant_reports_count(struct LD2410S_uart *s) {

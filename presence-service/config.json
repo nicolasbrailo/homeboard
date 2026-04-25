@@ -1,0 +1,10 @@
+{
+  "COMMENT_sensor_stabilization_delay_secs": "seconds the sensor service must have been up before its reports are trusted; applied each time it (re)appears on the bus",
+  "sensor_stabilization_delay_secs": 10,
+
+  "COMMENT_hysteresis_occupied": "consecutive occupied reports required before a presence=true transition",
+  "hysteresis_occupied": 5,
+
+  "COMMENT_hysteresis_vacant": "consecutive vacant reports required before a presence=false transition",
+  "hysteresis_vacant": 9
+}

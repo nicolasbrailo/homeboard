@@ -29,8 +29,10 @@ struct app_ctx {
 static void on_occupancy(bool occupied, uint32_t distance, void *ud) {
   struct app_ctx *ctx = ud;
   char payload[128];
-  int n = snprintf(payload, sizeof(payload), "{\"occupied\":%s,\"distance_cm\":%u,\"ts\":%lld}",
-                   occupied ? "true" : "false", distance, (long long)time(NULL));
+  int n =
+      snprintf(payload, sizeof(payload),
+               "{\"occupied\":%s,\"distance_cm\":%u,\"ts\":%lld}",
+               occupied ? "true" : "false", distance, (long long)time(NULL));
   if (n > 0 && (size_t)n < sizeof(payload))
     rc_mqtt_publish(ctx->mqtt, "state/occupancy", payload, (size_t)n, true);
 }
@@ -43,7 +45,8 @@ static void on_displayed_photo_changed(const char *meta, void *ud) {
 static void on_slideshow_active_changed(bool active, void *ud) {
   struct app_ctx *ctx = ud;
   const char *payload = active ? "true" : "false";
-  rc_mqtt_publish(ctx->mqtt, "state/slideshow_active", payload, strlen(payload), true);
+  rc_mqtt_publish(ctx->mqtt, "state/slideshow_active", payload, strlen(payload),
+                  true);
 }
 
 static int parse_bool(const char *p, size_t n, bool *out) {
@@ -98,7 +101,8 @@ static int parse_size(const char *p, size_t n, uint32_t *w, uint32_t *h) {
   return 0;
 }
 
-static void on_cmd(const char *suffix, const char *payload, size_t len, void *ud) {
+static void on_cmd(const char *suffix, const char *payload, size_t len,
+                   void *ud) {
   struct app_ctx *ctx = ud;
   printf("cmd: %s (%zu bytes)\n", suffix, len);
 
@@ -106,10 +110,10 @@ static void on_cmd(const char *suffix, const char *payload, size_t len, void *ud
     rc_dbus_ambience_call_void(ctx->dbus, "Next");
   } else if (strcmp(suffix, "ambience/prev") == 0) {
     rc_dbus_ambience_call_void(ctx->dbus, "Prev");
-  } else if (strcmp(suffix, "ambience/force_on") == 0) {
-    rc_dbus_ambience_call_void(ctx->dbus, "ForceSlideshowOn");
-  } else if (strcmp(suffix, "ambience/force_off") == 0) {
-    rc_dbus_ambience_call_void(ctx->dbus, "ForceSlideshowOff");
+  } else if (strcmp(suffix, "presence/force_on") == 0) {
+    rc_dbus_presence_call_void(ctx->dbus, "ForceOn");
+  } else if (strcmp(suffix, "presence/force_off") == 0) {
+    rc_dbus_presence_call_void(ctx->dbus, "ForceOff");
   } else if (strcmp(suffix, "ambience/set_transition_time_secs") == 0) {
     uint32_t s;
     if (parse_u32(payload, len, &s) == 0)
@@ -147,7 +151,8 @@ int main(int argc, char *argv[]) {
   signal(SIGINT, sig_handler);
 
   struct app_ctx ctx = {0};
-  ctx.dbus = rc_dbus_init(on_occupancy, on_displayed_photo_changed, on_slideshow_active_changed, &ctx);
+  ctx.dbus = rc_dbus_init(on_occupancy, on_displayed_photo_changed,
+                          on_slideshow_active_changed, &ctx);
   if (!ctx.dbus)
     return 1;
   ctx.mqtt = rc_mqtt_init(&cfg, on_cmd, &ctx);
@@ -189,7 +194,8 @@ int main(int argc, char *argv[]) {
       break;
     }
 
-    if (dbus_idx >= 0 && (fds[dbus_idx].revents & (POLLIN | POLLHUP | POLLERR))) {
+    if (dbus_idx >= 0 &&
+        (fds[dbus_idx].revents & (POLLIN | POLLHUP | POLLERR))) {
       while (sd_bus_process(rc_dbus_bus(ctx.dbus), NULL) > 0)
         ;
     }

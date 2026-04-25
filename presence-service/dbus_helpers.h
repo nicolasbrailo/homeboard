@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <systemd/sd-bus.h>
 
-// One-shot check: does anyone currently own the occupancy service name?
+// One-shot check: does anyone currently own svc_name?
 bool is_service_up(sd_bus *bus, const char *svc_name);
 
 // Invoked when svc_name appears on (up=true) or disappears from (up=false) the

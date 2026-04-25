@@ -35,9 +35,7 @@ void eink_meta_free(struct EinkMeta *em) {
   free(em);
 }
 
-void eink_meta_clear(struct EinkMeta *em) {
-  eink_clear(em->display);
-}
+void eink_meta_clear(struct EinkMeta *em) { eink_clear(em->display); }
 
 void eink_meta_render(struct EinkMeta *em, const char *meta_json) {
   if (!em || !meta_json)

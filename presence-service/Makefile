@@ -1,0 +1,18 @@
+BIN_NAME = presence-service
+DBUS_POLICY = io.homeboard.Presence.conf
+SERVICE_DEPS = display-mgr occupancy-sensor
+SRCS = main.c presence.c dbus.c dbus_helpers.c display_client.c config.c
+CFLAGS += -I../lib/
+LDFLAGS += -Wl,-Bstatic -ljson-c -Wl,-Bdynamic -lsystemd -lpthread
+
+all: $(BIN_NAME)
+
+include ../common.mk
+
+SSH = ssh $(DEPLOY_TGT_HOST)
+tgt-force-on:
+	$(SSH) 'busctl --system call io.homeboard.Presence /io/homeboard/Presence io.homeboard.Presence1 ForceOn'
+tgt-force-off:
+	$(SSH) 'busctl --system call io.homeboard.Presence /io/homeboard/Presence io.homeboard.Presence1 ForceOff'
+dbus-listen:
+	$(SSH) "dbus-monitor --system \"type='signal',interface='io.homeboard.Presence1'\""

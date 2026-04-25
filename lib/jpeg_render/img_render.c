@@ -3,7 +3,8 @@
 #include "img_render.h"
 
 // Map rotated coordinates back to original image coordinates.
-static inline void rotate_coords(uint32_t sx, uint32_t sy, uint32_t w, uint32_t h, enum rotation rot, uint32_t *ix,
+static inline void rotate_coords(uint32_t sx, uint32_t sy, uint32_t w,
+                                 uint32_t h, enum rotation rot, uint32_t *ix,
                                  uint32_t *iy) {
   // For ROT_90/ROT_270 the rotated canvas is h × w (dims swapped), so
   // sx ranges [0, h) and sy ranges [0, w). The subtract term must use the
@@ -29,7 +30,8 @@ static inline void rotate_coords(uint32_t sx, uint32_t sy, uint32_t w, uint32_t 
   }
 }
 
-static inline uint32_t pixel_nearest(const uint8_t *pixels, uint32_t w, uint32_t h, float fx, float fy,
+static inline uint32_t pixel_nearest(const uint8_t *pixels, uint32_t w,
+                                     uint32_t h, float fx, float fy,
                                      enum rotation rot) {
   uint32_t sx = (uint32_t)fx;
   uint32_t sy = (uint32_t)fy;
@@ -46,9 +48,12 @@ static inline uint32_t pixel_nearest(const uint8_t *pixels, uint32_t w, uint32_t
   return ((uint32_t)p[0] << 16) | ((uint32_t)p[1] << 8) | p[2];
 }
 
-static inline uint8_t lerp(uint8_t a, uint8_t b, float t) { return (uint8_t)(a + (b - a) * t); }
+static inline uint8_t lerp(uint8_t a, uint8_t b, float t) {
+  return (uint8_t)(a + (b - a) * t);
+}
 
-static inline uint32_t pixel_bilinear(const uint8_t *pixels, uint32_t w, uint32_t h, float fx, float fy,
+static inline uint32_t pixel_bilinear(const uint8_t *pixels, uint32_t w,
+                                      uint32_t h, float fx, float fy,
                                       enum rotation rot) {
   const uint32_t src_w = (rot == ROT_90 || rot == ROT_270) ? h : w;
   const uint32_t src_h = (rot == ROT_90 || rot == ROT_270) ? w : h;
@@ -72,15 +77,19 @@ static inline uint32_t pixel_bilinear(const uint8_t *pixels, uint32_t w, uint32_
   const uint8_t *p01 = pixels + (coords[2][1] * w + coords[2][0]) * 3;
   const uint8_t *p11 = pixels + (coords[3][1] * w + coords[3][0]) * 3;
 
-  const uint8_t r = lerp(lerp(p00[0], p10[0], tx), lerp(p01[0], p11[0], tx), ty);
-  const uint8_t g = lerp(lerp(p00[1], p10[1], tx), lerp(p01[1], p11[1], tx), ty);
-  const uint8_t b = lerp(lerp(p00[2], p10[2], tx), lerp(p01[2], p11[2], tx), ty);
+  const uint8_t r =
+      lerp(lerp(p00[0], p10[0], tx), lerp(p01[0], p11[0], tx), ty);
+  const uint8_t g =
+      lerp(lerp(p00[1], p10[1], tx), lerp(p01[1], p11[1], tx), ty);
+  const uint8_t b =
+      lerp(lerp(p00[2], p10[2], tx), lerp(p01[2], p11[2], tx), ty);
 
   return ((uint32_t)r << 16) | ((uint32_t)g << 8) | b;
 }
 
-void img_render(uint32_t *dst, uint32_t fb_w, uint32_t fb_h, uint32_t fb_stride, const uint8_t *img_pixels,
-                uint32_t img_w, uint32_t img_h, const struct img_render_cfg *cfg) {
+void img_render(uint32_t *dst, uint32_t fb_w, uint32_t fb_h, uint32_t fb_stride,
+                const uint8_t *img_pixels, uint32_t img_w, uint32_t img_h,
+                const struct img_render_cfg *cfg) {
   const enum rotation rot = cfg->rot;
   const enum interpolation interp = cfg->interp;
 
