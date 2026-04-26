@@ -1,6 +1,7 @@
 #include "config.h"
 #include "dbus_listeners.h"
 #include "drm_mgr/drm_mgr.h"
+#include "overlay.h"
 #include "render.h"
 
 #include <signal.h>
@@ -23,6 +24,9 @@ struct AmbienceCtx {
 
   // Render service
   struct RenderCtx* render;
+
+  // Remote-control overlay (QR code shown on the framebuffer)
+  struct Overlay *overlay;
 } g_ambience_ctx;
 
 void on_next(void *ud) {
@@ -55,8 +59,9 @@ void on_presence_changed(void *ud, bool present) {
   render_slideshow_set_active(s->render, present);
 }
 void on_set_remote_control_server(void *ud, const char *url, const char *qr_img) {
-  // TODO
-  printf("New remote control available @ %s\n", url);
+  printf("Remote control available @ %s\n", url);
+  struct AmbienceCtx* s = ud;
+  overlay_set_qr(s->overlay, qr_img);
 }
 void on_presence_service_updown(void *ud, bool up) {
   struct AmbienceCtx* s = ud;
@@ -96,6 +101,11 @@ void on_drm_mgr_updown(void *ud, bool up) {
   render_set_fb(ctx->render, ctx->fb, &ctx->fbi);
 }
 
+void render_pre_commit_cb(void *ud, uint32_t* fb, const struct fb_info* fbi) {
+  struct AmbienceCtx *ctx = ud;
+  overlay_render(ctx->overlay, fb, fbi);
+}
+
 static const struct dbus_listeners_cbs cbs = {
     .on_next = on_next,
     .on_prev = on_prev,
@@ -121,12 +131,18 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  g_ambience_ctx.render = render_init(cfg.fallback_image, cfg.transition_time_s, cfg.use_eink_for_metadata, &cfg.render);
+  g_ambience_ctx.render = render_init(render_pre_commit_cb, &g_ambience_ctx,
+      cfg.fallback_image, cfg.transition_time_s, cfg.use_eink_for_metadata, &cfg.render);
   if (!g_ambience_ctx.render) {
     fprintf(stderr, "Failed to start display render service\n");
     return 1;
   }
 
+  g_ambience_ctx.overlay = overlay_init();
+  if (!g_ambience_ctx.overlay) {
+    fprintf(stderr, "overlay_init failed\n");
+    return 1;
+  }
   bool all_deps_ready = false;
   struct DBusListeners *listeners = dbus_listeners_init(&cbs, &g_ambience_ctx, &all_deps_ready);
   render_slideshow_set_active(g_ambience_ctx.render, all_deps_ready);
@@ -145,5 +161,6 @@ int main(int argc, char *argv[]) {
   dbus_listeners_free(listeners);
   render_free(g_ambience_ctx.render);
   drm_mgr_free(g_ambience_ctx.drm_mgr);
+  overlay_free(g_ambience_ctx.overlay);
   return 0;
 }

@@ -1,7 +1,7 @@
 BIN_NAME = ambience
 DBUS_POLICY = io.homeboard.Ambience.conf
 SERVICE_DEPS = photo-provider presence-service display-mgr
-SRCS = main.c config.c dbus_listeners.c render.c photo_client.c eink_meta.c \
+SRCS = main.c config.c dbus_listeners.c render.c photo_client.c eink_meta.c overlay.c \
        ../lib/dbus_helpers/dbus_helpers.c \
        ../lib/drm_mgr/drm_mgr.c \
        ../lib/jpeg_render/jpeg_loader.c \

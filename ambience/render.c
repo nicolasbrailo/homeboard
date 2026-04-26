@@ -38,38 +38,44 @@ struct RenderCtx {
   sem_t wake_sem;
   char *fallback_img_path;
 
+  render_pre_commit_cb_t render_pre_commit_cb;
+  void *render_pre_commit_cb_ud;
+
   // Downstream deps
   struct PhotoClient* photo_client;
   struct EinkMeta *eink;
 };
 
-static bool render_fd(struct RenderCtx *s, int fd, const struct fb_info* fbi) {
-  struct jpeg_image *img = jpeg_load_fd(fd, fbi->width, fbi->height);
+// Call holding drm lock
+static bool render_fd(struct RenderCtx *s, int fd) {
+  const struct img_render_cfg cfg = s->img_cfg;
+  const struct fb_info fbi = s->fbi;
+
+  struct jpeg_image *img = jpeg_load_fd(fd, fbi.width, fbi.height);
   if (!img) {
     fprintf(stderr, "jpeg decode failed\n");
     return false;
   }
-  pthread_mutex_lock(&s->img_cfg_mutex);
-  const struct img_render_cfg cfg = s->img_cfg;
-  pthread_mutex_unlock(&s->img_cfg_mutex);
-  img_render(s->scratch_fb, fbi->width, fbi->height, fbi->stride,
+  img_render(s->scratch_fb, fbi.width, fbi.height, fbi.stride,
              img->pixels, img->width, img->height, &cfg);
   jpeg_free(img);
   return true;
 }
 
 static bool render_fallback(struct RenderCtx *s) {
+  pthread_mutex_lock(&s->img_cfg_mutex);
+  const struct img_render_cfg cfg = s->img_cfg;
+  const struct fb_info fbi = s->fbi;
+  pthread_mutex_unlock(&s->img_cfg_mutex);
+
   if (!s->fallback_img_path)
     return false;
-  struct jpeg_image *img = jpeg_load(s->fallback_img_path, s->fbi.width, s->fbi.height);
+  struct jpeg_image *img = jpeg_load(s->fallback_img_path, fbi.width, fbi.height);
   if (!img) {
     fprintf(stderr, "fallback image decode failed: %s\n", s->fallback_img_path);
     return false;
   }
-  pthread_mutex_lock(&s->img_cfg_mutex);
-  const struct img_render_cfg cfg = s->img_cfg;
-  pthread_mutex_unlock(&s->img_cfg_mutex);
-  img_render(s->scratch_fb, s->fbi.width, s->fbi.height, s->fbi.stride,
+  img_render(s->scratch_fb, fbi.width, fbi.height, fbi.stride,
              img->pixels, img->width, img->height,
              &cfg);
   jpeg_free(img);
@@ -166,7 +172,8 @@ static void *render_thread_fn(void *arg) {
     bool rendered = false;
     pthread_mutex_lock(&s->drm_mutex);
     if (s->scratch_fb && atomic_load_explicit(&s->slideshow_active, memory_order_relaxed)) {
-      render_fd(s, fd, &s->fbi);
+      render_fd(s, fd);
+      s->render_pre_commit_cb(s->render_pre_commit_cb_ud, s->scratch_fb, &s->fbi);
       memcpy(s->fb, s->scratch_fb,
              atomic_load_explicit(&s->scratch_fb_sz, memory_order_relaxed));
       rendered = true;
@@ -186,9 +193,10 @@ static void *render_thread_fn(void *arg) {
   return NULL;
 }
 
-struct RenderCtx* render_init(const char* fallback_img_path, uint32_t transition_time_s,
-                              bool use_eink,
-                              const struct img_render_cfg *img_cfg) {
+struct RenderCtx* render_init(render_pre_commit_cb_t cb, void* render_pre_commit_cb_ud,
+      const char* fallback_img_path, uint32_t transition_time_s,
+      bool use_eink,
+      const struct img_render_cfg *img_cfg) {
   struct RenderCtx* s = calloc(1, sizeof(*s));
   atomic_init(&s->thread_running, true);
   pthread_mutex_init(&s->drm_mutex, NULL);
@@ -203,6 +211,8 @@ struct RenderCtx* render_init(const char* fallback_img_path, uint32_t transition
   atomic_init(&s->skip_count, 0);
   atomic_init(&s->slideshow_active, false);
   s->fallback_img_path = fallback_img_path? strdup(fallback_img_path) : NULL;
+  s->render_pre_commit_cb = cb;
+  s->render_pre_commit_cb_ud = render_pre_commit_cb_ud;
   render_fallback(s);
 
   if (sem_init(&s->wake_sem, 0, 0) != 0) {

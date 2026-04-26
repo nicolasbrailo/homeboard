@@ -7,7 +7,10 @@
 #include <stdbool.h>
 
 struct RenderCtx;
-struct RenderCtx* render_init(const char* fallback_img_path, uint32_t transition_time_s, bool use_eink, const struct img_render_cfg *img_cfg);
+typedef void (*render_pre_commit_cb_t)(void *ud, uint32_t* fb, const struct fb_info* fbi);
+struct RenderCtx* render_init(render_pre_commit_cb_t cb, void* render_pre_commit_cb_ud,
+        const char* fallback_img_path, uint32_t transition_time_s,
+        bool use_eink, const struct img_render_cfg *img_cfg);
 void render_free(struct RenderCtx* s);
 
 // Call when the DRM assigns an FB to this service
