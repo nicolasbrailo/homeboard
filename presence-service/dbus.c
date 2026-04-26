@@ -1,5 +1,5 @@
 #include "dbus.h"
-#include "dbus_helpers.h"
+#include "dbus_helpers/dbus_helpers.h"
 
 #include <errno.h>
 #include <stdio.h>

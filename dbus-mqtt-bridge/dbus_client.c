@@ -1,4 +1,5 @@
 #include "dbus_client.h"
+#include "dbus_helpers/dbus_helpers.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,11 +26,21 @@ struct rc_dbus {
   sd_bus_slot *occupancy_slot;
   sd_bus_slot *displayed_photo_slot;
   sd_bus_slot *slideshow_active_slot;
+  sd_bus_slot *ambience_updown_slot;
   rc_dbus_occupancy_cb on_occupancy;
   rc_dbus_displayed_photo_cb on_displayed_photo;
   rc_dbus_slideshow_active_cb on_slideshow_active;
   void *ud;
+
+  char *rc_server_url;
+  char *rc_server_qr_img;
 };
+
+static int log_err(const char *method, int r, sd_bus_error *err) {
+  fprintf(stderr, "%s failed: %s\n", method,
+          err->message ? err->message : strerror(-r));
+  return -1;
+}
 
 static int on_occupancy_report(sd_bus_message *m, void *userdata,
                                sd_bus_error *err) {
@@ -60,6 +71,27 @@ static int on_displaying_photo(sd_bus_message *m, void *userdata,
   return 0;
 }
 
+static int propagate_ambience_remote_control_server(struct rc_dbus *d) {
+  if (!d->rc_server_url) {
+    return 0;
+  }
+
+  sd_bus_error err = SD_BUS_ERROR_NULL;
+  int r = sd_bus_call_method(d->bus, AMBIENCE_SERVICE, AMBIENCE_PATH,
+                             AMBIENCE_INTERFACE, "SetRemoteControlServer", &err,
+                             NULL, "ss", d->rc_server_url,
+                             d->rc_server_qr_img ? d->rc_server_qr_img : "");
+  int ret = (r < 0) ? log_err("SetRemoteControlServer", r, &err) : 0;
+  sd_bus_error_free(&err);
+  return ret;
+}
+
+static void on_ambience_updown(void *ud, bool up) {
+  if (up) {
+    propagate_ambience_remote_control_server(ud);
+  }
+}
+
 static int on_slideshow_active_signal(sd_bus_message *m, void *userdata,
                                       sd_bus_error *err) {
   (void)err;
@@ -85,6 +117,8 @@ struct rc_dbus *rc_dbus_init(rc_dbus_occupancy_cb on_occupancy,
   d->on_displayed_photo = on_displayed_photo;
   d->on_slideshow_active = on_slideshow_active;
   d->ud = ud;
+  d->rc_server_url = NULL;
+  d->rc_server_qr_img = NULL;
 
   int r = sd_bus_open_system(&d->bus);
   if (r < 0) {
@@ -130,6 +164,9 @@ struct rc_dbus *rc_dbus_init(rc_dbus_occupancy_cb on_occupancy,
     return NULL;
   }
 
+  d->ambience_updown_slot =
+      on_service_updown(d->bus, AMBIENCE_SERVICE, on_ambience_updown, d);
+
   printf("D-Bus client ready; listening for %s Report and %s DisplayingPhoto, "
          "SlideshowActive\n",
          OCCUPANCY_SERVICE, AMBIENCE_SERVICE);
@@ -139,6 +176,8 @@ struct rc_dbus *rc_dbus_init(rc_dbus_occupancy_cb on_occupancy,
 void rc_dbus_free(struct rc_dbus *d) {
   if (!d)
     return;
+  if (d->ambience_updown_slot)
+    sd_bus_slot_unref(d->ambience_updown_slot);
   if (d->occupancy_slot)
     sd_bus_slot_unref(d->occupancy_slot);
   if (d->displayed_photo_slot)
@@ -147,16 +186,12 @@ void rc_dbus_free(struct rc_dbus *d) {
     sd_bus_slot_unref(d->slideshow_active_slot);
   if (d->bus)
     sd_bus_flush_close_unref(d->bus);
+  free(d->rc_server_url);
+  free(d->rc_server_qr_img);
   free(d);
 }
 
 sd_bus *rc_dbus_bus(struct rc_dbus *d) { return d->bus; }
-
-static int log_err(const char *method, int r, sd_bus_error *err) {
-  fprintf(stderr, "%s failed: %s\n", method,
-          err->message ? err->message : strerror(-r));
-  return -1;
-}
 
 int rc_dbus_ambience_call_void(struct rc_dbus *d, const char *method) {
   sd_bus_error err = SD_BUS_ERROR_NULL;
@@ -189,14 +224,11 @@ int rc_dbus_ambience_set_transition_time(struct rc_dbus *d, uint32_t secs) {
 int rc_dbus_ambience_set_remote_control_server(struct rc_dbus *d,
                                                const char *url,
                                                const char *qr_img) {
-  sd_bus_error err = SD_BUS_ERROR_NULL;
-  int r = sd_bus_call_method(d->bus, AMBIENCE_SERVICE, AMBIENCE_PATH,
-                             AMBIENCE_INTERFACE, "SetRemoteControlServer", &err,
-                             NULL, "ss", url ? url : "",
-                             qr_img ? qr_img : "");
-  int ret = (r < 0) ? log_err("SetRemoteControlServer", r, &err) : 0;
-  sd_bus_error_free(&err);
-  return ret;
+  free(d->rc_server_url);
+  free(d->rc_server_qr_img);
+  d->rc_server_url = strdup(url);
+  d->rc_server_qr_img = strdup(qr_img);
+  return propagate_ambience_remote_control_server(d);
 }
 
 int rc_dbus_photo_set_embed_qr(struct rc_dbus *d, bool on) {
