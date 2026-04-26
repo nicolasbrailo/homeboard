@@ -2,20 +2,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include <systemd/sd-event.h>
-
-// Inbound D-Bus surface for ambience. Owns its own system-bus connection
-// (attached to the shared sd_event) plus the well-known name
-// io.homeboard.Ambience, dispatches method calls, and subscribes to the
-// external signals ambience cares about: presence state changes, and
-// name-owner changes for the presence and photo-provider services. Every
-// external event reaches the orchestrator through the single
-// `dbus_listeners_cbs` struct.
-//
-// Outbound D-Bus to other services lives in dedicated client modules
-// (photo_client) that own their own bus connections. Outbound *signals*
-// declared on the io.homeboard.Ambience1 interface (DisplayingPhoto,
-// SlideshowActive) are emitted from here, on the bus that owns the name.
+#include "jpeg_render/img_render.h"
 
 struct DBusListeners;
 
@@ -26,28 +13,24 @@ struct dbus_listeners_cbs {
   // Returns false on invalid value (caller reports InvalidArgs).
   bool (*on_set_transition_time)(void *ud, uint32_t seconds);
   // Returns 0 on success, negative errno on failure (-EINVAL, -EBUSY, ...).
-  int (*on_set_render_config)(void *ud, uint32_t rotation,
-                              const char *interpolation,
-                              const char *horizontal_align,
-                              const char *vertical_align);
+  int (*on_set_render_config)(void *ud, const struct img_render_cfg* cfg);
   int (*on_announce)(void *ud, uint32_t timeout_seconds, const char *msg);
 
-  // External signals.
+  // Presence status change (present=true => someone is in the room, false => room is vacant)
   void (*on_presence_changed)(void *ud, bool present);
-  // Invoked when the presence / photo-provider services appear or disappear
-  // from the bus. `up=true` means the service is now reachable.
+
+  // A remote control server is available
+  void (*on_set_remote_control_server)(void *ud, const char *url, const char *qr_img);
+
+  // Invoked when a service we depend on goes away or appears from the bus.
+  // `up=true` means the service is now reachable.
   void (*on_presence_service_updown)(void *ud, bool up);
   void (*on_photo_service_updown)(void *ud, bool up);
+  void (*on_drm_mgr_updown)(void *ud, bool up);
 };
 
-// `event` is borrowed; the caller owns it and must outlive the listeners.
-// `cbs` is copied; `ud` is shared across every callback.
-struct DBusListeners *dbus_listeners_init(sd_event *event,
-                                          const struct dbus_listeners_cbs *cbs,
-                                          void *ud);
+struct DBusListeners *
+dbus_listeners_init(const struct dbus_listeners_cbs *cbs, void *ud, bool* all_deps_ready);
 void dbus_listeners_free(struct DBusListeners *d);
+int dbus_listeners_run_once(struct DBusListeners *s, int timeout_ms);
 
-// Emit SlideshowActive(b) / DisplayingPhoto(s) on io.homeboard.Ambience1.
-int dbus_listeners_emit_slideshow_active(struct DBusListeners *d, bool active);
-int dbus_listeners_emit_displaying_photo(struct DBusListeners *d,
-                                         const char *meta);

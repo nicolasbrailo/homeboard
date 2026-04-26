@@ -180,15 +180,6 @@ image can stall the loop for ~100ms. If that becomes user-visible, push
 *just decode* off-thread (with a result queue back to dispatch) — but
 that's a localized fix in `render_loop`, not a structural change.
 
-### Startup ordering
-
-`main.c` creates `sd_event`, registers `SIGINT`/`SIGTERM` via
-`sd_event_add_signal`, loads config, then wires
-`overlay → eink_meta → photo_client → render_loop → dbus_listeners` and
-calls `sd_event_loop`. Each D-Bus-aware module opens and attaches its own
-bus during init; main never holds an `sd_bus *`. Teardown frees the
-modules in reverse before unref'ing the event loop.
-
 ## Build gotchas
 
 - `json-c` is statically linked; `libsystemd`, `libjpeg`, `libcairo`,
@@ -199,6 +190,3 @@ modules in reverse before unref'ing the event loop.
 - Cross-compile only: targets `arm-linux-gnueabihf`. `make
   install_sysroot_deps` pulls the needed `.deb`s into the rpiz-xcompile
   sysroot.
-- If `display-mgr` goes away ambience can't acquire a framebuffer at startup
-  and exits; once running, render keeps drawing into the existing
-  framebuffer regardless.

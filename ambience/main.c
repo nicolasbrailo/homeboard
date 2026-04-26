@@ -1,328 +1,149 @@
 #include "config.h"
 #include "dbus_listeners.h"
-#include "eink_meta.h"
-#include "overlay.h"
-#include "photo_client.h"
-#include "render_loop.h"
-
 #include "drm_mgr/drm_mgr.h"
-#include "jpeg_render/img_render.h"
+#include "render.h"
 
-#include <errno.h>
 #include <signal.h>
-#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/signalfd.h>
-#include <systemd/sd-event.h>
 
-struct ambience_ctx {
-  sd_event *event;
-  struct DBusListeners *listeners;
-  struct PhotoClient *photos;
-  struct RenderLoop *render;
-  struct Overlay *overlay;
-  struct EinkMeta *eink_meta;
+static volatile sig_atomic_t g_quit;
 
-  const struct fb_info *fbi;
-  bool embed_qr;
+static void sig_handler(int sig) {
+  (void)sig;
+  g_quit = 1;
+}
 
-  // Cached so we can detect axis-swap on SetRenderConfig and re-push the
-  // target size to photo-provider. Initialised from the loaded config and
-  // updated on every successful render-config change.
-  enum rotation current_rotation;
-  uint32_t photo_target_w;
-  uint32_t photo_target_h;
+struct AmbienceCtx {
+  // DRM
+  struct DRM_Mgr *drm_mgr;
+  uint32_t* fb;
+  struct fb_info fbi;
+
+  // Render service
+  struct RenderCtx* render;
+} g_ambience_ctx;
+
+void on_next(void *ud) {
+  struct AmbienceCtx* s = ud;
+  render_slideshow_next(s->render);
+}
+
+void on_prev(void *ud) {
+  struct AmbienceCtx* s = ud;
+  render_slideshow_prev(s->render);
+}
+
+bool on_set_transition_time(void *ud, uint32_t seconds) {
+  struct AmbienceCtx* s = ud;
+  return slideshow_set_transition_time_s(s->render, seconds);
+}
+
+int on_set_render_config(void *ud, const struct img_render_cfg* cfg) {
+  struct AmbienceCtx* s = ud;
+  render_set_img_render_config(s->render, cfg);
+  return 0;
+}
+int on_announce(void *ud, uint32_t timeout_seconds, const char *msg) {
+  // TODO
+  printf("Announcement requested [%d seconds]: '%s'\n", timeout_seconds, msg);
+  return 0;
+}
+void on_presence_changed(void *ud, bool present) {
+  struct AmbienceCtx* s = ud;
+  render_slideshow_set_active(s->render, present);
+}
+void on_set_remote_control_server(void *ud, const char *url, const char *qr_img) {
+  // TODO
+  printf("New remote control available @ %s\n", url);
+}
+void on_presence_service_updown(void *ud, bool up) {
+  struct AmbienceCtx* s = ud;
+  if (!up) {
+    render_slideshow_set_active(s->render, false);
+  }
+}
+void on_photo_service_updown(void *ud, bool up) {
+  struct AmbienceCtx* s = ud;
+  render_slideshow_set_active(s->render, up);
+}
+
+void on_drm_mgr_updown(void *ud, bool up) {
+  struct AmbienceCtx *ctx = ud;
+  // This doesn't need a drm mutex because the mutex is held in the render object
+  if (up) {
+    if (ctx->drm_mgr) {
+      fprintf(stderr, "drm_mgr service reported up, but we were already connected. Will renew connection.\n");
+      drm_mgr_free(ctx->drm_mgr);
+      ctx->drm_mgr = NULL;
+      ctx->fb = NULL;
+      memset(&ctx->fbi, 0, sizeof(ctx->fbi));
+    }
+
+    ctx->drm_mgr = drm_mgr_init_acquire_fb(&ctx->fb, &ctx->fbi);
+    if (!ctx->drm_mgr)
+      fprintf(stderr, "drm_mgr service reported up, but dbus connection failed\n");
+  } else {
+    fprintf(stderr, "drm_mgr went away, display won't work\n");
+    drm_mgr_free(ctx->drm_mgr);
+    ctx->drm_mgr = NULL;
+    ctx->fb = NULL;
+    memset(&ctx->fbi, 0, sizeof(ctx->fbi));
+  }
+
+  // Notify then render thread it has a new fb (or that the old fb went away)
+  render_set_fb(ctx->render, ctx->fb, &ctx->fbi);
+}
+
+static const struct dbus_listeners_cbs cbs = {
+    .on_next = on_next,
+    .on_prev = on_prev,
+    .on_set_transition_time = on_set_transition_time,
+    .on_set_render_config = on_set_render_config,
+    .on_announce = on_announce,
+    .on_presence_changed = on_presence_changed,
+    .on_set_remote_control_server = on_set_remote_control_server,
+    .on_presence_service_updown = on_presence_service_updown,
+    .on_photo_service_updown = on_photo_service_updown,
+    .on_drm_mgr_updown = on_drm_mgr_updown,
 };
 
-static void compute_photo_target(const struct fb_info *fbi, enum rotation rot,
-                                 uint32_t *w, uint32_t *h) {
-  if (rot == ROT_90 || rot == ROT_270) {
-    *w = fbi->height;
-    *h = fbi->width;
-  } else {
-    *w = fbi->width;
-    *h = fbi->height;
-  }
-}
-
-// ----- dbus_listeners callbacks -----
-
-static void on_next(void *ud) {
-  render_loop_next(((struct ambience_ctx *)ud)->render);
-}
-static void on_prev(void *ud) {
-  render_loop_prev(((struct ambience_ctx *)ud)->render);
-}
-
-static bool on_set_transition_time(void *ud, uint32_t seconds) {
-  return render_loop_set_transition_time(((struct ambience_ctx *)ud)->render,
-                                         seconds);
-}
-
-static int on_announce(void *ud, uint32_t timeout_seconds, const char *msg) {
-  return overlay_request_announce(((struct ambience_ctx *)ud)->overlay,
-                                  timeout_seconds, msg);
-}
-
-static int parse_render_config(uint32_t rotation, const char *interp_s,
-                               const char *h_align_s, const char *v_align_s,
-                               struct img_render_cfg *out) {
-  if (rotation != 0 && rotation != 90 && rotation != 180 && rotation != 270) {
-    fprintf(stderr, "SetRenderConfig: invalid rotation %u\n", rotation);
-    return -EINVAL;
-  }
-  out->rot = (enum rotation)rotation;
-
-  if (interp_s && strcmp(interp_s, "nearest") == 0)
-    out->interp = INTERP_NEAREST;
-  else if (interp_s && strcmp(interp_s, "bilinear") == 0)
-    out->interp = INTERP_BILINEAR;
-  else {
-    fprintf(stderr, "SetRenderConfig: invalid interpolation '%s'\n",
-            interp_s ? interp_s : "");
-    return -EINVAL;
-  }
-
-  if (h_align_s && strcmp(h_align_s, "left") == 0)
-    out->h_align = HORIZONTAL_ALIGN_LEFT;
-  else if (h_align_s && strcmp(h_align_s, "center") == 0)
-    out->h_align = HORIZONTAL_ALIGN_CENTER;
-  else if (h_align_s && strcmp(h_align_s, "right") == 0)
-    out->h_align = HORIZONTAL_ALIGN_RIGHT;
-  else {
-    fprintf(stderr, "SetRenderConfig: invalid horizontal_align '%s'\n",
-            h_align_s ? h_align_s : "");
-    return -EINVAL;
-  }
-
-  if (v_align_s && strcmp(v_align_s, "top") == 0)
-    out->v_align = VERTICAL_ALIGN_TOP;
-  else if (v_align_s && strcmp(v_align_s, "center") == 0)
-    out->v_align = VERTICAL_ALIGN_CENTER;
-  else if (v_align_s && strcmp(v_align_s, "bottom") == 0)
-    out->v_align = VERTICAL_ALIGN_BOTTOM;
-  else {
-    fprintf(stderr, "SetRenderConfig: invalid vertical_align '%s'\n",
-            v_align_s ? v_align_s : "");
-    return -EINVAL;
-  }
-
-  return 0;
-}
-
-static int on_set_render_config(void *ud, uint32_t rotation,
-                                const char *interp_s, const char *h_align_s,
-                                const char *v_align_s) {
-  struct ambience_ctx *ctx = ud;
-  struct img_render_cfg cfg;
-  int r = parse_render_config(rotation, interp_s, h_align_s, v_align_s, &cfg);
-  if (r < 0)
-    return r;
-
-  // photo-provider pre-scales to the configured target size. When rotation
-  // toggles between portrait/landscape the axes swap, so we re-push the
-  // target size before applying the new render config locally — that way
-  // the next photo arrives with the correct aspect ratio.
-  const bool axes_before =
-      (ctx->current_rotation == ROT_90 || ctx->current_rotation == ROT_270);
-  const bool axes_after = (cfg.rot == ROT_90 || cfg.rot == ROT_270);
-  if (axes_before != axes_after) {
-    compute_photo_target(ctx->fbi, cfg.rot, &ctx->photo_target_w,
-                         &ctx->photo_target_h);
-    if (photo_client_set_target_size(ctx->photos, ctx->photo_target_w,
-                                     ctx->photo_target_h) < 0)
-      fprintf(stderr,
-              "WARNING: Failed to push new target size to photo-provider\n");
-  }
-
-  if (!render_loop_set_render_cfg(ctx->render, &cfg))
-    return -EINVAL;
-  ctx->current_rotation = cfg.rot;
-  return 0;
-}
-
-static void apply_presence(struct ambience_ctx *ctx, bool present) {
-  if (present) {
-    render_loop_start(ctx->render);
-    dbus_listeners_emit_slideshow_active(ctx->listeners, true);
-  } else {
-    render_loop_stop(ctx->render);
-    if (ctx->eink_meta)
-      eink_meta_clear(ctx->eink_meta);
-    dbus_listeners_emit_slideshow_active(ctx->listeners, false);
-  }
-}
-
-static void on_presence_changed(void *ud, bool present) {
-  apply_presence((struct ambience_ctx *)ud, present);
-}
-
-// presence-service is the sole owner of Display.On/Off; if it disappears we
-// can't trust display state and have nothing driving us, so just stop the
-// slideshow.
-static void on_presence_service_updown(void *ud, bool up) {
-  if (up)
-    return;
-  fprintf(stderr, "WARNING: Presence service is down, stopping slideshow\n");
-  apply_presence((struct ambience_ctx *)ud, false);
-}
-
-static void on_photo_service_updown(void *ud, bool up) {
-  struct ambience_ctx *ctx = ud;
-  if (!up) {
-    fprintf(stderr, "WARNING: Photo service is down, slideshow will freeze on "
-                    "current picture\n");
-    return;
-  }
-  if (photo_client_push_config(ctx->photos, ctx->photo_target_w,
-                               ctx->photo_target_h, ctx->embed_qr) < 0)
-    fprintf(stderr, "WARNING: Failed to (re)configure photo-provider after it "
-                    "came back up\n");
-}
-
-// ----- render_loop callbacks -----
-
-static void on_photo_rendered(void *ud, const char *meta) {
-  struct ambience_ctx *ctx = ud;
-  if (ctx->eink_meta)
-    eink_meta_render(ctx->eink_meta, meta);
-  dbus_listeners_emit_displaying_photo(ctx->listeners, meta);
-}
-
-// ----- signal handler -----
-
-static int on_signal(sd_event_source *s, const struct signalfd_siginfo *si,
-                     void *ud) {
-  (void)ud;
-  printf("Received signal %d, shutting down\n", si->ssi_signo);
-  return sd_event_exit(sd_event_source_get_event(s), 0);
-}
-
-// ----- main -----
-
 int main(int argc, char *argv[]) {
-  int ret = 0;
-  sd_event *event = NULL;
-  struct DRM_Mgr *drm_mgr = NULL;
-  uint32_t *fb = NULL;
-  struct fb_info fbi = {0};
-  struct ambience_config cfg = {0};
-  struct ambience_ctx ctx = {0};
-
-  const char *config_path = (argc >= 2) ? argv[1] : "config.json";
-  if (ambience_config_load(config_path, &cfg) != 0) {
-    fprintf(stderr, "Failed to load config: %s\n", config_path);
+  if (argc <= 1) {
+    fprintf(stderr, "Usage: %s config.json\n", argv[0]);
     return 1;
   }
 
-  drm_mgr = drm_mgr_init();
-  if (!drm_mgr) {
-    fprintf(stderr, "drm_mgr_init failed\n");
-    ret = 1;
-    goto end;
-  }
-  fb = drm_mgr_acquire_fb(drm_mgr, &fbi);
-  if (!fb) {
-    fprintf(stderr, "drm_mgr_acquire_fb failed\n");
-    ret = 1;
-    goto end;
+  struct ambience_config cfg = {0};
+  if (ambience_config_load(argv[1], &cfg) != 0) {
+    fprintf(stderr, "Failed to load config\n");
+    return 1;
   }
 
-  int r = sd_event_default(&event);
-  if (r < 0) {
-    fprintf(stderr, "sd_event_default: %s\n", strerror(-r));
-    ret = 1;
-    goto end;
+  g_ambience_ctx.render = render_init(cfg.fallback_image, cfg.transition_time_s, cfg.use_eink_for_metadata, &cfg.render);
+  if (!g_ambience_ctx.render) {
+    fprintf(stderr, "Failed to start display render service\n");
+    return 1;
   }
 
-  // Block SIGINT/SIGTERM so sd_event can deliver them via signalfd.
-  sigset_t mask;
-  sigemptyset(&mask);
-  sigaddset(&mask, SIGINT);
-  sigaddset(&mask, SIGTERM);
-  sigprocmask(SIG_BLOCK, &mask, NULL);
-  sd_event_add_signal(event, NULL, SIGINT, on_signal, NULL);
-  sd_event_add_signal(event, NULL, SIGTERM, on_signal, NULL);
+  bool all_deps_ready = false;
+  struct DBusListeners *listeners = dbus_listeners_init(&cbs, &g_ambience_ctx, &all_deps_ready);
+  render_slideshow_set_active(g_ambience_ctx.render, all_deps_ready);
 
-  ctx.event = event;
-  ctx.fbi = &fbi;
-  ctx.embed_qr = cfg.embed_qr;
-  ctx.current_rotation = cfg.render.rot;
-  compute_photo_target(&fbi, cfg.render.rot, &ctx.photo_target_w,
-                       &ctx.photo_target_h);
+  // Simulate service up callback to connect to DRM. If it fails, we'll connect later
+  on_drm_mgr_updown(&g_ambience_ctx, true);
 
-  ctx.overlay = overlay_init();
-  if (!ctx.overlay) {
-    fprintf(stderr, "overlay_init failed\n");
-    ret = 1;
-    goto end;
+  signal(SIGTERM, sig_handler);
+  signal(SIGINT, sig_handler);
+  printf("Ambience running\n");
+  while (!g_quit) {
+    if (dbus_listeners_run_once(listeners, 1000) < 0)
+      break;
   }
 
-  if (cfg.use_eink_for_metadata) {
-    ctx.eink_meta = eink_meta_init();
-    if (!ctx.eink_meta)
-      fprintf(stderr, "WARNING: eink metadata display unavailable\n");
-  }
-
-  ctx.photos = photo_client_init(event);
-  if (!ctx.photos) {
-    fprintf(stderr, "photo_client_init failed\n");
-    ret = 1;
-    goto end;
-  }
-  // Initial config push. If photo-provider isn't up yet we'll retry on its
-  // service-up event (wired through dbus_listeners).
-  if (photo_client_push_config(ctx.photos, ctx.photo_target_w,
-                               ctx.photo_target_h, ctx.embed_qr) < 0)
-    fprintf(stderr,
-            "WARNING: Failed to push initial config to photo-provider\n");
-
-  ctx.render = render_loop_init(event, fb, &fbi, cfg.transition_time_s,
-                                &cfg.render, cfg.fallback_image, ctx.photos,
-                                on_photo_rendered, &ctx, overlay_draw,
-                                ctx.overlay);
-  if (!ctx.render) {
-    fprintf(stderr, "render_loop_init failed\n");
-    ret = 1;
-    goto end;
-  }
-
-  const struct dbus_listeners_cbs cbs = {
-      .on_next = on_next,
-      .on_prev = on_prev,
-      .on_set_transition_time = on_set_transition_time,
-      .on_set_render_config = on_set_render_config,
-      .on_announce = on_announce,
-      .on_presence_changed = on_presence_changed,
-      .on_presence_service_updown = on_presence_service_updown,
-      .on_photo_service_updown = on_photo_service_updown,
-  };
-  ctx.listeners = dbus_listeners_init(event, &cbs, &ctx);
-  if (!ctx.listeners) {
-    fprintf(stderr, "dbus_listeners_init failed\n");
-    ret = 1;
-    goto end;
-  }
-
-  r = sd_event_loop(event);
-  if (r < 0) {
-    fprintf(stderr, "sd_event_loop: %s\n", strerror(-r));
-    ret = 1;
-  }
-
-end:
-  dbus_listeners_free(ctx.listeners);
-  render_loop_free(ctx.render);
-  photo_client_free(ctx.photos);
-  eink_meta_free(ctx.eink_meta);
-  overlay_free(ctx.overlay);
-  if (event)
-    sd_event_unref(event);
-  if (drm_mgr) {
-    drm_mgr_release_fb(drm_mgr);
-    drm_mgr_free(drm_mgr);
-  }
-  return ret;
+  dbus_listeners_free(listeners);
+  render_free(g_ambience_ctx.render);
+  drm_mgr_free(g_ambience_ctx.drm_mgr);
+  return 0;
 }
