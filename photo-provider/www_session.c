@@ -8,11 +8,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/mman.h>
+#include <time.h>
 #include <unistd.h>
 
 #define IMG_MIN_SZ 128
 #define IMG_MAX_SZ 3840
 #define MAX_CLIENT_ID 128
+#define CLIENT_STALE_S (5 * 60)
 
 struct pp_www_session {
   char url_base[256];
@@ -34,6 +36,11 @@ struct pp_www_session {
   pthread_mutex_t id_mu;
   char client_id[MAX_CLIENT_ID];
 
+  // Monotonic seconds of the last successful registration or fetch. The
+  // server evicts idle clients, so when a fetch sees this stale we
+  // re-register before talking to the server.
+  atomic_long last_activity_s;
+
   pp_ws_invalidate_fn on_invalidate;
   void *on_invalidate_ud;
 };
@@ -43,6 +50,12 @@ struct mem_buf {
   size_t len;
   size_t cap;
 };
+
+static long now_monotonic_s(void) {
+  struct timespec ts;
+  clock_gettime(CLOCK_MONOTONIC, &ts);
+  return (long)ts.tv_sec;
+}
 
 static size_t write_to_mem(void *ptr, size_t size, size_t nmemb, void *ud) {
   struct mem_buf *b = ud;
@@ -163,6 +176,7 @@ static int reregister(struct pp_www_session *s) {
   strncpy(s->client_id, new_id, sizeof(s->client_id) - 1);
   s->client_id[sizeof(s->client_id) - 1] = '\0';
   pthread_mutex_unlock(&s->id_mu);
+  atomic_store(&s->last_activity_s, now_monotonic_s());
   printf("Registered with server, client_id=%s\n", new_id);
 
   if (s->on_invalidate)
@@ -205,6 +219,7 @@ struct pp_www_session *pp_www_session_init(const char *server_url, uint32_t targ
   atomic_init(&s->target_w, target_w);
   atomic_init(&s->target_h, target_h);
   atomic_init(&s->embed_qr, embed_qr);
+  atomic_init(&s->last_activity_s, 0);
   pthread_mutex_init(&s->id_mu, NULL);
 
   s->curl_fetch = curl_easy_init();
@@ -309,6 +324,16 @@ static char *fetch_meta_str(struct pp_www_session *s, const char *id) {
 
 int pp_www_session_fetch_next(struct pp_www_session *s, int *fd_out, char **meta_out) {
   char id[MAX_CLIENT_ID];
+
+  // Server evicts idle clients, so refresh the registration if we've been
+  // quiet too long. reregister() restamps last_activity_s on success.
+  long now = now_monotonic_s();
+  long last = atomic_load(&s->last_activity_s);
+  if (last == 0 || now - last > CLIENT_STALE_S) {
+    if (reregister(s) < 0)
+      fprintf(stderr, "stale-client re-register failed; attempting fetch with old id\n");
+  }
+  atomic_store(&s->last_activity_s, now_monotonic_s());
 
   // Snapshots the current client_id into `out`. Returns -1 if no id is set
   // (shouldn't happen after a successful init, but guards against the brief
