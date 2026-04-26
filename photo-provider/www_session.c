@@ -326,14 +326,14 @@ int pp_www_session_fetch_next(struct pp_www_session *s, int *fd_out, char **meta
   char id[MAX_CLIENT_ID];
 
   // Server evicts idle clients, so refresh the registration if we've been
-  // quiet too long. reregister() restamps last_activity_s on success.
-  long now = now_monotonic_s();
+  // quiet too long. last_activity_s == 0 means start() hasn't registered
+  // yet — leave that to start(); this path must not race against it on
+  // the shared ctrl curl handle.
   long last = atomic_load(&s->last_activity_s);
-  if (last == 0 || now - last > CLIENT_STALE_S) {
+  if (last != 0 && now_monotonic_s() - last > CLIENT_STALE_S) {
     if (reregister(s) < 0)
       fprintf(stderr, "stale-client re-register failed; attempting fetch with old id\n");
   }
-  atomic_store(&s->last_activity_s, now_monotonic_s());
 
   // Snapshots the current client_id into `out`. Returns -1 if no id is set
   // (shouldn't happen after a successful init, but guards against the brief
@@ -358,6 +358,7 @@ int pp_www_session_fetch_next(struct pp_www_session *s, int *fd_out, char **meta
     meta = strdup("{}");
   }
 
+  atomic_store(&s->last_activity_s, now_monotonic_s());
   *fd_out = fd;
   *meta_out = meta;
   return 0;
