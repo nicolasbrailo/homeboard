@@ -37,6 +37,25 @@ struct DRM_Mgr *drm_mgr_init() {
   return self;
 }
 
+struct DRM_Mgr *drm_mgr_init_acquire_fb(uint32_t** fb, struct fb_info *info) {
+  struct DRM_Mgr *drm_mgr = drm_mgr_init();
+  if (!drm_mgr) {
+    fprintf(stderr, "drm_mgr_init failed\n");
+    *fb = NULL;
+    memset(info, 0, sizeof(*info));
+    return NULL;
+  }
+
+  *fb = drm_mgr_acquire_fb(drm_mgr, info);
+  if (!*fb) {
+    fprintf(stderr, "drm_mgr_acquire_fb failed\n");
+    drm_mgr_free(drm_mgr);
+    memset(info, 0, sizeof(*info));
+    return NULL;
+  }
+  return drm_mgr;
+}
+
 void drm_mgr_free(struct DRM_Mgr *self) {
   if (!self)
     return;

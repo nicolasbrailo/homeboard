@@ -22,7 +22,7 @@ struct transport_cmd {
 struct transport {
   int fd;
   pthread_t reader_thread;
-  bool thread_running;
+  atomic_bool thread_running;
 
   /* Lockless SPSC command queue.
    * Producer: caller thread (via transport_enqueue).

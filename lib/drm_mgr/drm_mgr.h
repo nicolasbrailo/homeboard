@@ -14,6 +14,8 @@ struct DRM_Mgr;
 
 struct DRM_Mgr *drm_mgr_init();
 
+struct DRM_Mgr *drm_mgr_init_acquire_fb(uint32_t**, struct fb_info *info);
+
 // Automatically calls release_fb if DRM is held
 void drm_mgr_free(struct DRM_Mgr *self);
 
