@@ -52,4 +52,6 @@ This should verify the full dev cycle works (cross compile, deploy to target). T
 * Add announcement overlay (overlay text on top of picture, with timeout)
 * Use sides of the display for info, eg weather service
 * if eInk fails on startup then we never recover -> Should retry a few times?
+* RC QR code: make configurable
+* RC QR code: show only if mmwave shows close presence
 

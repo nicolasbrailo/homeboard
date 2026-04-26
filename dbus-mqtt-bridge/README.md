@@ -58,6 +58,7 @@ Default topic prefix `homeboard/` (configurable). Every topic below is relative 
 | `cmd/presence/force_on` | `Presence.ForceOn` | ignored | force presence=true |
 | `cmd/presence/force_off` | `Presence.ForceOff` | ignored | latch presence=false until next genuine vacancy |
 | `cmd/ambience/set_transition_time_secs` | `Ambience.SetTransitionTimeSecs` (`u`) | decimal string, e.g. `"30"` | |
+| `cmd/ambience/set_render_config` | `Ambience.SetRenderConfig` (`usss`) | space-separated `"<rotation> <interp> <h_align> <v_align>"`, e.g. `"180 bilinear center top"` | rotation `0`/`90`/`180`/`270`; interp `nearest`/`bilinear`; aligns as on the D-Bus method. Validation happens service-side |
 | `cmd/photo_provider/set_embed_qr` | `PhotoProvider.SetEmbedQr` (`b`) | `"0"`/`"1"` or `"true"`/`"false"` (case-insensitive) | |
 | `cmd/photo_provider/set_target_size` | `PhotoProvider.SetTargetSize` (`uu`) | `"<W>x<H>"`, e.g. `"1024x768"` | |
 

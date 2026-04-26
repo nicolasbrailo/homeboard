@@ -221,6 +221,18 @@ int rc_dbus_ambience_set_transition_time(struct rc_dbus *d, uint32_t secs) {
   return ret;
 }
 
+int rc_dbus_ambience_set_render_config(struct rc_dbus *d, uint32_t rotation,
+                                       const char *interp, const char *h_align,
+                                       const char *v_align) {
+  sd_bus_error err = SD_BUS_ERROR_NULL;
+  int r = sd_bus_call_method(d->bus, AMBIENCE_SERVICE, AMBIENCE_PATH,
+                             AMBIENCE_INTERFACE, "SetRenderConfig", &err, NULL,
+                             "usss", rotation, interp, h_align, v_align);
+  int ret = (r < 0) ? log_err("SetRenderConfig", r, &err) : 0;
+  sd_bus_error_free(&err);
+  return ret;
+}
+
 int rc_dbus_ambience_set_remote_control_server(struct rc_dbus *d,
                                                const char *url,
                                                const char *qr_img) {

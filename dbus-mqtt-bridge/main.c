@@ -85,6 +85,32 @@ static int parse_u32(const char *p, size_t n, uint32_t *out) {
   return 0;
 }
 
+static int parse_render_cfg(const char *p, size_t n, char *buf, size_t bufcap,
+                            uint32_t *rot, const char **interp,
+                            const char **h_align, const char **v_align) {
+  if (n == 0 || n + 1 > bufcap)
+    return -1;
+  memcpy(buf, p, n);
+  buf[n] = '\0';
+  char *save = NULL;
+  char *t1 = strtok_r(buf, " ", &save);
+  char *t2 = strtok_r(NULL, " ", &save);
+  char *t3 = strtok_r(NULL, " ", &save);
+  char *t4 = strtok_r(NULL, " ", &save);
+  char *t5 = strtok_r(NULL, " ", &save);
+  if (!t1 || !t2 || !t3 || !t4 || t5)
+    return -1;
+  char *end;
+  unsigned long v = strtoul(t1, &end, 10);
+  if (*end != '\0' || v > UINT32_MAX)
+    return -1;
+  *rot = (uint32_t)v;
+  *interp = t2;
+  *h_align = t3;
+  *v_align = t4;
+  return 0;
+}
+
 static int parse_size(const char *p, size_t n, uint32_t *w, uint32_t *h) {
   if (n == 0 || n > 20)
     return -1;
@@ -126,6 +152,16 @@ static void on_cmd(const char *suffix, const char *payload, size_t len,
       rc_dbus_ambience_set_transition_time(ctx->dbus, s);
     else
       fprintf(stderr, "set_transition_time_secs: invalid payload\n");
+  } else if (strcmp(suffix, "ambience/set_render_config") == 0) {
+    char buf[64];
+    uint32_t rot;
+    const char *interp, *h_align, *v_align;
+    if (parse_render_cfg(payload, len, buf, sizeof(buf), &rot, &interp,
+                         &h_align, &v_align) == 0)
+      rc_dbus_ambience_set_render_config(ctx->dbus, rot, interp, h_align,
+                                         v_align);
+    else
+      fprintf(stderr, "set_render_config: invalid payload\n");
   } else if (strcmp(suffix, "photo_provider/set_embed_qr") == 0) {
     bool b;
     if (parse_bool(payload, len, &b) == 0)
