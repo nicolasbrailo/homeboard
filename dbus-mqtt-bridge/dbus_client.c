@@ -186,6 +186,19 @@ int rc_dbus_ambience_set_transition_time(struct rc_dbus *d, uint32_t secs) {
   return ret;
 }
 
+int rc_dbus_ambience_set_remote_control_server(struct rc_dbus *d,
+                                               const char *url,
+                                               const char *qr_img) {
+  sd_bus_error err = SD_BUS_ERROR_NULL;
+  int r = sd_bus_call_method(d->bus, AMBIENCE_SERVICE, AMBIENCE_PATH,
+                             AMBIENCE_INTERFACE, "SetRemoteControlServer", &err,
+                             NULL, "ss", url ? url : "",
+                             qr_img ? qr_img : "");
+  int ret = (r < 0) ? log_err("SetRemoteControlServer", r, &err) : 0;
+  sd_bus_error_free(&err);
+  return ret;
+}
+
 int rc_dbus_photo_set_embed_qr(struct rc_dbus *d, bool on) {
   sd_bus_error err = SD_BUS_ERROR_NULL;
   int r = sd_bus_call_method(d->bus, PHOTO_SERVICE, PHOTO_PATH, PHOTO_INTERFACE,

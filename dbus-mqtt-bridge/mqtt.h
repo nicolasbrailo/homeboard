@@ -8,8 +8,11 @@ struct rc_config;
 
 typedef void (*rc_mqtt_cmd_cb)(const char *topic_suffix, const char *payload,
                                size_t len, void *ud);
+typedef void (*rc_mqtt_active_server_cb)(const char *url, const char *qr_img,
+                                         void *ud);
 
 struct rc_mqtt *rc_mqtt_init(const struct rc_config *cfg, rc_mqtt_cmd_cb on_cmd,
+                             rc_mqtt_active_server_cb on_active_server,
                              void *ud);
 void rc_mqtt_free(struct rc_mqtt *m);
 

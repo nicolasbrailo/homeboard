@@ -49,6 +49,12 @@ static void on_slideshow_active_changed(bool active, void *ud) {
                   true);
 }
 
+static void on_active_server(const char *url, const char *qr_img, void *ud) {
+  struct app_ctx *ctx = ud;
+  printf("active_server: %s\n", url);
+  rc_dbus_ambience_set_remote_control_server(ctx->dbus, url, qr_img);
+}
+
 static int parse_bool(const char *p, size_t n, bool *out) {
   if (n == 1 && (p[0] == '0' || p[0] == '1')) {
     *out = (p[0] == '1');
@@ -155,7 +161,7 @@ int main(int argc, char *argv[]) {
                           on_slideshow_active_changed, &ctx);
   if (!ctx.dbus)
     return 1;
-  ctx.mqtt = rc_mqtt_init(&cfg, on_cmd, &ctx);
+  ctx.mqtt = rc_mqtt_init(&cfg, on_cmd, on_active_server, &ctx);
   if (!ctx.mqtt) {
     rc_dbus_free(ctx.dbus);
     return 1;
