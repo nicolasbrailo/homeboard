@@ -25,17 +25,85 @@
      inkscape:document-units="mm"
      showgrid="false"
      inkscape:zoom="0.5"
-     inkscape:cx="691"
-     inkscape:cy="-3"
+     inkscape:cx="720"
+     inkscape:cy="677"
      inkscape:window-width="1920"
      inkscape:window-height="1011"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
-     inkscape:current-layer="svg286"
+     inkscape:current-layer="g16"
      showguides="true" />
   <defs
      id="defs283">
+    <inkscape:path-effect
+       effect="fillet_chamfer"
+       id="path-effect34"
+       is_visible="true"
+       lpeversion="1"
+       nodesatellites_param="F,0,0,1,0,4.0000001,0,1 @ F,0,0,1,0,4.0000001,0,1 @ F,0,0,1,0,4.0000001,0,1 @ F,0,0,1,0,4.0000001,0,1 @ F,0,0,1,0,4.0000001,0,1 @ F,0,0,1,0,4.0000001,0,1 @ F,0,0,1,0,4.0000001,0,1 @ F,0,0,1,0,4.0000001,0,1"
+       radius="4"
+       unit="mm"
+       method="auto"
+       mode="F"
+       chamfer_steps="1"
+       flexible="false"
+       use_knot_distance="true"
+       apply_no_radius="true"
+       apply_with_radius="true"
+       only_selected="false"
+       hide_knots="false" />
+    <inkscape:path-effect
+       effect="fillet_chamfer"
+       id="path-effect19"
+       is_visible="true"
+       lpeversion="1"
+       nodesatellites_param="F,0,0,1,0,0.85466901,0,1 @ F,0,0,1,0,0.85466901,0,1 @ F,0,0,1,0,0.85466901,0,1 @ F,0,0,1,0,0.85466901,0,1 @ F,0,0,1,0,0.85466901,0,1 @ F,0,0,1,0,0.85466901,0,1 @ F,0,0,1,0,0.85466901,0,1 @ F,0,0,1,0,0.85466901,0,1 @ F,0,0,1,0,0.85466901,0,1 @ F,0,0,1,0,0.85466901,0,1 @ F,0,0,1,0,0.85466901,0,1 @ F,0,0,1,0,0.85466901,0,1 @ F,0,0,1,0,0.85466901,0,1 @ F,0,0,1,0,0.85466901,0,1 @ F,0,0,1,0,0.85466901,0,1 @ F,0,0,1,0,0.85466901,0,1 @ F,0,0,1,0,0.85466901,0,1 @ F,0,0,1,0,0.85466901,0,1 @ F,0,0,1,0,0.85466901,0,1 @ F,0,0,1,0,0.85466901,0,1"
+       radius="3"
+       unit="px"
+       method="auto"
+       mode="F"
+       chamfer_steps="1"
+       flexible="false"
+       use_knot_distance="true"
+       apply_no_radius="true"
+       apply_with_radius="true"
+       only_selected="false"
+       hide_knots="false" />
+    <inkscape:path-effect
+       effect="fillet_chamfer"
+       id="path-effect13"
+       is_visible="true"
+       lpeversion="1"
+       nodesatellites_param="F,0,0,1,0,0.11132882,0,1 @ F,0,0,1,0,1,0,1 @ F,0,0,1,0,1,0,1 @ F,0,0,1,0,0.11059864,0,1"
+       radius="1"
+       unit="mm"
+       method="auto"
+       mode="F"
+       chamfer_steps="1"
+       flexible="false"
+       use_knot_distance="true"
+       apply_no_radius="true"
+       apply_with_radius="true"
+       only_selected="false"
+       hide_knots="false" />
+    <inkscape:path-effect
+       effect="fillet_chamfer"
+       id="path-effect10"
+       is_visible="true"
+       lpeversion="1"
+       nodesatellites_param="F,0,0,1,0,3.0000001,0,1 @ F,0,0,1,0,3.0000001,0,1 @ F,0,0,1,0,3.0000001,0,1 @ F,0,0,1,0,3.0000001,0,1"
+       radius="3"
+       unit="mm"
+       method="auto"
+       mode="F"
+       chamfer_steps="1"
+       flexible="false"
+       use_knot_distance="true"
+       apply_no_radius="true"
+       apply_with_radius="true"
+       only_selected="false"
+       hide_knots="false" />
     <inkscape:path-effect
        effect="fillet_chamfer"
        id="path-effect9"
@@ -58,7 +126,7 @@
        id="path-effect8"
        is_visible="true"
        lpeversion="1"
-       nodesatellites_param="F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,1.3271588,0,1 @ F,0,0,1,0,0.83102975,0,1 @ F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,1.3797333,0,1 @ F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,2.0000001,0,1"
+       nodesatellites_param="F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,2.0000001,0,1 @ F,0,0,1,0,2.0000001,0,1"
        radius="2"
        unit="mm"
        method="auto"
@@ -638,11 +706,164 @@
        apply_with_radius="true"
        only_selected="false"
        hide_knots="false" />
+    <inkscape:path-effect
+       effect="fillet_chamfer"
+       id="path-effect13-3"
+       is_visible="true"
+       lpeversion="1"
+       nodesatellites_param="F,0,0,1,0,0.11132882,0,1 @ F,0,0,1,0,1,0,1 @ F,0,0,1,0,1,0,1 @ F,0,0,1,0,0.11059864,0,1"
+       radius="1"
+       unit="mm"
+       method="auto"
+       mode="F"
+       chamfer_steps="1"
+       flexible="false"
+       use_knot_distance="true"
+       apply_no_radius="true"
+       apply_with_radius="true"
+       only_selected="false"
+       hide_knots="false" />
+    <inkscape:path-effect
+       effect="fillet_chamfer"
+       id="path-effect15-6"
+       is_visible="true"
+       lpeversion="1"
+       nodesatellites_param="F,0,0,1,0,2.9999999,0,1 @ F,0,0,1,0,2.9999999,0,1 @ F,0,0,1,0,2.9999999,0,1 @ F,0,0,1,0,2.9999999,0,1"
+       radius="3"
+       unit="mm"
+       method="auto"
+       mode="F"
+       chamfer_steps="1"
+       flexible="false"
+       use_knot_distance="true"
+       apply_no_radius="true"
+       apply_with_radius="true"
+       only_selected="false"
+       hide_knots="false" />
+    <inkscape:path-effect
+       effect="fillet_chamfer"
+       id="path-effect9-0"
+       is_visible="true"
+       lpeversion="1"
+       nodesatellites_param="F,0,0,1,0,4.0000001,0,1 @ F,0,0,1,0,4.0000001,0,1 @ F,0,0,1,0,4.0000001,0,1 @ F,0,0,1,0,4.0000001,0,1"
+       radius="4"
+       unit="mm"
+       method="auto"
+       mode="F"
+       chamfer_steps="1"
+       flexible="false"
+       use_knot_distance="true"
+       apply_no_radius="true"
+       apply_with_radius="true"
+       only_selected="false"
+       hide_knots="false" />
+    <inkscape:path-effect
+       effect="fillet_chamfer"
+       id="path-effect9-5-6"
+       is_visible="true"
+       lpeversion="1"
+       nodesatellites_param="F,0,0,1,0,4.0000001,0,1 @ F,0,0,1,0,4.0000001,0,1 @ F,0,0,1,0,4.0000001,0,1 @ F,0,0,1,0,4.0000001,0,1"
+       radius="4"
+       unit="mm"
+       method="auto"
+       mode="F"
+       chamfer_steps="1"
+       flexible="false"
+       use_knot_distance="true"
+       apply_no_radius="true"
+       apply_with_radius="true"
+       only_selected="false"
+       hide_knots="false" />
+    <inkscape:path-effect
+       effect="fillet_chamfer"
+       id="path-effect15-7"
+       is_visible="true"
+       lpeversion="1"
+       nodesatellites_param="F,0,0,1,0,2.9999999,0,1 @ F,0,0,1,0,2.9999999,0,1 @ F,0,0,1,0,2.9999999,0,1 @ F,0,0,1,0,2.9999999,0,1"
+       radius="3"
+       unit="mm"
+       method="auto"
+       mode="F"
+       chamfer_steps="1"
+       flexible="false"
+       use_knot_distance="true"
+       apply_no_radius="true"
+       apply_with_radius="true"
+       only_selected="false"
+       hide_knots="false" />
+    <inkscape:path-effect
+       effect="fillet_chamfer"
+       id="path-effect18-6"
+       is_visible="true"
+       lpeversion="1"
+       nodesatellites_param="F,0,0,1,0,2,0,1 @ F,0,0,1,0,2,0,1 @ F,0,0,1,0,2,0,1 @ F,0,0,1,0,2,0,1"
+       radius="2"
+       unit="mm"
+       method="auto"
+       mode="F"
+       chamfer_steps="1"
+       flexible="false"
+       use_knot_distance="true"
+       apply_no_radius="true"
+       apply_with_radius="true"
+       only_selected="false"
+       hide_knots="false" />
+    <inkscape:path-effect
+       effect="fillet_chamfer"
+       id="path-effect18-6-6"
+       is_visible="true"
+       lpeversion="1"
+       nodesatellites_param="F,0,0,1,0,2,0,1 @ F,0,0,1,0,2,0,1 @ F,0,0,1,0,2,0,1 @ F,0,0,1,0,2,0,1"
+       radius="2"
+       unit="mm"
+       method="auto"
+       mode="F"
+       chamfer_steps="1"
+       flexible="false"
+       use_knot_distance="true"
+       apply_no_radius="true"
+       apply_with_radius="true"
+       only_selected="false"
+       hide_knots="false" />
+    <inkscape:path-effect
+       effect="fillet_chamfer"
+       id="path-effect18-6-6-0"
+       is_visible="true"
+       lpeversion="1"
+       nodesatellites_param="F,0,0,1,0,2,0,1 @ F,0,0,1,0,2,0,1 @ F,0,0,1,0,2,0,1 @ F,0,0,1,0,2,0,1"
+       radius="2"
+       unit="mm"
+       method="auto"
+       mode="F"
+       chamfer_steps="1"
+       flexible="false"
+       use_knot_distance="true"
+       apply_no_radius="true"
+       apply_with_radius="true"
+       only_selected="false"
+       hide_knots="false" />
+    <inkscape:path-effect
+       effect="fillet_chamfer"
+       id="path-effect18-4"
+       is_visible="true"
+       lpeversion="1"
+       nodesatellites_param="F,0,0,1,0,2,0,1 @ F,0,0,1,0,2,0,1 @ F,0,0,1,0,2,0,1 @ F,0,0,1,0,2,0,1"
+       radius="2"
+       unit="mm"
+       method="auto"
+       mode="F"
+       chamfer_steps="1"
+       flexible="false"
+       use_knot_distance="true"
+       apply_no_radius="true"
+       apply_with_radius="true"
+       only_selected="false"
+       hide_knots="false" />
   </defs>
   <g
      id="g16"
      inkscape:label="MainBoard"
-     transform="translate(-20.754883,-317.98982)"
+     transform="translate(-21.792465,-149.23846)"
      style="display:inline">
     <circle
        style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
@@ -668,18 +889,10 @@
        r="1.3"
        transform="rotate(-135)"
        inkscape:label="MainBoard To frame screw right" />
-    <path
-       id="rect16"
-       style="fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
-       inkscape:label="Main board shape"
-       d="m 53.930347,218.37691 c -2.827815,0.71978 -5.053966,2.94593 -5.773754,5.77375 -0.27176,1.06766 -0.246779,2.87492 -0.246779,3.97949 v 68.00026 c 0,1.10457 -0.02498,2.91183 0.246779,3.9795 0.719788,2.82781 2.945942,5.05397 5.773761,5.77375 1.067661,0.27176 2.86894,0.35312 3.970122,0.43835 34.483307,2.66905 305.049234,0.0833 331.009874,-0.17174 1.10442,-0.0109 2.91155,0.005 3.97922,-0.26661 2.82781,-0.71979 5.05397,-2.94594 5.77375,-5.77376 0.27176,-1.06766 0.24678,-2.87492 0.24678,-3.97949 v -45.51844 a 3.828686,3.828686 76.245689 0 0 -0.51949,-2.12229 c -0.56245,-0.31746 -0.56245,-0.31746 -0.56245,-0.31746 v -0.0124 c -1.6844,-1.23989 -1.75291,-1.34306 -1.81401,-1.44946 -0.37494,-0.65303 -0.35175,-1.93503 -0.35175,-2.69703 v -5.56959 c 0,-1.10457 0.003,-3.01349 0.72631,-3.81492 0.63731,-0.70603 1.77501,-1.11302 2.18832,-1.32078 0.32652,-0.88208 0.32652,-0.88208 0.32652,-0.88208 -0.002,-0.0744 -0.002,-0.0744 -0.002,-0.0744 h 0.009 v -4.35362 c 0,-1.10457 0.0262,-2.91236 -0.24887,-3.9791 -0.72189,-2.79954 -2.94589,-4.95447 -5.77034,-5.65004 -1.06992,-0.26348 -2.87625,-0.23859 -3.98082,-0.23859 l -331.000677,-8e-5 c -1.104569,0 -2.911832,-0.025 -3.979496,0.24678 z"
-       inkscape:path-effect="#path-effect8"
-       inkscape:original-d="m 55.909843,218.13013 c -4.418297,-2e-5 -8.00004,3.58172 -8.000029,8.00002 v 72.00026 c -1.7e-5,4.4183 3.581728,8.00005 8.000029,8.00003 25.14742,3.12747 335.000227,0 335.000227,0 4.4183,2e-5 8.00005,-3.58173 8.00003,-8.00003 v -48.8456 l -0.51949,-0.79513 c -0.0673,-0.54695 0.0146,-0.19869 -0.56245,-0.31746 v -0.0124 c -1.32156,-0.46783 -2.17687,-1.56048 -2.16576,-2.76676 v -8.94932 c -10e-5,-1.20189 0.85238,-2.28782 2.16628,-2.75952 l 0.74835,-0.37618 c 0.62931,-0.13569 0.32644,-0.28217 0.32652,-0.88208 1e-4,-0.0248 -5.6e-4,-0.0496 -0.002,-0.0744 h 0.009 v -6.35362 c 0,-4.4183 -3.58173,-7.86775 -8.00003,-7.86773 z"
-       sodipodi:nodetypes="cccccccccccccccccscc" />
     <g
        id="g9-4"
        inkscape:label="RPIhz"
-       transform="rotate(180,304.48495,171.24907)"
+       transform="rotate(-90,328.82116,252.21875)"
        style="display:inline;fill:none;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1">
       <g
          id="g21239-1"
@@ -808,10 +1021,118 @@
          inkscape:label="HDMI/USB notch" />
     </g>
     <g
+       id="g19"
+       inkscape:label="RPIz-Neg"
+       style="display:inline"
+       transform="translate(-25.929166,119.32708)">
+      <path
+         id="rect1"
+         style="fill:none;stroke:#ffffff;stroke-width:0.00107401;stroke-dasharray:none"
+         d="m 118.88812,234.91553 c -0.97874,0.28619 -1.75028,1.05778 -2.03641,2.03653 -0.13201,0.45159 -0.12014,1.22603 -0.12014,1.69805 v 4.77548 a 0.85466901,0.85466901 45 0 0 0.85467,0.85467 l 5.24372,0 c 0.47202,0 1.30812,0.004 1.60337,0.35312 0.26332,0.31131 0.25124,1.07685 0.25124,1.54887 l 0,27.61631 c 0,0.47202 0.009,1.30245 -0.3201,1.62266 -0.29115,0.28287 -1.06249,0.27933 -1.53451,0.27933 h -5.24372 a 0.85466901,0.85466901 135 0 0 -0.85467,0.85467 l 0,19.0583 c 0,0.47202 -0.0119,1.24641 0.12011,1.69794 0.28609,0.97877 1.05761,1.75039 2.03633,2.0366 0.45158,0.13206 1.22602,0.12023 1.69804,0.12023 h 61.60719 c 0.47202,0 1.24641,0.0118 1.69793,-0.12019 0.97875,-0.28618 1.75029,-1.05777 2.03642,-2.03653 0.13201,-0.45159 0.12014,-1.22603 0.12014,-1.69805 V 276.5588 a 0.85466901,0.85466901 45 0 0 -0.85467,-0.85467 h -4.67063 c -0.47202,0 -1.3082,-0.002 -1.60527,-0.34985 -0.26029,-0.30468 -0.24934,-1.06403 -0.24934,-1.53605 v -27.15971 c 0,-0.47202 -0.007,-1.3045 0.32782,-1.61822 0.29162,-0.27315 1.05477,-0.26768 1.52679,-0.26768 h 4.67063 a 0.85466901,0.85466901 135 0 0 0.85467,-0.85467 v -5.26784 c 0,-0.47202 0.0119,-1.24641 -0.12011,-1.69794 -0.28609,-0.97878 -1.05761,-1.75039 -2.03634,-2.03661 -0.45158,-0.13205 -1.22602,-0.12022 -1.69804,-0.12022 l -61.60719,0 c -0.47202,0 -1.24641,-0.0118 -1.69793,0.12019 z"
+         transform="matrix(1.0000003,0,0,0.86692903,25.183328,-82.02505)"
+         inkscape:path-effect="#path-effect19"
+         inkscape:original-d="m 119.73138,234.79534 a 3.0000001,3.0000001 0 0 0 -2.99981,3.0001 v 6.48482 h 6.95306 a 1.0000012,1.0473881 0 0 1 0.99994,1.04732 v 29.32565 a 1.0000012,1.0473881 0 0 1 -0.99994,1.04732 h -6.95306 v 20.76764 a 3.0000001,3.0000001 0 0 0 2.99981,3.0001 h 63.31653 a 3.0000001,3.0000001 0 0 0 2.99982,-3.0001 v -20.76406 h -6.37997 a 1.0000014,1.0310958 0 0 1 -0.99994,-1.03123 v -28.86905 a 1.0000014,1.0310958 0 0 1 0.99994,-1.03123 h 6.37997 v -6.97718 a 3.0000001,3.0000001 0 0 0 -2.99982,-3.0001 z"
+         inkscape:label="Cut" />
+      <g
+         id="g21239-1-6"
+         inkscape:label="RpiShapehz"
+         transform="translate(-358.35569,126.84117)"
+         style="display:inline;fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1">
+        <text
+           xml:space="preserve"
+           style="font-size:2.02547px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.200762;fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+           x="-16.331087"
+           y="540.21057"
+           id="text3-5-1-4-6-8-4-1"
+           transform="matrix(0,-1.0698408,0.93471851,0,0,0)"><tspan
+             sodipodi:role="line"
+             style="fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+             x="-16.331087"
+             y="540.21057"
+             dx="0 0 0 0 0 0 0 0 0 0 0 0 0.097224377"
+             id="tspan5-2-9-0-2-4-51-2">30</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-size:2.02547px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.200762;fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+           x="496.83569"
+           y="3.6774263"
+           id="text3-5-1-4-6-8-7-4-9"
+           transform="scale(1.0698408,0.93471851)"><tspan
+             sodipodi:role="line"
+             style="fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+             x="496.83569"
+             y="3.6774263"
+             dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.097224377"
+             id="tspan27123-6-3"><tspan
+               dx="0 0 0 0 0 0 0 0 0 0 0 0 0.097224377"
+               id="tspan27125-03-1"
+               style="fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1">65</tspan></tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-size:2.02547px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.200762;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+           x="-19.835917"
+           y="605.50781"
+           id="text3-5-1-4-6-8-7-7-2-9"
+           transform="matrix(0,-1.0698408,0.93471851,0,0,0)"><tspan
+             sodipodi:role="line"
+             style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+             x="-19.835917"
+             y="605.50781"
+             dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.097224377"
+             id="tspan27123-0-2-4">RPI Zero</tspan><tspan
+             sodipodi:role="line"
+             style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+             x="-19.835917"
+             y="608.03967"
+             dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.097224377"
+             id="tspan23">Mount behind</tspan></text>
+      </g>
+      <rect
+         style="display:inline;fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-linecap:round;stroke-miterlimit:6.2;stroke-dasharray:none;stroke-opacity:1;stop-color:#000000"
+         id="rect1188-0"
+         width="58"
+         height="22.999002"
+         x="147.86237"
+         y="131.81825"
+         inkscape:label="Rpi Z screw inner outline" />
+      <circle
+         style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+         id="path3-5-3-5-1-0-9-2-1-4-8-0-7-1"
+         cx="-36.05724"
+         cy="-255.07147"
+         r="1.3"
+         transform="rotate(135)"
+         inkscape:label="Screw Bottom Right" />
+      <circle
+         style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+         id="path3-5-3-5-1-0-9-2-1-4-8-0-8-0-2"
+         cx="4.9549565"
+         cy="-214.05931"
+         r="1.3"
+         transform="rotate(135)"
+         inkscape:label="Screw Bottom left" />
+      <circle
+         style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+         id="path3-5-3-5-1-0-9-2-1-4-8-7-7"
+         cx="-52.319996"
+         cy="-238.80876"
+         r="1.3"
+         transform="rotate(135)"
+         inkscape:label="Screw Top right" />
+      <circle
+         style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+         id="path3-5-3-5-1-0-9-2-1-4-8-0-8-4-9-0"
+         cx="-11.307805"
+         cy="-197.79659"
+         r="1.3"
+         transform="rotate(135)"
+         inkscape:label="Screw Top left" />
+    </g>
+    <g
        id="g9"
        inkscape:label="PoE"
        style="display:inline;fill:none;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
-       transform="translate(-230.03973,-40.199724)">
+       transform="translate(-230.03973,-52.370565)">
       <text
          xml:space="preserve"
          style="font-size:6.20393px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
@@ -1048,9 +1369,21 @@
          y="-176.22194"
          sodipodi:type="rect"
          d="m 343.36066,-176.22194 11,0 a 2,2 45 0 1 2,2 v 6 a 2,2 135 0 1 -2,2 h -11 a 2,2 45 0 1 -2,-2 v -6 a 2,2 135 0 1 2,-2 z"
-         transform="matrix(1.3333333,0,0,1,-179.25124,494.47813)"
+         transform="matrix(1.0521365,0,0,1.0000112,-41.935641,505.06344)"
          inkscape:label="USB Eth notch"
          inkscape:path-effect="#path-effect18" />
+      <path
+         style="display:inline;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.00086603;stroke-dasharray:none;stroke-opacity:1"
+         id="rect18-07"
+         width="15"
+         height="10"
+         x="341.36066"
+         y="-176.22194"
+         sodipodi:type="rect"
+         d="m 343.36066,-176.22194 11,0 a 2,2 45 0 1 2,2 v 6 a 2,2 135 0 1 -2,2 h -11 a 2,2 45 0 1 -2,-2 v -6 a 2,2 135 0 1 2,-2 z"
+         transform="matrix(0.64055383,0,0,1.0000307,112.88196,459.06359)"
+         inkscape:label="USB Eth notch"
+         inkscape:path-effect="#path-effect18-4" />
     </g>
     <g
        id="g2"
@@ -1521,6 +1854,14 @@
            y="166.93332"
            dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.097224377"
            id="tspan10072">matching ribbon direction</tspan></text>
+      <rect
+         style="fill:none;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none"
+         id="rect26"
+         width="25"
+         height="8"
+         x="165.18823"
+         y="112.58762"
+         inkscape:label="Ribbon cable notch" />
     </g>
     <g
        id="g13-0"
@@ -1779,6 +2120,122 @@
              y="13.045461"
              dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.028852453"
              id="tspan76508-7-6-9-4" /></text>
+      </g>
+      <path
+         style="display:inline;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.00086603;stroke-dasharray:none;stroke-opacity:1"
+         id="rect18-0"
+         width="15"
+         height="10"
+         x="341.36066"
+         y="-176.22194"
+         sodipodi:type="rect"
+         d="m 343.36066,-176.22194 11,0 a 2,2 45 0 1 2,2 v 6 a 2,2 135 0 1 -2,2 h -11 a 2,2 45 0 1 -2,-2 v -6 a 2,2 135 0 1 2,-2 z"
+         transform="matrix(0.66661223,0,0,0.79994283,-142.47499,242.22168)"
+         inkscape:label="Random cables notch"
+         inkscape:path-effect="#path-effect18-6" />
+      <path
+         style="display:inline;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.00086603;stroke-dasharray:none;stroke-opacity:1"
+         id="rect18-0-2"
+         width="15"
+         height="10"
+         x="341.36066"
+         y="-176.22194"
+         sodipodi:type="rect"
+         d="m 343.36066,-176.22194 11,0 a 2,2 45 0 1 2,2 v 6 a 2,2 135 0 1 -2,2 h -11 a 2,2 45 0 1 -2,-2 v -6 a 2,2 135 0 1 2,-2 z"
+         transform="matrix(0.66661223,0,0,0.79994283,-142.46948,289.72723)"
+         inkscape:label="Random cables notch"
+         inkscape:path-effect="#path-effect18-6-6" />
+    </g>
+    <path
+       id="rect25"
+       style="fill:none;stroke:#ffffff;stroke-width:0.000975252;stroke-dasharray:none"
+       inkscape:label="MainBoardShape"
+       d="m 48.203257,226.59884 v 81.21575 a 4.0000001,4.0000001 45 0 0 4,4 H 245.75168 a 4.0000001,4.0000001 135 0 0 4,-4 l 0,-15.75876 a 4.0000001,4.0000001 135 0 1 4,-4 h 50.48842 a 4.0000001,4.0000001 45 0 1 4,4 v 15.75876 a 4.0000001,4.0000001 45 0 0 4,4 h 82.72779 a 4.0000001,4.0000001 135 0 0 4,-4 v -81.21575 a 4.0000001,4.0000001 45 0 0 -4,-4 H 52.203257 a 4.0000001,4.0000001 135 0 0 -4,4 z"
+       inkscape:path-effect="#path-effect34"
+       inkscape:original-d="m 48.203257,222.59884 v 89.21575 H 249.75168 v -23.75876 h 58.48842 v 23.75876 h 90.72779 v -89.21575 z" />
+    <g
+       id="g173415-8-5-5-6-5"
+       transform="translate(52.293943,77.948995)"
+       style="display:inline;fill:none;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+       inkscape:label="Extra clip screw holes">
+      <circle
+         style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+         id="path3-5-3-5-1-0-9-8-5-3-4-1-1-4"
+         cx="-55.073841"
+         cy="214.5134"
+         r="1.3"
+         transform="scale(-1,1)"
+         inkscape:label="Screw hole clip" />
+      <circle
+         style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+         id="path3-5-3-5-1-0-9-2-9-1-0-1-2-8-7"
+         cx="6.6749821"
+         cy="214.51323"
+         r="1.3"
+         inkscape:label="ScreHole clip" />
+      <g
+         id="g15-65"
+         inkscape:label="Clip hole comment"
+         transform="translate(-5.0446229,3.5856959)"
+         style="stroke:none">
+        <text
+           xml:space="preserve"
+           style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:none;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1"
+           x="61.826057"
+           y="217.06374"
+           id="text5-2-3-1-6"><tspan
+             sodipodi:role="line"
+             style="stroke:none;stroke-width:0.000264583"
+             x="61.826057"
+             y="217.06374"
+             id="tspan6-0-5-9-9">Clip</tspan></text>
+        <rect
+           style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+           id="rect12-37"
+           height="6"
+           x="60.123493"
+           y="207.9164"
+           width="0.001" />
+        <rect
+           style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+           id="rect12-7-4"
+           height="6"
+           x="210.91588"
+           y="-63.12447"
+           width="0.001"
+           transform="rotate(90)" />
+      </g>
+      <g
+         id="g15-4-5"
+         inkscape:label="Clip hole comment"
+         transform="translate(-53.451606,3.5959321)"
+         style="display:inline;fill:none;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1">
+        <text
+           xml:space="preserve"
+           style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:none;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1"
+           x="54.30743"
+           y="215.06422"
+           id="text5-2-3-1-5-2"><tspan
+             sodipodi:role="line"
+             style="stroke:none;stroke-width:0.000264583"
+             x="54.30743"
+             y="215.06422"
+             id="tspan6-0-5-9-0-5">Clip</tspan></text>
+        <rect
+           style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+           id="rect12-3-4"
+           height="6"
+           x="60.123493"
+           y="207.9164"
+           width="0.001" />
+        <rect
+           style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+           id="rect12-7-6-74"
+           height="6"
+           x="210.91588"
+           y="-63.12447"
+           width="0.001"
+           transform="rotate(90)" />
       </g>
     </g>
   </g>
