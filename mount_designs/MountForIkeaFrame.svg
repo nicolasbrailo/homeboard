@@ -24,9 +24,9 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      showgrid="false"
-     inkscape:zoom="0.5"
-     inkscape:cx="720"
-     inkscape:cy="677"
+     inkscape:zoom="1.4142136"
+     inkscape:cx="597.50523"
+     inkscape:cy="441.58819"
      inkscape:window-width="1920"
      inkscape:window-height="1011"
      inkscape:window-x="0"
@@ -36,6 +36,40 @@
      showguides="true" />
   <defs
      id="defs283">
+    <inkscape:path-effect
+       effect="fillet_chamfer"
+       id="path-effect20"
+       is_visible="true"
+       lpeversion="1"
+       nodesatellites_param="F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1 @ F,0,0,1,0,0,0,1"
+       radius="1"
+       unit="px"
+       method="auto"
+       mode="F"
+       chamfer_steps="1"
+       flexible="false"
+       use_knot_distance="true"
+       apply_no_radius="true"
+       apply_with_radius="true"
+       only_selected="false"
+       hide_knots="false" />
+    <inkscape:path-effect
+       effect="fillet_chamfer"
+       id="path-effect11"
+       is_visible="true"
+       lpeversion="1"
+       nodesatellites_param="F,0,0,1,0,1,0,1 @ F,0,0,1,0,1,0,1 @ F,0,0,1,0,1,0,1 @ F,0,0,1,0,1,0,1"
+       radius="1"
+       unit="mm"
+       method="auto"
+       mode="F"
+       chamfer_steps="1"
+       flexible="false"
+       use_knot_distance="true"
+       apply_no_radius="true"
+       apply_with_radius="true"
+       only_selected="false"
+       hide_knots="false" />
     <inkscape:path-effect
        effect="fillet_chamfer"
        id="path-effect34"
@@ -863,7 +897,7 @@
   <g
      id="g16"
      inkscape:label="MainBoard"
-     transform="translate(-21.792465,-149.23846)"
+     transform="translate(-21.802542,-151.23772)"
      style="display:inline">
     <circle
        style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
@@ -890,183 +924,53 @@
        transform="rotate(-135)"
        inkscape:label="MainBoard To frame screw right" />
     <g
-       id="g9-4"
-       inkscape:label="RPIhz"
-       transform="rotate(-90,328.82116,252.21875)"
-       style="display:inline;fill:none;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1">
-      <g
-         id="g21239-1"
-         inkscape:label="RpiShapehz"
-         transform="rotate(90,470.43037,11.800317)"
-         style="display:inline;fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1">
-        <text
-           xml:space="preserve"
-           style="font-size:2.02547px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.200762;fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
-           x="-16.331087"
-           y="540.21057"
-           id="text3-5-1-4-6-8-4"
-           transform="matrix(0,-1.0698408,0.93471851,0,0,0)"><tspan
-             sodipodi:role="line"
-             style="fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
-             x="-16.331087"
-             y="540.21057"
-             dx="0 0 0 0 0 0 0 0 0 0 0 0 0.097224377"
-             id="tspan5-2-9-0-2-4-51">30</tspan></text>
-        <text
-           xml:space="preserve"
-           style="font-size:2.02547px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.200762;fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
-           x="496.83569"
-           y="3.6774263"
-           id="text3-5-1-4-6-8-7-4"
-           transform="scale(1.0698408,0.93471851)"><tspan
-             sodipodi:role="line"
-             style="fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
-             x="496.83569"
-             y="3.6774263"
-             dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.097224377"
-             id="tspan27123-6"><tspan
-               dx="0 0 0 0 0 0 0 0 0 0 0 0 0.097224377"
-               id="tspan27125-03"
-               style="fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1">65</tspan></tspan></text>
-        <text
-           xml:space="preserve"
-           style="font-size:2.02547px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.200762;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
-           x="493.75131"
-           y="18.175867"
-           id="text3-5-1-4-6-8-7-7-2"
-           transform="scale(1.0698408,0.93471851)"><tspan
-             sodipodi:role="line"
-             style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
-             x="493.75131"
-             y="18.175867"
-             dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.097224377"
-             id="tspan27123-0-2">RPI Zero</tspan></text>
-      </g>
-      <circle
-         style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
-         id="path3-5-3-5-1-0-9-2-1-4-8-0-7"
-         cx="-395.27356"
-         cy="246.96574"
-         r="1.3"
-         transform="rotate(-135)"
-         inkscape:label="Screw Bottom Right" />
-      <circle
-         style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
-         id="path3-5-3-5-1-0-9-2-1-4-8-0-8-0"
-         cx="-354.26135"
-         cy="287.97794"
-         r="1.3"
-         transform="rotate(-135)"
-         inkscape:label="Screw Bottom left" />
-      <circle
-         style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
-         id="path3-5-3-5-1-0-9-2-1-4-8-7"
-         cx="-411.53632"
-         cy="263.22849"
-         r="1.3"
-         transform="rotate(-135)"
-         inkscape:label="Screw Top right" />
-      <circle
-         style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
-         id="path3-5-3-5-1-0-9-2-1-4-8-0-8-4-9"
-         cx="-370.52411"
-         cy="304.24066"
-         r="1.3"
-         transform="rotate(-135)"
-         inkscape:label="Screw Top left" />
-      <path
-         style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.000264583"
-         id="rect15"
-         width="65"
-         height="30"
-         x="43.369457"
-         y="-480.63174"
-         transform="rotate(90)"
-         sodipodi:type="rect"
-         d="m 46.369457,-480.63174 h 59.000003 a 2.9999999,2.9999999 45 0 1 3,3 v 24 a 2.9999999,2.9999999 135 0 1 -3,3 H 46.369457 a 2.9999999,2.9999999 45 0 1 -3,-3 v -24 a 2.9999999,2.9999999 135 0 1 3,-3 z"
-         inkscape:label="RpiZ outline"
-         inkscape:path-effect="#path-effect15" />
-      <rect
-         style="display:inline;fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-linecap:round;stroke-miterlimit:6.2;stroke-dasharray:none;stroke-opacity:1;stop-color:#000000"
-         id="rect1188"
-         width="58"
-         height="22.999002"
-         x="46.869457"
-         y="-477.13126"
-         inkscape:label="Rpi Z screw inner outline"
-         transform="rotate(90)" />
-      <path
-         style="fill:none;stroke:#ffffff;stroke-width:0.001;stroke-opacity:1"
-         id="rect8"
-         width="15"
-         height="65"
-         x="-495.20444"
-         y="-108.21467"
-         transform="rotate(180,0,-5.4913697e-4)"
-         inkscape:path-effect="#path-effect9"
-         sodipodi:type="rect"
-         d="m -491.20444,-108.21467 h 7 a 4.0000001,4.0000001 45 0 1 4,4 v 57.000002 a 4.0000001,4.0000001 135 0 1 -4,4 h -7 a 4.0000001,4.0000001 45 0 1 -4,-4 l 0,-57.000002 a 4.0000001,4.0000001 135 0 1 4,-4 z"
-         inkscape:label="HDMI/USB notch" />
-      <path
-         style="display:inline;fill:none;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
-         id="rect8-5"
-         width="15"
-         height="65"
-         x="-495.20444"
-         y="-108.21467"
-         transform="rotate(180,-22.043902,0.07689586)"
-         inkscape:path-effect="#path-effect9-5"
-         sodipodi:type="rect"
-         d="m -491.20444,-108.21467 h 7 a 4.0000001,4.0000001 45 0 1 4,4 v 57.000002 a 4.0000001,4.0000001 135 0 1 -4,4 h -7 a 4.0000001,4.0000001 45 0 1 -4,-4 l 0,-57.000002 a 4.0000001,4.0000001 135 0 1 4,-4 z"
-         inkscape:label="HDMI/USB notch" />
-    </g>
-    <g
        id="g19"
        inkscape:label="RPIz-Neg"
        style="display:inline"
        transform="translate(-25.929166,119.32708)">
       <path
          id="rect1"
-         style="fill:none;stroke:#ffffff;stroke-width:0.00107401;stroke-dasharray:none"
-         d="m 118.88812,234.91553 c -0.97874,0.28619 -1.75028,1.05778 -2.03641,2.03653 -0.13201,0.45159 -0.12014,1.22603 -0.12014,1.69805 v 4.77548 a 0.85466901,0.85466901 45 0 0 0.85467,0.85467 l 5.24372,0 c 0.47202,0 1.30812,0.004 1.60337,0.35312 0.26332,0.31131 0.25124,1.07685 0.25124,1.54887 l 0,27.61631 c 0,0.47202 0.009,1.30245 -0.3201,1.62266 -0.29115,0.28287 -1.06249,0.27933 -1.53451,0.27933 h -5.24372 a 0.85466901,0.85466901 135 0 0 -0.85467,0.85467 l 0,19.0583 c 0,0.47202 -0.0119,1.24641 0.12011,1.69794 0.28609,0.97877 1.05761,1.75039 2.03633,2.0366 0.45158,0.13206 1.22602,0.12023 1.69804,0.12023 h 61.60719 c 0.47202,0 1.24641,0.0118 1.69793,-0.12019 0.97875,-0.28618 1.75029,-1.05777 2.03642,-2.03653 0.13201,-0.45159 0.12014,-1.22603 0.12014,-1.69805 V 276.5588 a 0.85466901,0.85466901 45 0 0 -0.85467,-0.85467 h -4.67063 c -0.47202,0 -1.3082,-0.002 -1.60527,-0.34985 -0.26029,-0.30468 -0.24934,-1.06403 -0.24934,-1.53605 v -27.15971 c 0,-0.47202 -0.007,-1.3045 0.32782,-1.61822 0.29162,-0.27315 1.05477,-0.26768 1.52679,-0.26768 h 4.67063 a 0.85466901,0.85466901 135 0 0 0.85467,-0.85467 v -5.26784 c 0,-0.47202 0.0119,-1.24641 -0.12011,-1.69794 -0.28609,-0.97878 -1.05761,-1.75039 -2.03634,-2.03661 -0.45158,-0.13205 -1.22602,-0.12022 -1.69804,-0.12022 l -61.60719,0 c -0.47202,0 -1.24641,-0.0118 -1.69793,0.12019 z"
-         transform="matrix(1.0000003,0,0,0.86692903,25.183328,-82.02505)"
-         inkscape:path-effect="#path-effect19"
-         inkscape:original-d="m 119.73138,234.79534 a 3.0000001,3.0000001 0 0 0 -2.99981,3.0001 v 6.48482 h 6.95306 a 1.0000012,1.0473881 0 0 1 0.99994,1.04732 v 29.32565 a 1.0000012,1.0473881 0 0 1 -0.99994,1.04732 h -6.95306 v 20.76764 a 3.0000001,3.0000001 0 0 0 2.99981,3.0001 h 63.31653 a 3.0000001,3.0000001 0 0 0 2.99982,-3.0001 v -20.76406 h -6.37997 a 1.0000014,1.0310958 0 0 1 -0.99994,-1.03123 v -28.86905 a 1.0000014,1.0310958 0 0 1 0.99994,-1.03123 h 6.37997 v -6.97718 a 3.0000001,3.0000001 0 0 0 -2.99982,-3.0001 z"
-         inkscape:label="Cut" />
+         style="display:inline;fill:none;stroke:#ffffff;stroke-width:0.00107401;stroke-dasharray:none"
+         inkscape:label="Cut"
+         d="m 125.20564,234.79535 c 0,38.54168 0.008,-26.46446 0.008,39.0037 0,0.47203 -0.51998,1.30233 -0.84956,1.62254 -0.29115,0.28287 -1.06225,0.27897 -1.53427,0.27897 h -5.2436 c -0.47209,-3e-5 -0.8548,0.3827 -0.85473,0.85479 v 19.05866 c 0,0.13034 -9.6e-4,0.28377 5.1e-4,0.44706 v 20.58822 h 69.31513 v -20.6061 c 0.001,-0.1568 5.2e-4,-0.30348 5.2e-4,-0.42918 v -19.05508 c 6e-5,-0.47208 -0.38265,-0.85482 -0.85473,-0.85479 h -4.67051 c -0.47202,0 -1.30852,-0.002 -1.60559,-0.34931 -0.26029,-0.30469 -0.77825,-1.06409 -0.77825,-1.53611 10e-4,-13.00779 1.2e-4,-26.01558 -0.003,-39.02337 z"
+         transform="matrix(1.0000003,0,0,0.86692904,25.183327,-82.025063)"
+         sodipodi:nodetypes="csssccsccccsccscscc"
+         inkscape:path-effect="#path-effect20"
+         inkscape:original-d="m 125.20564,234.79535 c 0,38.54168 0.008,-26.46446 0.008,39.0037 0,0.47203 -0.51998,1.30233 -0.84956,1.62254 -0.29115,0.28287 -1.06225,0.27897 -1.53427,0.27897 h -5.2436 c -0.47209,-3e-5 -0.8548,0.3827 -0.85473,0.85479 v 19.05866 c 0,0.13034 -9.6e-4,0.28377 5.1e-4,0.44706 v 20.58822 h 69.31513 v -20.6061 c 0.001,-0.1568 5.2e-4,-0.30348 5.2e-4,-0.42918 v -19.05508 c 6e-5,-0.47208 -0.38265,-0.85482 -0.85473,-0.85479 h -4.67051 c -0.47202,0 -1.30852,-0.002 -1.60559,-0.34931 -0.26029,-0.30469 -0.77825,-1.06409 -0.77825,-1.53611 10e-4,-13.00779 1.2e-4,-26.01558 -0.003,-39.02337 z" />
       <g
          id="g21239-1-6"
          inkscape:label="RpiShapehz"
          transform="translate(-358.35569,126.84117)"
-         style="display:inline;fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1">
+         style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1">
         <text
            xml:space="preserve"
-           style="font-size:2.02547px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.200762;fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+           style="font-size:2.02547px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.200762;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
            x="-16.331087"
            y="540.21057"
            id="text3-5-1-4-6-8-4-1"
            transform="matrix(0,-1.0698408,0.93471851,0,0,0)"><tspan
              sodipodi:role="line"
-             style="fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+             style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
              x="-16.331087"
              y="540.21057"
              dx="0 0 0 0 0 0 0 0 0 0 0 0 0.097224377"
              id="tspan5-2-9-0-2-4-51-2">30</tspan></text>
         <text
            xml:space="preserve"
-           style="font-size:2.02547px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.200762;fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+           style="font-size:2.02547px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.200762;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
            x="496.83569"
            y="3.6774263"
            id="text3-5-1-4-6-8-7-4-9"
            transform="scale(1.0698408,0.93471851)"><tspan
              sodipodi:role="line"
-             style="fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+             style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
              x="496.83569"
              y="3.6774263"
              dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.097224377"
              id="tspan27123-6-3"><tspan
                dx="0 0 0 0 0 0 0 0 0 0 0 0 0.097224377"
                id="tspan27125-03-1"
-               style="fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1">65</tspan></tspan></text>
+               style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1">65</tspan></tspan></text>
         <text
            xml:space="preserve"
            style="font-size:2.02547px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.200762;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
@@ -1127,6 +1031,17 @@
          r="1.3"
          transform="rotate(135)"
          inkscape:label="Screw Top left" />
+      <path
+         style="fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+         id="rect2"
+         width="8.6060791"
+         height="15.715447"
+         x="137.16008"
+         y="135.18358"
+         inkscape:label="sdcard notch"
+         inkscape:path-effect="#path-effect11"
+         sodipodi:type="rect"
+         d="m 138.16008,135.18358 h 6.60608 a 1,1 45 0 1 1,1 v 13.71545 a 1,1 135 0 1 -1,1 l -6.60608,0 a 1,1 45 0 1 -1,-1 v -13.71545 a 1,1 135 0 1 1,-1 z" />
     </g>
     <g
        id="g9"
@@ -1152,7 +1067,7 @@
          inkscape:label="PoE Outline and screw holes"
          style="stroke:none">
         <rect
-           style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.000212774"
+           style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
            id="rect4"
            width="46.999786"
            height="41.499786"
@@ -1160,7 +1075,7 @@
            y="-333.77286"
            transform="matrix(0,-1,-1,0,0,0)" />
         <ellipse
-           style="display:inline;fill:#000000;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+           style="display:inline;fill:none;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
            id="path4-6"
            cx="294.27295"
            cy="-292.70752"
@@ -1169,7 +1084,7 @@
            transform="scale(1,-1)"
            inkscape:label="Board screw through hole" />
         <ellipse
-           style="display:inline;fill:#000000;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+           style="display:inline;fill:none;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
            id="path4-6-3"
            cx="331.77298"
            cy="327.20749"
@@ -1180,9 +1095,9 @@
       <g
          id="g10"
          inkscape:label="PoEBoardElms"
-         style="stroke:none">
+         style="display:inline;stroke:none;fill:#000000;fill-opacity:1">
         <rect
-           style="fill:none;stroke:none;stroke-width:0.000264583"
+           style="fill:#000000;stroke:none;stroke-width:0.000264583;fill-opacity:1"
            id="rect5"
            width="16"
            height="16"
@@ -1190,7 +1105,7 @@
            y="313.20752"
            inkscape:label="EthInBox" />
         <rect
-           style="display:inline;fill:none;stroke:none;stroke-width:0.000256181;stroke-dasharray:none;stroke-opacity:1"
+           style="display:inline;fill:#000000;stroke:none;stroke-width:0.000256181;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1"
            id="rect5-0"
            width="15"
            height="16"
@@ -1198,7 +1113,7 @@
            y="289.20752"
            inkscape:label="TrafoBox" />
         <rect
-           style="display:inline;fill:none;stroke:none;stroke-width:0.000104585;stroke-dasharray:none;stroke-opacity:1"
+           style="display:inline;fill:#000000;stroke:none;stroke-width:0.000104585;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1"
            id="rect5-9"
            width="8"
            height="5"
@@ -1207,66 +1122,66 @@
            inkscape:label="USBBox" />
         <text
            xml:space="preserve"
-           style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:none;stroke:none;stroke-width:0.000264583"
+           style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000;stroke:none;stroke-width:0.000264583;fill-opacity:1"
            x="305.54816"
            y="324.84436"
            id="text5"><tspan
              sodipodi:role="line"
              id="tspan5"
-             style="stroke:none;stroke-width:0.000264583"
+             style="stroke:none;stroke-width:0.000264583;fill:#000000;fill-opacity:1"
              x="305.54816"
              y="324.84436">ETH IN</tspan><tspan
              sodipodi:role="line"
-             style="stroke:none;stroke-width:0.000264583"
+             style="stroke:none;stroke-width:0.000264583;fill:#000000;fill-opacity:1"
              x="305.54816"
              y="328.81311"
              id="tspan6">     ↑</tspan></text>
         <text
            xml:space="preserve"
-           style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:none;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1"
+           style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:#000000;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1"
            x="322.2605"
            y="328.71109"
            id="text5-2"><tspan
              sodipodi:role="line"
              id="tspan5-7"
-             style="stroke:none;stroke-width:0.000264583"
+             style="stroke:none;stroke-width:0.000264583;fill:#000000;fill-opacity:1"
              x="322.2605"
              y="328.71109">USB</tspan><tspan
              sodipodi:role="line"
-             style="stroke:none;stroke-width:0.000264583"
+             style="stroke:none;stroke-width:0.000264583;fill:#000000;fill-opacity:1"
              x="322.2605"
              y="332.67984"
              id="tspan6-0" /></text>
         <text
            xml:space="preserve"
-           style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:none;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1"
+           style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:#000000;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1"
            x="301.39224"
            y="298.52341"
            id="text5-2-3"><tspan
              sodipodi:role="line"
-             style="stroke:none;stroke-width:0.000264583"
+             style="stroke:none;stroke-width:0.000264583;fill:#000000;fill-opacity:1"
              x="301.39224"
              y="298.52341"
              id="tspan6-0-5">Trfo</tspan></text>
         <text
            xml:space="preserve"
-           style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:none;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1"
+           style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:#000000;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1"
            x="-291.52615"
            y="329.09918"
            id="text5-2-6"
            transform="rotate(-90)"><tspan
              sodipodi:role="line"
-             style="stroke:none;stroke-width:0.000264583"
+             style="stroke:none;stroke-width:0.000264583;fill:#000000;fill-opacity:1"
              x="-291.52615"
              y="329.09918"
              id="tspan6-0-6"> USB</tspan><tspan
              sodipodi:role="line"
-             style="stroke:none;stroke-width:0.000264583"
+             style="stroke:none;stroke-width:0.000264583;fill:#000000;fill-opacity:1"
              x="-291.52615"
              y="333.06793"
              id="tspan9">   ↓</tspan></text>
         <rect
-           style="display:inline;fill:none;stroke:none;stroke-width:0.00013146;stroke-dasharray:none;stroke-opacity:1"
+           style="display:inline;fill:#000000;stroke:none;stroke-width:0.00013146;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1"
            id="rect5-9-3"
            width="8"
            height="7.8998742"
@@ -1361,7 +1276,7 @@
         </g>
       </g>
       <path
-         style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.00086603;stroke-dasharray:none;stroke-opacity:1"
+         style="display:inline;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.0009749;stroke-dasharray:none;stroke-opacity:1"
          id="rect18"
          width="15"
          height="10"
@@ -1373,7 +1288,7 @@
          inkscape:label="USB Eth notch"
          inkscape:path-effect="#path-effect18" />
       <path
-         style="display:inline;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.00086603;stroke-dasharray:none;stroke-opacity:1"
+         style="display:inline;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.00124944;stroke-dasharray:none;stroke-opacity:1"
          id="rect18-07"
          width="15"
          height="10"
@@ -1609,26 +1524,6 @@
              id="tspan47671" /></text>
         <text
            xml:space="preserve"
-           style="font-size:2.02547px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.200762;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
-           x="-122.73618"
-           y="152.14586"
-           id="text3-5-1-4-6-8-7-7-1"
-           transform="scale(-1.0698408,0.93471851)"
-           inkscape:label="Comm"><tspan
-             sodipodi:role="line"
-             style="text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
-             x="-122.73618"
-             y="152.14586"
-             dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.097224377"
-             id="tspan27123-0-4">HDMI 2 eDP</tspan><tspan
-             sodipodi:role="line"
-             style="text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
-             x="-122.73618"
-             y="154.6777"
-             dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.097224377"
-             id="tspan49854">aliexpress.com/i/4000189443613.html</tspan></text>
-        <text
-           xml:space="preserve"
            style="font-size:0.601082px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.200762;fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
            x="-113.97458"
            y="111.97818"
@@ -1836,6 +1731,26 @@
       </g>
       <text
          xml:space="preserve"
+         style="display:inline;fill:#000000;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1;font-size:2.02547px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.200762"
+         x="-122.73618"
+         y="152.14586"
+         id="text3-5-1-4-6-8-7-7-1"
+         transform="matrix(-1.0698408,0,0,-0.93471852,37.703742,291.46392)"
+         inkscape:label="Comm"><tspan
+           sodipodi:role="line"
+           style="text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+           x="-122.73618"
+           y="152.14586"
+           dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.097224377"
+           id="tspan27123-0-4">HDMI 2 eDP</tspan><tspan
+           sodipodi:role="line"
+           style="text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+           x="-122.73618"
+           y="154.6777"
+           dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.097224377"
+           id="tspan49854">aliexpress.com/i/4000189443613.html</tspan></text>
+      <text
+         xml:space="preserve"
          style="font-size:2.02547px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;opacity:0.200762;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
          x="-103.58715"
          y="164.40147"
@@ -1844,14 +1759,14 @@
          inkscape:label="Comm"><tspan
            sodipodi:role="line"
            style="text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
-           x="-103.58715"
-           y="164.40147"
+           x="0"
+           y="0"
            dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.097224377"
            id="tspan49854-8">Mount towards back,</tspan><tspan
            sodipodi:role="line"
            style="text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
-           x="-103.58715"
-           y="166.93332"
+           x="0"
+           y="0"
            dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.097224377"
            id="tspan10072">matching ribbon direction</tspan></text>
       <rect
@@ -1927,38 +1842,38 @@
          inkscape:label="Screw top left" />
       <g
          id="g21161"
-         style="display:inline;fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+         style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
          inkscape:label="dc2dcShape"
          transform="translate(-126.8637,103.36299)">
         <text
            xml:space="preserve"
-           style="font-size:2.02547px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.200762;fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+           style="font-size:2.02547px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.200762;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
            x="-23.306767"
            y="200.86435"
            id="text3-5-1-4-6-8-1"
            transform="matrix(0,-1.0698408,0.93471851,0,0,0)"><tspan
              sodipodi:role="line"
-             style="fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+             style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
              x="-23.306767"
              y="200.86435"
              dx="0 0 0 0 0 0 0 0 0 0 0 0 0.097224377"
              id="tspan5-2-9-0-2-4-5">36</tspan></text>
         <text
            xml:space="preserve"
-           style="font-size:2.02547px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.200762;fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+           style="font-size:2.02547px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.200762;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
            x="201.20735"
            y="11.267439"
            id="text3-5-1-4-6-8-7-9"
            transform="scale(1.0698408,0.93471851)"><tspan
              sodipodi:role="line"
-             style="fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+             style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
              x="201.20735"
              y="11.267439"
              dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.097224377"
              id="tspan27123-8"><tspan
                dx="0 0 0 0 0 0 0 0 0 0 0 0 0.097224377"
                id="tspan27125-4"
-               style="fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1">66</tspan></tspan></text>
+               style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1">66</tspan></tspan></text>
         <text
            xml:space="preserve"
            style="font-size:2.02547px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.200762;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
@@ -1975,32 +1890,32 @@
              id="tspan27123-0-1">DC2DC</tspan></text>
         <text
            xml:space="preserve"
-           style="font-size:8.92383px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.200762;fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+           style="font-size:8.92383px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.200762;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
            x="-21.606474"
            y="314.42526"
            id="text3-5-1-4-6-8-7-7-8-5"
            transform="matrix(0,-1.2847215,0.77837882,0,0,0)"><tspan
              sodipodi:role="line"
-             style="fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+             style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
              x="-21.606474"
              y="314.42526"
              dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0.428352"
              id="tspan27123-0-1-3">↓</tspan></text>
         <text
            xml:space="preserve"
-           style="font-size:8.92383px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.200762;fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+           style="font-size:8.92383px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.200762;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
            x="-21.606474"
            y="252.65446"
            id="text3-5-1-4-6-8-7-7-8-5-8"
            transform="matrix(0,-1.2847215,0.77837882,0,0,0)"><tspan
              sodipodi:role="line"
-             style="fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+             style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
              x="-21.606474"
              y="252.65446"
              dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0.428352"
              id="tspan27123-0-1-3-8">↓</tspan></text>
         <rect
-           style="font-variation-settings:normal;fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;stop-color:#000000"
+           style="font-variation-settings:normal;display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;stop-color:#000000"
            id="rect50010-9-6-8-9-6"
            width="36"
            height="1.9999409e-09"
@@ -2008,7 +1923,7 @@
            y="247.37953"
            transform="rotate(-90)" />
         <rect
-           style="font-variation-settings:normal;fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;stop-color:#000000"
+           style="font-variation-settings:normal;display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;stop-color:#000000"
            id="rect50010-9-6-8-9-6-7"
            width="36"
            height="1.9999409e-09"
@@ -2016,14 +1931,14 @@
            y="-187.37953"
            transform="matrix(0,-1,-1,0,1.0416666e-7,6.4583333e-7)" />
         <rect
-           style="font-variation-settings:normal;fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;stop-color:#000000"
+           style="font-variation-settings:normal;display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;stop-color:#000000"
            id="rect50010-9-2-0-3"
            width="66"
            height="1.9999409e-09"
            x="184.37953"
            y="40.562252" />
         <rect
-           style="font-variation-settings:normal;fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;stop-color:#000000"
+           style="font-variation-settings:normal;display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;stop-color:#000000"
            id="rect50010-9-2-0-3-8"
            width="66"
            height="1.9999409e-09"
@@ -2031,68 +1946,68 @@
            y="10.562245" />
         <text
            xml:space="preserve"
-           style="font-size:1.21948px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.200762;fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+           style="font-size:1.21948px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.200762;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
            x="215.11444"
            y="32.704529"
            id="text3-5-1-4-6-8-7-7-8-1"
            transform="scale(1.1217145,0.89149245)"><tspan
              sodipodi:role="line"
-             style="fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+             style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
              x="215.11444"
              y="32.704529"
              id="tspan27123-0-1-8">pwr</tspan><tspan
              sodipodi:role="line"
-             style="fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+             style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
              x="215.11444"
              y="34.228878"
              dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.058536246"
              id="tspan99650">out</tspan></text>
         <text
            xml:space="preserve"
-           style="font-size:1.26756px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.200762;fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+           style="font-size:1.26756px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.200762;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
            x="171.00563"
            y="33.061489"
            id="text3-5-1-4-6-8-7-7-8-1-5"
            transform="scale(1.1332931,0.88238427)"><tspan
              sodipodi:role="line"
-             style="text-align:center;text-anchor:middle;fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+             style="text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
              x="171.00563"
              y="33.061489"
              id="tspan27123-0-1-8-9">pwr</tspan><tspan
              sodipodi:role="line"
-             style="text-align:center;text-anchor:middle;fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+             style="text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
              x="171.00563"
              y="34.645939"
              dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.060843971"
              id="tspan99650-7">in</tspan></text>
         <text
            xml:space="preserve"
-           style="font-size:1.26756px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.200762;fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+           style="font-size:1.26756px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.200762;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
            x="168.03955"
            y="14.285855"
            id="text3-5-1-4-6-8-7-7-8-1-5-9"
            transform="scale(1.1332931,0.88238427)"><tspan
              sodipodi:role="line"
-             style="text-align:center;text-anchor:middle;fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+             style="text-align:center;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
              x="168.03955"
              y="14.285855"
              dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.060843971"
              id="tspan99650-7-4">M3</tspan></text>
         <text
            xml:space="preserve"
-           style="font-size:0.601082px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.200762;fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+           style="font-size:0.601082px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.200762;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
            x="204.3853"
            y="9.6892653"
            id="text3-5-1-4-6-8-7-8-4-7-2-17"
            transform="scale(0.92878624,1.076674)"><tspan
              sodipodi:role="line"
-             style="fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+             style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
              x="204.3853"
              y="9.6892653"
              dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.028852453"
              id="tspan47671-1-2-2-5">3</tspan><tspan
              sodipodi:role="line"
-             style="fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+             style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
              x="204.3853"
              y="10.440618"
              dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.028852453"
@@ -2103,26 +2018,26 @@
            d="m 184.37953,7.562248 v 36 h 66 v -36 z m 0.98503,1.12496 h 64.02994 v 33.75008 h -64.02994 z" />
         <text
            xml:space="preserve"
-           style="font-size:0.601082px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.200762;fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+           style="font-size:0.601082px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;opacity:0.200762;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
            x="201.92693"
            y="12.294108"
            id="text3-5-1-4-6-8-7-8-4-7-2-17-5"
            transform="scale(0.92878624,1.076674)"><tspan
              sodipodi:role="line"
-             style="fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+             style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
              x="201.92693"
              y="12.294108"
              dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.028852453"
              id="tspan47671-1-2-2-5-7">3</tspan><tspan
              sodipodi:role="line"
-             style="fill:none;fill-opacity:0.5;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+             style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
              x="201.92693"
              y="13.045461"
              dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.028852453"
              id="tspan76508-7-6-9-4" /></text>
       </g>
       <path
-         style="display:inline;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.00086603;stroke-dasharray:none;stroke-opacity:1"
+         style="display:inline;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.00136941;stroke-dasharray:none;stroke-opacity:1"
          id="rect18-0"
          width="15"
          height="10"
@@ -2134,7 +2049,7 @@
          inkscape:label="Random cables notch"
          inkscape:path-effect="#path-effect18-6" />
       <path
-         style="display:inline;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.00086603;stroke-dasharray:none;stroke-opacity:1"
+         style="display:inline;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.00136941;stroke-dasharray:none;stroke-opacity:1"
          id="rect18-0-2"
          width="15"
          height="10"
@@ -2150,9 +2065,8 @@
        id="rect25"
        style="fill:none;stroke:#ffffff;stroke-width:0.000975252;stroke-dasharray:none"
        inkscape:label="MainBoardShape"
-       d="m 48.203257,226.59884 v 81.21575 a 4.0000001,4.0000001 45 0 0 4,4 H 245.75168 a 4.0000001,4.0000001 135 0 0 4,-4 l 0,-15.75876 a 4.0000001,4.0000001 135 0 1 4,-4 h 50.48842 a 4.0000001,4.0000001 45 0 1 4,4 v 15.75876 a 4.0000001,4.0000001 45 0 0 4,4 h 82.72779 a 4.0000001,4.0000001 135 0 0 4,-4 v -81.21575 a 4.0000001,4.0000001 45 0 0 -4,-4 H 52.203257 a 4.0000001,4.0000001 135 0 0 -4,4 z"
-       inkscape:path-effect="#path-effect34"
-       inkscape:original-d="m 48.203257,222.59884 v 89.21575 H 249.75168 v -23.75876 h 58.48842 v 23.75876 h 90.72779 v -89.21575 z" />
+       d="m 52.2032,222.59903 c -2.20895,1.3e-4 -3.999623,1.79081 -3.999756,3.99976 v 81.21571 c -1.49e-4,2.20915 1.790607,4.00014 3.999756,4.00027 h 193.54839 c 2.20935,1.5e-4 4.00043,-1.79092 4.00028,-4.00027 v -15.75873 c 1.4e-4,-2.20894 1.79081,-3.99961 3.99975,-3.99975 h 50.48839 c 2.20915,-1.5e-4 4.00013,1.7906 4.00027,3.99975 v 15.75873 c -1.5e-4,2.20915 1.79061,4.00014 3.99976,4.00027 h 82.72777 c 2.20935,1.5e-4 4.00042,-1.79092 4.00027,-4.00027 v -81.21571 c -1.3e-4,-2.20915 -1.79112,-3.99991 -4.00027,-3.99976 z"
+       sodipodi:nodetypes="ccccccccccccccccc" />
     <g
        id="g173415-8-5-5-6-5"
        transform="translate(52.293943,77.948995)"
@@ -2177,27 +2091,27 @@
          id="g15-65"
          inkscape:label="Clip hole comment"
          transform="translate(-5.0446229,3.5856959)"
-         style="stroke:none">
+         style="stroke:none;fill:#000000;fill-opacity:1">
         <text
            xml:space="preserve"
-           style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:none;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1"
+           style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:#000000;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1"
            x="61.826057"
            y="217.06374"
            id="text5-2-3-1-6"><tspan
              sodipodi:role="line"
-             style="stroke:none;stroke-width:0.000264583"
+             style="stroke:none;stroke-width:0.000264583;fill:#000000;fill-opacity:1"
              x="61.826057"
              y="217.06374"
              id="tspan6-0-5-9-9">Clip</tspan></text>
         <rect
-           style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+           style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
            id="rect12-37"
            height="6"
            x="60.123493"
            y="207.9164"
            width="0.001" />
         <rect
-           style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+           style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
            id="rect12-7-4"
            height="6"
            x="210.91588"
@@ -2209,27 +2123,27 @@
          id="g15-4-5"
          inkscape:label="Clip hole comment"
          transform="translate(-53.451606,3.5959321)"
-         style="display:inline;fill:none;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1">
+         style="display:inline;fill:#000000;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1">
         <text
            xml:space="preserve"
-           style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:none;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1"
+           style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:#000000;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1"
            x="54.30743"
            y="215.06422"
            id="text5-2-3-1-5-2"><tspan
              sodipodi:role="line"
-             style="stroke:none;stroke-width:0.000264583"
+             style="stroke:none;stroke-width:0.000264583;fill:#000000;fill-opacity:1"
              x="54.30743"
              y="215.06422"
              id="tspan6-0-5-9-0-5">Clip</tspan></text>
         <rect
-           style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+           style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
            id="rect12-3-4"
            height="6"
            x="60.123493"
            y="207.9164"
            width="0.001" />
         <rect
-           style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+           style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
            id="rect12-7-6-74"
            height="6"
            x="210.91588"
@@ -2244,7 +2158,7 @@
      inkscape:label="Frame"
      style="display:inline;fill:none;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1">
     <path
-       style="display:inline;fill:none;stroke:#000000;stroke-width:0.00129206;stroke-dasharray:none;stroke-opacity:1"
+       style="display:inline;fill:none;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
        id="rect446-73"
        x="-403.99933"
        y="-303.99936"
@@ -2303,7 +2217,7 @@
        transform="translate(-8.000546,1.9007955)"
        style="display:inline">
       <path
-         style="fill:none;stroke:#000000;stroke-width:0.000995204;stroke-dasharray:none;stroke-opacity:1"
+         style="display:inline;fill:none;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
          id="rect446"
          x="-385.99951"
          y="-275.99951"
@@ -2319,56 +2233,56 @@
          inkscape:label="ClipHolderHoles"
          style="display:inline">
         <circle
-           style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+           style="display:inline;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
            id="path3-5-3-5-1-0-9-9"
            cx="62.942883"
            cy="467.12329"
            r="1.3"
            transform="rotate(-45)" />
         <circle
-           style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+           style="display:inline;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
            id="path3-5-3-5-1-0-9-2-1"
            cx="-87.943871"
            cy="467.12329"
            r="1.3"
            transform="matrix(-0.70710678,0.70710678,0.70710678,0.70710678,0,0)" />
         <circle
-           style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+           style="display:inline;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
            id="path3-5-3-5-1-0-9-9-7"
            cx="-234.04184"
            cy="170.13788"
            r="1.3"
            transform="matrix(-0.70710678,-0.70710678,-0.70710678,0.70710678,0,0)" />
         <circle
-           style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+           style="display:inline;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
            id="path3-5-3-5-1-0-9-2-1-5"
            cx="209.04085"
            cy="170.13788"
            r="1.3"
            transform="rotate(45)" />
         <circle
-           style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+           style="display:inline;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
            id="path3-5-3-5-1-0-9-9-77"
            cx="308.3129"
            cy="221.75461"
            r="1.3"
            transform="matrix(0.70710678,0.70710678,0.70710678,-0.70710678,0,0)" />
         <circle
-           style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+           style="display:inline;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
            id="path3-5-3-5-1-0-9-2-1-4"
            cx="-333.3139"
            cy="221.75461"
            r="1.3"
            transform="rotate(-135)" />
         <circle
-           style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+           style="display:inline;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
            id="path3-5-3-5-1-0-9-9-7-9"
            cx="11.326859"
            cy="-75.232147"
            r="1.3"
            transform="rotate(135)" />
         <circle
-           style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+           style="display:inline;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
            id="path3-5-3-5-1-0-9-2-1-5-1"
            cx="-36.32785"
            cy="-75.232147"
@@ -2408,14 +2322,14 @@
        style="display:inline;fill:none;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
        inkscape:label="eInk clip screw holes">
       <circle
-         style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+         style="display:inline;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
          id="path3-5-3-5-1-0-9-8-5-3-4-1-1-7-7"
          cx="-83.764481"
          cy="200.66884"
          transform="scale(-1,1)"
          r="1.3" />
       <circle
-         style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+         style="display:inline;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
          id="path3-5-3-5-1-0-9-2-9-1-0-1-2-8-3-6"
          cx="0.36548001"
          cy="200.66867"
@@ -2424,27 +2338,27 @@
          id="g15-4-4"
          inkscape:label="Clip hole comment"
          transform="translate(-59.768628,-10.217588)"
-         style="display:inline;fill:none;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1">
+         style="display:inline;fill:#000000;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1">
         <text
            xml:space="preserve"
-           style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:none;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1"
+           style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:#000000;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1"
            x="54.30743"
            y="215.06422"
            id="text5-2-3-1-5-4"><tspan
              sodipodi:role="line"
-             style="stroke-width:0.000264583"
+             style="stroke-width:0.000264583;fill:#000000;fill-opacity:1;stroke:none"
              x="54.30743"
              y="215.06422"
              id="tspan6-0-5-9-0-3">Clip</tspan></text>
         <rect
-           style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+           style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
            id="rect12-3-0"
            height="6"
            x="60.123493"
            y="207.9164"
            width="0.001" />
         <rect
-           style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+           style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
            id="rect12-7-6-7"
            height="6"
            x="210.91588"
@@ -2456,27 +2370,27 @@
          id="g15-6"
          inkscape:label="Clip hole comment"
          transform="translate(23.65072,-10.231489)"
-         style="display:inline;fill:none;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1">
+         style="display:inline;fill:#000000;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1">
         <text
            xml:space="preserve"
-           style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:none;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1"
+           style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:#000000;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1"
            x="61.826057"
            y="217.06374"
            id="text5-2-3-1-8"><tspan
              sodipodi:role="line"
-             style="stroke-width:0.000264583"
+             style="stroke-width:0.000264583;fill:#000000;fill-opacity:1;stroke:none"
              x="61.826057"
              y="217.06374"
              id="tspan6-0-5-9-8">Clip</tspan></text>
         <rect
-           style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+           style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
            id="rect12-4"
            height="6"
            x="60.123493"
            y="207.9164"
            width="0.001" />
         <rect
-           style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+           style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
            id="rect12-7-3"
            height="6"
            x="210.91588"
@@ -2510,7 +2424,7 @@
            r="1.3"
            transform="rotate(-135)" />
         <circle
-           style="display:inline;fill:none;stroke:#000000;stroke-width:0.000499928;stroke-dasharray:none;stroke-opacity:1"
+           style="display:inline;fill:none;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
            id="path2-5-8"
            cx="-384.35083"
            cy="-129.40152"
@@ -2520,27 +2434,27 @@
            id="g15-4-6"
            inkscape:label="Clip hole comment"
            transform="rotate(180,222.31955,165.15882)"
-           style="display:inline;fill:none;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1">
+           style="display:inline;fill:#000000;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1">
           <text
              xml:space="preserve"
-             style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:none;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1"
+             style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:#000000;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1"
              x="54.30743"
              y="215.06422"
              id="text5-2-3-1-5-6"><tspan
                sodipodi:role="line"
-               style="stroke:none;stroke-width:0.000264583"
+               style="stroke:none;stroke-width:0.000264583;fill:#000000;fill-opacity:1"
                x="54.30743"
                y="215.06422"
                id="tspan6-0-5-9-0-4">Clip</tspan></text>
           <rect
-             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
              id="rect12-3-9"
              height="6"
              x="60.123493"
              y="207.9164"
              width="0.001" />
           <rect
-             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
              id="rect12-7-6-5"
              height="6"
              x="210.91588"
@@ -2552,32 +2466,32 @@
            id="g15-4-6-7"
            inkscape:label="Clip hole comment"
            transform="rotate(180,222.28564,170.17031)"
-           style="display:inline;fill:none;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1">
+           style="display:inline;fill:#000000;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1">
           <text
              xml:space="preserve"
-             style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:none;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1"
+             style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:#000000;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1"
              x="48.694771"
              y="214.03523"
              id="text5-2-3-1-5-6-2"><tspan
                sodipodi:role="line"
-               style="stroke:none;stroke-width:0.000264583"
+               style="stroke:none;stroke-width:0.000264583;fill:#000000;fill-opacity:1"
                x="48.694771"
                y="214.03523"
                id="tspan6-0-5-9-0-4-2">Button</tspan><tspan
                sodipodi:role="line"
-               style="stroke:none;stroke-width:0.000264583"
+               style="stroke:none;stroke-width:0.000264583;fill:#000000;fill-opacity:1"
                x="48.694771"
                y="218.00398"
                id="tspan7">Exit</tspan></text>
           <rect
-             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
              id="rect12-3-9-6"
              height="6"
              x="60.123493"
              y="207.9164"
              width="0.001" />
           <rect
-             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
              id="rect12-7-6-5-1"
              height="6"
              x="210.91588"
@@ -2589,27 +2503,27 @@
            id="g15-4-6-4"
            inkscape:label="Clip hole comment"
            transform="rotate(180,222.26066,175.09929)"
-           style="display:inline;fill:none;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1">
+           style="display:inline;fill:#000000;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1">
           <text
              xml:space="preserve"
-             style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:none;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1"
+             style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:#000000;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1"
              x="54.30743"
              y="215.06422"
              id="text5-2-3-1-5-6-8"><tspan
                sodipodi:role="line"
-               style="stroke:none;stroke-width:0.000264583"
+               style="stroke:none;stroke-width:0.000264583;fill:#000000;fill-opacity:1"
                x="54.30743"
                y="215.06422"
                id="tspan6-0-5-9-0-4-7">Clip</tspan></text>
           <rect
-             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
              id="rect12-3-9-1"
              height="6"
              x="60.123493"
              y="207.9164"
              width="0.001" />
           <rect
-             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
              id="rect12-7-6-5-7"
              height="6"
              x="210.91588"
@@ -2638,7 +2552,7 @@
            r="1.3"
            transform="rotate(-135)" />
         <circle
-           style="display:inline;fill:none;stroke:#000000;stroke-width:0.000499928;stroke-dasharray:none;stroke-opacity:1"
+           style="display:inline;fill:none;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
            id="path2-5-8-9"
            cx="-384.35083"
            cy="-129.40152"
@@ -2648,27 +2562,27 @@
            id="g15-4-6-49"
            inkscape:label="Clip hole comment"
            transform="rotate(180,222.31955,165.15882)"
-           style="display:inline;fill:none;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1">
+           style="display:inline;fill:#000000;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1">
           <text
              xml:space="preserve"
-             style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:none;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1"
+             style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:#000000;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1"
              x="54.30743"
              y="215.06422"
              id="text5-2-3-1-5-6-0"><tspan
                sodipodi:role="line"
-               style="stroke:none;stroke-width:0.000264583"
+               style="stroke:none;stroke-width:0.000264583;fill:#000000;fill-opacity:1"
                x="54.30743"
                y="215.06422"
                id="tspan6-0-5-9-0-4-9">Clip</tspan></text>
           <rect
-             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
              id="rect12-3-9-17"
              height="6"
              x="60.123493"
              y="207.9164"
              width="0.001" />
           <rect
-             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
              id="rect12-7-6-5-71"
              height="6"
              x="210.91588"
@@ -2680,32 +2594,32 @@
            id="g15-4-6-7-1"
            inkscape:label="Clip hole comment"
            transform="rotate(180,222.28564,170.17031)"
-           style="display:inline;fill:none;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1">
+           style="display:inline;fill:#000000;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1">
           <text
              xml:space="preserve"
-             style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:none;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1"
+             style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:#000000;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1"
              x="47.946415"
              y="214.12878"
              id="text5-2-3-1-5-6-2-5"><tspan
                sodipodi:role="line"
-               style="stroke:none;stroke-width:0.000264583"
+               style="stroke:none;stroke-width:0.000264583;fill:#000000;fill-opacity:1"
                x="47.946415"
                y="214.12878"
                id="tspan6-0-5-9-0-4-2-9">Button</tspan><tspan
                sodipodi:role="line"
-               style="stroke:none;stroke-width:0.000264583"
+               style="stroke:none;stroke-width:0.000264583;fill:#000000;fill-opacity:1"
                x="47.946415"
                y="218.09753"
                id="tspan7-7">Exit</tspan></text>
           <rect
-             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
              id="rect12-3-9-6-7"
              height="6"
              x="60.123493"
              y="207.9164"
              width="0.001" />
           <rect
-             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
              id="rect12-7-6-5-1-6"
              height="6"
              x="210.91588"
@@ -2717,27 +2631,27 @@
            id="g15-4-6-4-7"
            inkscape:label="Clip hole comment"
            transform="rotate(180,222.26066,175.09929)"
-           style="display:inline;fill:none;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1">
+           style="display:inline;fill:#000000;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1">
           <text
              xml:space="preserve"
-             style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:none;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1"
+             style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:#000000;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1"
              x="54.30743"
              y="215.06422"
              id="text5-2-3-1-5-6-8-3"><tspan
                sodipodi:role="line"
-               style="stroke:none;stroke-width:0.000264583"
+               style="stroke:none;stroke-width:0.000264583;fill:#000000;fill-opacity:1"
                x="54.30743"
                y="215.06422"
                id="tspan6-0-5-9-0-4-7-6">Clip</tspan></text>
           <rect
-             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
              id="rect12-3-9-1-5"
              height="6"
              x="60.123493"
              y="207.9164"
              width="0.001" />
           <rect
-             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
              id="rect12-7-6-5-7-6"
              height="6"
              x="210.91588"
@@ -2771,7 +2685,7 @@
            r="1.3"
            transform="rotate(-135)" />
         <circle
-           style="display:inline;fill:none;stroke:#000000;stroke-width:0.000499928;stroke-dasharray:none;stroke-opacity:1"
+           style="display:inline;fill:none;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
            id="circle19"
            cx="-384.35083"
            cy="-129.40152"
@@ -2781,27 +2695,27 @@
            id="g20"
            inkscape:label="Clip hole comment"
            transform="rotate(180,222.31955,165.15882)"
-           style="display:inline;fill:none;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1">
+           style="display:inline;fill:#000000;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1">
           <text
              xml:space="preserve"
-             style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:none;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1"
+             style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:#000000;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1"
              x="54.30743"
              y="215.06422"
              id="text19"><tspan
                sodipodi:role="line"
-               style="stroke:none;stroke-width:0.000264583"
+               style="stroke:none;stroke-width:0.000264583;fill:#000000;fill-opacity:1"
                x="54.30743"
                y="215.06422"
                id="tspan19">Clip</tspan></text>
           <rect
-             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
              id="rect19"
              height="6"
              x="60.123493"
              y="207.9164"
              width="0.001" />
           <rect
-             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
              id="rect20"
              height="6"
              x="210.91588"
@@ -2813,32 +2727,32 @@
            id="g22"
            inkscape:label="Clip hole comment"
            transform="rotate(180,222.28564,170.17031)"
-           style="display:inline;fill:none;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1">
+           style="display:inline;fill:#000000;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1">
           <text
              xml:space="preserve"
-             style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:none;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1"
+             style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:#000000;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1"
              x="63.287685"
              y="214.31587"
              id="text21"><tspan
                sodipodi:role="line"
-               style="stroke:none;stroke-width:0.000264583"
+               style="stroke:none;stroke-width:0.000264583;fill:#000000;fill-opacity:1"
                x="63.287685"
                y="214.31587"
                id="tspan20">Button</tspan><tspan
                sodipodi:role="line"
-               style="stroke:none;stroke-width:0.000264583"
+               style="stroke:none;stroke-width:0.000264583;fill:#000000;fill-opacity:1"
                x="63.287685"
                y="218.28462"
                id="tspan21">Exit</tspan></text>
           <rect
-             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
              id="rect21"
              height="6"
              x="60.123493"
              y="207.9164"
              width="0.001" />
           <rect
-             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
              id="rect22"
              height="6"
              x="210.91588"
@@ -2850,27 +2764,27 @@
            id="g24"
            inkscape:label="Clip hole comment"
            transform="rotate(180,222.26066,175.09929)"
-           style="display:inline;fill:none;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1">
+           style="display:inline;fill:#000000;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1">
           <text
              xml:space="preserve"
-             style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:none;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1"
+             style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:#000000;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1"
              x="54.30743"
              y="215.06422"
              id="text22"><tspan
                sodipodi:role="line"
-               style="stroke:none;stroke-width:0.000264583"
+               style="stroke:none;stroke-width:0.000264583;fill:#000000;fill-opacity:1"
                x="54.30743"
                y="215.06422"
                id="tspan22">Clip</tspan></text>
           <rect
-             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
              id="rect23"
              height="6"
              x="60.123493"
              y="207.9164"
              width="0.001" />
           <rect
-             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
              id="rect24"
              height="6"
              x="210.91588"
@@ -2899,7 +2813,7 @@
            r="1.3"
            transform="rotate(-135)" />
         <circle
-           style="display:inline;fill:none;stroke:#000000;stroke-width:0.000499928;stroke-dasharray:none;stroke-opacity:1"
+           style="display:inline;fill:none;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
            id="circle27"
            cx="-384.35083"
            cy="-129.40152"
@@ -2909,27 +2823,27 @@
            id="g28"
            inkscape:label="Clip hole comment"
            transform="rotate(180,222.31955,165.15882)"
-           style="display:inline;fill:none;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1">
+           style="display:inline;fill:#000000;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1">
           <text
              xml:space="preserve"
-             style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:none;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1"
+             style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:#000000;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1"
              x="54.30743"
              y="215.06422"
              id="text27"><tspan
                sodipodi:role="line"
-               style="stroke:none;stroke-width:0.000264583"
+               style="stroke:none;stroke-width:0.000264583;fill:#000000;fill-opacity:1"
                x="54.30743"
                y="215.06422"
                id="tspan27">Clip</tspan></text>
           <rect
-             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
              id="rect27"
              height="6"
              x="60.123493"
              y="207.9164"
              width="0.001" />
           <rect
-             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
              id="rect28"
              height="6"
              x="210.91588"
@@ -2941,32 +2855,32 @@
            id="g30"
            inkscape:label="Clip hole comment"
            transform="rotate(180,222.28564,170.17031)"
-           style="display:inline;fill:none;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1">
+           style="display:inline;fill:#000000;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1">
           <text
              xml:space="preserve"
-             style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:none;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1"
+             style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:#000000;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1"
              x="63.287685"
              y="214.31587"
              id="text29"><tspan
                sodipodi:role="line"
-               style="stroke:none;stroke-width:0.000264583"
+               style="stroke:none;stroke-width:0.000264583;fill:#000000;fill-opacity:1"
                x="63.287685"
                y="214.31587"
                id="tspan28">Button</tspan><tspan
                sodipodi:role="line"
-               style="stroke:none;stroke-width:0.000264583"
+               style="stroke:none;stroke-width:0.000264583;fill:#000000;fill-opacity:1"
                x="63.287685"
                y="218.28462"
                id="tspan29">Exit</tspan></text>
           <rect
-             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
              id="rect29"
              height="6"
              x="60.123493"
              y="207.9164"
              width="0.001" />
           <rect
-             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
              id="rect30"
              height="6"
              x="210.91588"
@@ -2978,27 +2892,27 @@
            id="g32"
            inkscape:label="Clip hole comment"
            transform="rotate(180,222.26066,175.09929)"
-           style="display:inline;fill:none;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1">
+           style="display:inline;fill:#000000;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1">
           <text
              xml:space="preserve"
-             style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:none;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1"
+             style="font-size:3.175px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:#000000;stroke:none;stroke-width:0.000264583;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1"
              x="54.30743"
              y="215.06422"
              id="text30"><tspan
                sodipodi:role="line"
-               style="stroke:none;stroke-width:0.000264583"
+               style="stroke:none;stroke-width:0.000264583;fill:#000000;fill-opacity:1"
                x="54.30743"
                y="215.06422"
                id="tspan30">Clip</tspan></text>
           <rect
-             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
              id="rect31"
              height="6"
              x="60.123493"
              y="207.9164"
              width="0.001" />
           <rect
-             style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
+             style="display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.000229136;stroke-dasharray:none;stroke-opacity:1"
              id="rect32"
              height="6"
              x="210.91588"
@@ -3297,7 +3211,7 @@
            dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.18443994"
            id="tspan5-2-1-4-3-4-9">PoE Clip</tspan></text>
       <rect
-         style="font-variation-settings:normal;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.000886319;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;stop-color:#000000"
+         style="font-variation-settings:normal;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;stop-color:#000000"
          id="rect114228-3-1-6-7-4-7-6"
          width="54.999115"
          height="4.999114"
@@ -3319,7 +3233,7 @@
          transform="scale(-1,1)"
          r="1.3" />
       <circle
-         style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.0011534;stroke-dasharray:none;stroke-opacity:1"
+         style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
          id="path3-5-3-5-1-0-9-2-9-1-0-1-2-8-3-6-5"
          cx="0.56498003"
          cy="200.6684"
@@ -3338,7 +3252,7 @@
            dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.18443994"
            id="tspan5-2-1-4-3-4-9-6-5">eInk clip</tspan></text>
       <rect
-         style="font-variation-settings:normal;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.00113375;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;stop-color:#000000"
+         style="font-variation-settings:normal;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;stop-color:#000000"
          id="rect114228-3-1-6-7-4-7-6-9-4"
          width="89.998863"
          height="4.9988666"
@@ -3379,7 +3293,7 @@
            dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.18443994"
            id="tspan5-2-1-4-3-4-9-6">PoE Clip</tspan></text>
       <rect
-         style="font-variation-settings:normal;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.000886319;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;stop-color:#000000"
+         style="font-variation-settings:normal;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;stop-color:#000000"
          id="rect114228-3-1-6-7-4-7-6-2"
          width="54.999115"
          height="4.999114"
@@ -3401,26 +3315,26 @@
          transform="scale(-1,1)"
          r="1.3" />
       <circle
-         style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.0011534;stroke-dasharray:none;stroke-opacity:1"
+         style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
          id="path3-5-3-5-1-0-9-2-9-1-0-1-2-8-3-6-5-2"
          cx="0.56498003"
          cy="200.6684"
          r="1.4994233" />
       <text
          xml:space="preserve"
-         style="font-size:3.84244px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+         style="font-size:3.84244px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
          x="25.321529"
          y="263.04852"
          id="text3-5-3-8-09-9-2-5-2-7"
          transform="scale(1.3053426,0.7660824)"><tspan
            sodipodi:role="line"
-           style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0;stroke-dasharray:none;stroke-opacity:1"
+           style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
            x="25.321529"
            y="263.04852"
            dx="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.18443994"
            id="tspan5-2-1-4-3-4-9-6-5-0">eInk clip</tspan></text>
       <rect
-         style="font-variation-settings:normal;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.00113375;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;stop-color:#000000"
+         style="font-variation-settings:normal;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;stop-color:#000000"
          id="rect114228-3-1-6-7-4-7-6-9-4-9"
          width="89.998863"
          height="4.9988666"
@@ -3432,14 +3346,15 @@
     <g
        id="g11"
        inkscape:label="ButtonsBoard"
-       style="display:inline"
+       style="display:inline;fill:none;stroke:#000000;stroke-opacity:1;stroke-width:0.001;stroke-dasharray:none"
        transform="rotate(-90,280.41769,360.50854)">
       <g
          id="g4"
          transform="translate(-16.932083,-2.0136033)"
-         inkscape:label="Btn Pad B3F-40XX">
+         inkscape:label="Btn Pad B3F-40XX"
+         style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:0.001;stroke-dasharray:none">
         <rect
-           style="fill:none;stroke:#000000;stroke-width:0.00124792"
+           style="fill:none;stroke:#000000;stroke-width:0.001;stroke-opacity:1;stroke-dasharray:none"
            id="rect3-61"
            width="0.49875206"
            height="1.4987521"
@@ -3447,7 +3362,7 @@
            y="397.88403"
            transform="rotate(-90)" />
         <rect
-           style="fill:none;stroke:#000000;stroke-width:0.00124792"
+           style="fill:none;stroke:#000000;stroke-width:0.001;stroke-opacity:1;stroke-dasharray:none"
            id="rect3-6-5"
            width="0.49875206"
            height="1.4987521"
@@ -3455,7 +3370,7 @@
            y="403.18396"
            transform="rotate(-90)" />
         <rect
-           style="fill:none;stroke:#000000;stroke-width:0.00124792"
+           style="fill:none;stroke:#000000;stroke-width:0.001;stroke-opacity:1;stroke-dasharray:none"
            id="rect3-0-0"
            width="0.49875206"
            height="1.4987521"
@@ -3463,7 +3378,7 @@
            y="397.88391"
            transform="rotate(-90)" />
         <rect
-           style="fill:none;stroke:#000000;stroke-width:0.00124916"
+           style="fill:none;stroke:#000000;stroke-width:0.001;stroke-opacity:1;stroke-dasharray:none"
            id="rect3-6-3-6"
            width="0.49975082"
            height="1.4987508"
@@ -3472,21 +3387,21 @@
            transform="rotate(-90)" />
       </g>
       <circle
-         style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+         style="display:inline;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
          id="path3-5-3-5-1-0-9-2-1-4-3-6"
          cx="-356.27768"
          cy="187.27705"
          r="1.3"
          transform="rotate(-135)" />
       <circle
-         style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+         style="display:inline;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
          id="path3-5-3-5-1-0-9-2-1-4-3-6-6"
          cx="-370.27771"
          cy="173.27704"
          r="1.3"
          transform="rotate(-135)" />
       <path
-         style="fill:#000000;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+         style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
          id="rect6"
          width="25"
          height="10"
@@ -3502,14 +3417,15 @@
     <g
        id="g11-2"
        inkscape:label="ButtonsBoard"
-       style="display:inline"
+       style="display:inline;fill:none;stroke:#000000;stroke-opacity:1;stroke-width:0.001;stroke-dasharray:none"
        transform="rotate(-90,294.28546,346.63793)">
       <g
          id="g4-6"
          transform="translate(-16.932083,-2.0136033)"
-         inkscape:label="Btn Pad B3F-40XX">
+         inkscape:label="Btn Pad B3F-40XX"
+         style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:0.001;stroke-dasharray:none">
         <rect
-           style="fill:none;stroke:#000000;stroke-width:0.00124792"
+           style="fill:none;stroke:#000000;stroke-width:0.001;stroke-opacity:1;stroke-dasharray:none"
            id="rect3-61-1"
            width="0.49875206"
            height="1.4987521"
@@ -3517,7 +3433,7 @@
            y="397.88403"
            transform="rotate(-90)" />
         <rect
-           style="fill:none;stroke:#000000;stroke-width:0.00124792"
+           style="fill:none;stroke:#000000;stroke-width:0.001;stroke-opacity:1;stroke-dasharray:none"
            id="rect3-6-5-8"
            width="0.49875206"
            height="1.4987521"
@@ -3525,7 +3441,7 @@
            y="403.18396"
            transform="rotate(-90)" />
         <rect
-           style="fill:none;stroke:#000000;stroke-width:0.00124792"
+           style="fill:none;stroke:#000000;stroke-width:0.001;stroke-opacity:1;stroke-dasharray:none"
            id="rect3-0-0-7"
            width="0.49875206"
            height="1.4987521"
@@ -3533,7 +3449,7 @@
            y="397.88391"
            transform="rotate(-90)" />
         <rect
-           style="fill:none;stroke:#000000;stroke-width:0.00124916"
+           style="fill:none;stroke:#000000;stroke-width:0.001;stroke-opacity:1;stroke-dasharray:none"
            id="rect3-6-3-6-9"
            width="0.49975082"
            height="1.4987508"
@@ -3542,21 +3458,21 @@
            transform="rotate(-90)" />
       </g>
       <circle
-         style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+         style="display:inline;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
          id="path3-5-3-5-1-0-9-2-1-4-3-6-2"
          cx="-356.27768"
          cy="187.27705"
          r="1.3"
          transform="rotate(-135)" />
       <circle
-         style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+         style="display:inline;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
          id="path3-5-3-5-1-0-9-2-1-4-3-6-6-0"
          cx="-370.27771"
          cy="173.27704"
          r="1.3"
          transform="rotate(-135)" />
       <path
-         style="fill:#000000;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+         style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
          id="rect6-2"
          width="25"
          height="10"
@@ -3572,14 +3488,15 @@
     <g
        id="g11-0"
        inkscape:label="ButtonsBoard"
-       style="display:inline"
+       style="display:inline;fill:none;stroke:#000000;stroke-opacity:1;stroke-width:0.001;stroke-dasharray:none"
        transform="rotate(-90,308.15564,332.77291)">
       <g
          id="g4-63"
          transform="translate(-16.932083,-2.0136033)"
-         inkscape:label="Btn Pad B3F-40XX">
+         inkscape:label="Btn Pad B3F-40XX"
+         style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:0.001;stroke-dasharray:none">
         <rect
-           style="fill:none;stroke:#000000;stroke-width:0.00124792"
+           style="fill:none;stroke:#000000;stroke-width:0.001;stroke-opacity:1;stroke-dasharray:none"
            id="rect3-61-2"
            width="0.49875206"
            height="1.4987521"
@@ -3587,7 +3504,7 @@
            y="397.88403"
            transform="rotate(-90)" />
         <rect
-           style="fill:none;stroke:#000000;stroke-width:0.00124792"
+           style="fill:none;stroke:#000000;stroke-width:0.001;stroke-opacity:1;stroke-dasharray:none"
            id="rect3-6-5-0"
            width="0.49875206"
            height="1.4987521"
@@ -3595,7 +3512,7 @@
            y="403.18396"
            transform="rotate(-90)" />
         <rect
-           style="fill:none;stroke:#000000;stroke-width:0.00124792"
+           style="fill:none;stroke:#000000;stroke-width:0.001;stroke-opacity:1;stroke-dasharray:none"
            id="rect3-0-0-6"
            width="0.49875206"
            height="1.4987521"
@@ -3603,7 +3520,7 @@
            y="397.88391"
            transform="rotate(-90)" />
         <rect
-           style="fill:none;stroke:#000000;stroke-width:0.00124916"
+           style="fill:none;stroke:#000000;stroke-width:0.001;stroke-opacity:1;stroke-dasharray:none"
            id="rect3-6-3-6-1"
            width="0.49975082"
            height="1.4987508"
@@ -3612,21 +3529,21 @@
            transform="rotate(-90)" />
       </g>
       <circle
-         style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+         style="display:inline;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
          id="path3-5-3-5-1-0-9-2-1-4-3-6-55"
          cx="-356.27768"
          cy="187.27705"
          r="1.3"
          transform="rotate(-135)" />
       <circle
-         style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+         style="display:inline;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
          id="path3-5-3-5-1-0-9-2-1-4-3-6-6-4"
          cx="-370.27771"
          cy="173.27704"
          r="1.3"
          transform="rotate(-135)" />
       <path
-         style="fill:#000000;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+         style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
          id="rect6-7"
          width="25"
          height="10"
@@ -3642,14 +3559,15 @@
     <g
        id="g11-2-6"
        inkscape:label="ButtonsBoard"
-       style="display:inline"
+       style="display:inline;fill:none;stroke:#000000;stroke-opacity:1;stroke-width:0.001;stroke-dasharray:none"
        transform="rotate(-90,322.02341,318.9023)">
       <g
          id="g4-6-5"
          transform="translate(-16.932083,-2.0136033)"
-         inkscape:label="Btn Pad B3F-40XX">
+         inkscape:label="Btn Pad B3F-40XX"
+         style="fill:none;stroke:#000000;stroke-opacity:1;stroke-width:0.001;stroke-dasharray:none">
         <rect
-           style="fill:none;stroke:#000000;stroke-width:0.00124792"
+           style="fill:none;stroke:#000000;stroke-width:0.001;stroke-opacity:1;stroke-dasharray:none"
            id="rect3-61-1-6"
            width="0.49875206"
            height="1.4987521"
@@ -3657,7 +3575,7 @@
            y="397.88403"
            transform="rotate(-90)" />
         <rect
-           style="fill:none;stroke:#000000;stroke-width:0.00124792"
+           style="fill:none;stroke:#000000;stroke-width:0.001;stroke-opacity:1;stroke-dasharray:none"
            id="rect3-6-5-8-9"
            width="0.49875206"
            height="1.4987521"
@@ -3665,7 +3583,7 @@
            y="403.18396"
            transform="rotate(-90)" />
         <rect
-           style="fill:none;stroke:#000000;stroke-width:0.00124792"
+           style="fill:none;stroke:#000000;stroke-width:0.001;stroke-opacity:1;stroke-dasharray:none"
            id="rect3-0-0-7-3"
            width="0.49875206"
            height="1.4987521"
@@ -3673,7 +3591,7 @@
            y="397.88391"
            transform="rotate(-90)" />
         <rect
-           style="fill:none;stroke:#000000;stroke-width:0.00124916"
+           style="fill:none;stroke:#000000;stroke-width:0.001;stroke-opacity:1;stroke-dasharray:none"
            id="rect3-6-3-6-9-7"
            width="0.49975082"
            height="1.4987508"
@@ -3682,21 +3600,21 @@
            transform="rotate(-90)" />
       </g>
       <circle
-         style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+         style="display:inline;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
          id="path3-5-3-5-1-0-9-2-1-4-3-6-2-4"
          cx="-356.27768"
          cy="187.27705"
          r="1.3"
          transform="rotate(-135)" />
       <circle
-         style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+         style="display:inline;fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
          id="path3-5-3-5-1-0-9-2-1-4-3-6-6-0-5"
          cx="-370.27771"
          cy="173.27704"
          r="1.3"
          transform="rotate(-135)" />
       <path
-         style="fill:#000000;fill-opacity:1;stroke:#ffffff;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
+         style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:0.001;stroke-dasharray:none;stroke-opacity:1"
          id="rect6-2-2"
          width="25"
          height="10"
@@ -3732,12 +3650,12 @@
        style="fill:none;stroke:none;stroke-width:0.00220181"
        x="23.171207"
        y="303.92371"
-       id="tspan38">  - Vector 10 seeed / 80 power</tspan><tspan
+       id="tspan38">  - Vector 10 speed / 80 power</tspan><tspan
        sodipodi:role="line"
        style="fill:none;stroke:none;stroke-width:0.00220181"
        x="23.171207"
        y="312.66214"
-       id="tspan39">  - Raster 30 seeed / 50 power</tspan><tspan
+       id="tspan39">  - Raster 30 speed / 50 power</tspan><tspan
        sodipodi:role="line"
        style="fill:none;stroke:none;stroke-width:0.00220181"
        x="23.171207"
