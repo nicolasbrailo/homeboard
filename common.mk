@@ -13,6 +13,7 @@ XCOMPILE+=\
 
 CFLAGS+=\
 	$(XCOMPILE) \
+	$(SANS) \
 	-fdiagnostics-color=always \
 	-ffunction-sections -fdata-sections \
 	-ggdb -O3 \
@@ -36,6 +37,7 @@ CFLAGS+=\
 	-Wno-unused-function \
 	-Wno-unused-parameter \
 	-Wno-c23-extensions \
+
 
 xcompile-start:
 	../rpiz-xcompile/mount_rpy_root.sh ~/src/xcomp-rpiz-env

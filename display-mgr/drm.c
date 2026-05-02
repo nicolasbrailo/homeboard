@@ -54,6 +54,35 @@ void drm_free(struct DRM_state *s) {
   free(s);
 }
 
+static int drm_try_open(const char* card_path, bool perror_failure) {
+  const int fd = open(card_path, O_RDWR);
+  if (fd < 0) {
+    if (perror_failure) {
+      perror("open /dev/dri/card*");
+    }
+    return -1;
+  }
+
+  if (drmSetMaster(fd) < 0) {
+    if (perror_failure) {
+      perror("drmSetMaster");
+    }
+    close(fd);
+    return -1;
+  }
+
+  drmModeRes *res = drmModeGetResources(fd);
+  if (!res) {
+    if (perror_failure) {
+      perror("drmModeGetResources");
+    }
+    close(fd);
+    return -1;
+  }
+  drmModeFreeResources(res);
+  return fd;
+}
+
 struct DRM_state *drm_init(void) {
   struct DRM_state *s = calloc(1, sizeof(struct DRM_state));
   if (!s)
@@ -62,11 +91,11 @@ struct DRM_state *drm_init(void) {
   s->fd = -1;
   s->dmabuf_fd = -1;
 
-  s->fd = open("/dev/dri/card0", O_RDWR);
+  s->fd = drm_try_open("/dev/dri/card0", false);
   if (s->fd < 0) {
-    s->fd = open("/dev/dri/card1", O_RDWR);
+    s->fd = drm_try_open("/dev/dri/card1", false);
     if (s->fd < 0) {
-      perror("open /dev/dri/card*");
+      s->fd = drm_try_open("/dev/dri/card0", true);
       drm_free(s);
       return NULL;
     }

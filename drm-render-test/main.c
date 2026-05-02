@@ -50,7 +50,7 @@ int main(void) {
   size_t i = 0;
   while (!g_quit) {
     uint32_t color = colors[i++ % ncolors];
-    printf("frame %d: color 0x%08x\n", i, color);
+    printf("frame %zu: color 0x%08x\n", i, color);
     fill_color(fb, info.width, info.height, info.stride, color);
     sleep(1);
   }

@@ -145,6 +145,11 @@ int main(int argc, char *argv[]) {
   }
   bool all_deps_ready = false;
   struct DBusListeners *listeners = dbus_listeners_init(&cbs, &g_ambience_ctx, &all_deps_ready);
+  if (!listeners) {
+    fprintf(stderr, "DBusListeners init failed\n");
+    return 1;
+  }
+
   render_slideshow_set_active(g_ambience_ctx.render, all_deps_ready);
 
   // Simulate service up callback to connect to DRM. If it fails, we'll connect later

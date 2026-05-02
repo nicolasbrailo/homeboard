@@ -1,5 +1,6 @@
 BIN_NAME = homeboard-display-mgr
 SRCS = main.c drm.c dbus.c
+CFLAGS+=-I/usr/include/libdrm
 LDFLAGS += -Wl,-Bstatic -ldrm -Wl,-Bdynamic -lsystemd -lpthread
 DBUS_POLICY = io.homeboard.Display.conf
 all: $(BIN_NAME)
@@ -15,4 +16,4 @@ install_sysroot_deps:
 
 set_perms:
 	ssh "$(DEPLOY_TGT_HOST)" sudo usermod -aG video batman
-	ssh "$(DEPLOY_TGT_HOST)" "sudo setcap cap_sys_admin+ep display-mgr"
+	ssh "$(DEPLOY_TGT_HOST)" "sudo setcap cap_sys_admin+ep build/homeboard-display-mgr"

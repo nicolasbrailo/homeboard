@@ -34,6 +34,9 @@ install-systemd:
 		$(MAKE) -C $$dir install-systemd; \
 	done
 
+install-local-deps:
+	sudo apt install libjpeg62-turbo-dev libdrm-dev libcap-dev libmosquitto-dev libmosquitto1 libcairo2-dev libsystemd-dev libcurl4-openssl-dev libjson-c-dev
+
 format:
 	find lib -name '*.c' -o -name '*.h' | xargs clang-format -i
 	@for dir in $(SUBDIRS); do $(MAKE) -C $$dir format; done
