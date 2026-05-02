@@ -1,4 +1,4 @@
-BIN_NAME = photo-provider
+BIN_NAME = homeboard-photo-provider
 SRCS = main.c config.c www_session.c cache.c dbus.c
 LDFLAGS += -Wl,-Bstatic -ljson-c -Wl,-Bdynamic -lcurl -lsystemd -lpthread
 DBUS_POLICY = io.homeboard.PhotoProvider.conf

@@ -1,4 +1,4 @@
-BIN_NAME = occupancy-sensor
+BIN_NAME = homeboard-occupancy-sensor
 CFLAGS += -I../lib/
 SRCS = main.c ld2410s.c ld2410s_uart/ld2410s_uart.c ld2410s_uart/session.c ld2410s_uart/transport.c ../lib/rpigpio/rpigpio.c
 LDFLAGS += -Wl,-Bstatic -ljson-c -Wl,-Bdynamic -lsystemd -lpthread

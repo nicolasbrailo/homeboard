@@ -1,6 +1,6 @@
-BIN_NAME = ambience
+BIN_NAME = homeboard-ambience
 DBUS_POLICY = io.homeboard.Ambience.conf
-SERVICE_DEPS = photo-provider presence-service display-mgr
+SERVICE_DEPS = homeboard-photo-provider homeboard-presence-service homeboard-display-mgr
 SRCS = main.c config.c dbus_listeners.c render.c photo_client.c eink_meta.c overlay.c \
        ../lib/dbus_helpers/dbus_helpers.c \
        ../lib/drm_mgr/drm_mgr.c \

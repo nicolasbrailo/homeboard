@@ -1,5 +1,5 @@
-BIN_NAME = dbus-mqtt-bridge
-SERVICE_DEPS = ambience
+BIN_NAME = homeboard-dbus-mqtt-bridge
+SERVICE_DEPS = homeboard-ambience
 SRCS = main.c config.c mqtt.c dbus_client.c \
        ../lib/dbus_helpers/dbus_helpers.c
 CFLAGS += -I../lib/

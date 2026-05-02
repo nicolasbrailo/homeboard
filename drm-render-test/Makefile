@@ -1,4 +1,4 @@
-BIN_NAME = drm-render-test
+BIN_NAME = homeboard-drm-render-test
 SRCS = main.c ../lib/drm_mgr/drm_mgr.c
 CFLAGS += -I../lib/drm_mgr
 LDFLAGS += -lsystemd

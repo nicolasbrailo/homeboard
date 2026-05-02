@@ -1,6 +1,6 @@
-BIN_NAME = presence-service
+BIN_NAME = homeboard-presence-service
 DBUS_POLICY = io.homeboard.Presence.conf
-SERVICE_DEPS = display-mgr occupancy-sensor
+SERVICE_DEPS = homeboard-display-mgr homeboard-occupancy-sensor
 SRCS = main.c presence.c dbus.c display_client.c config.c \
        ../lib/dbus_helpers/dbus_helpers.c
 CFLAGS += -I../lib/

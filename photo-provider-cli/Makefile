@@ -1,4 +1,4 @@
-BIN_NAME = photo-provider-cli
+BIN_NAME = homeboard-photo-provider-cli
 SRCS = main.c
 LDFLAGS += -lsystemd
 

@@ -1,4 +1,4 @@
-BIN_NAME = display-ctrl
+BIN_NAME = homeboard-display-ctrl
 SRCS = main.c
 LDFLAGS += -lsystemd
 

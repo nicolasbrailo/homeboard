@@ -1,4 +1,4 @@
-BIN_NAME = eink-write
+BIN_NAME = homeboard-eink-write
 CFLAGS += -I../lib/
 LDFLAGS += -Wl,--gc-sections \
 	-Wl,-Bstatic -lcairo -lfontconfig -lfreetype -lpng -lz -lexpat -lbz2 -lbrotlidec -lbrotlicommon \

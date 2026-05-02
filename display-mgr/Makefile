@@ -1,4 +1,4 @@
-BIN_NAME = display-mgr
+BIN_NAME = homeboard-display-mgr
 SRCS = main.c drm.c dbus.c
 LDFLAGS += -Wl,-Bstatic -ldrm -Wl,-Bdynamic -lsystemd -lpthread
 DBUS_POLICY = io.homeboard.Display.conf

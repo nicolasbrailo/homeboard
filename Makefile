@@ -1,5 +1,5 @@
 SUBDIRS := $(filter-out rpiz-xcompile stockimgs lib bin, $(patsubst %/,%,$(wildcard */)))
-SERVICES := ambience dbus-mqtt-bridge display-mgr occupancy-sensor-ld2410s photo-provider presence-service
+SERVICES_DIRS := ambience dbus-mqtt-bridge display-mgr occupancy-sensor-ld2410s photo-provider presence-service
 
 # Keep these in sync with common.mk
 DEPLOY_TGT_HOST=batman@10.0.0.78
@@ -12,6 +12,9 @@ all:
 
 clean:
 	@for dir in $(SUBDIRS); do $(MAKE) -C $$dir clean; done
+
+xcompile-start:
+	./rpiz-xcompile/mount_rpy_root.sh ~/src/xcomp-rpiz-env
 
 deploy-all:
 	ssh "$(DEPLOY_TGT_HOST)" mkdir -p $(DEPLOY_TGT_DIR)/bin/
@@ -27,7 +30,7 @@ deploy-scripts:
 	scp scripts/* $(DEPLOY_TGT_HOST):$(DEPLOY_TGT_DIR)/bin/
 
 install-systemd:
-	@for dir in $(SERVICES); do \
+	@for dir in $(SERVICES_DIRS); do \
 		$(MAKE) -C $$dir install-systemd; \
 	done
 

@@ -2,11 +2,11 @@
 set -u
 
 SERVICES=(
-    ambience
-    dbus-mqtt-bridge
-    display-mgr
-    occupancy-sensor
-    photo-provider
+    homeboard-ambience \
+    homeboard-dbus-mqtt-bridge \
+    homeboard-display-mgr \
+    homeboard-occupancy-sensor \
+    homeboard-photo-provider
 )
 
 for svc in "${SERVICES[@]}"; do

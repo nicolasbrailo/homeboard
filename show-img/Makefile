@@ -1,4 +1,4 @@
-BIN_NAME = show-img
+BIN_NAME = homeboard-show-img
 SRCS = main.c ../lib/jpeg_render/jpeg_loader.c ../lib/jpeg_render/img_render.c ../lib/drm_mgr/drm_mgr.c
 CFLAGS += -I../lib/
 LDFLAGS += -Wl,-Bstatic -ljpeg -Wl,-Bdynamic -lsystemd
