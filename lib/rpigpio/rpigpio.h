@@ -25,7 +25,8 @@ struct RpiGpioPin {
 
 // Open /dev/gpiochipN and claim all pins. Returns NULL on failure.
 // consumer is a label for the lines (visible in gpioinfo).
-struct RpiGpio *rpigpio_open(int chip_num, const char *consumer, const struct RpiGpioPin *pins, int num_pins);
+struct RpiGpio *rpigpio_open(int chip_num, const char *consumer,
+                             const struct RpiGpioPin *pins, int num_pins);
 
 // Close the chip and release all claimed lines.
 void rpigpio_close(struct RpiGpio *gpio);

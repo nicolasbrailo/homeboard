@@ -12,7 +12,8 @@ static void sig_handler(int sig) {
   g_quit = 1;
 }
 
-static void fill_color(uint32_t *pixels, uint32_t width, uint32_t height, uint32_t stride, uint32_t color) {
+static void fill_color(uint32_t *pixels, uint32_t width, uint32_t height,
+                       uint32_t stride, uint32_t color) {
   for (uint32_t y = 0; y < height; y++) {
     uint32_t *row = (uint32_t *)((uint8_t *)pixels + y * stride);
     for (uint32_t x = 0; x < width; x++)
@@ -35,7 +36,8 @@ int main(void) {
     return 1;
   }
 
-  printf("acquired fb: %ux%u stride=%u size=%u\n", info.width, info.height, info.stride, info.size);
+  printf("acquired fb: %ux%u stride=%u size=%u\n", info.width, info.height,
+         info.stride, info.size);
 
   const uint32_t colors[] = {
       0x00FF0000, // red

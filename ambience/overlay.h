@@ -15,5 +15,4 @@ void overlay_free(struct Overlay *o);
 void overlay_set_qr(struct Overlay *o, const char *qr_data_url);
 
 // Blits the cached QR onto fb (no-op if none cached).
-void overlay_render(struct Overlay *o, uint32_t *fb,
-                    const struct fb_info *fbi);
+void overlay_render(struct Overlay *o, uint32_t *fb, const struct fb_info *fbi);

@@ -33,13 +33,16 @@ int main(int argc, char **argv) {
   bool log_change = false;
   long monitor_pin = -1;
   for (int i = 1; i < argc; ++i) {
-    if ((strcmp(argv[i], "--update_in_place") == 0) || (strcmp(argv[i], "-u") == 0)) {
+    if ((strcmp(argv[i], "--update_in_place") == 0) ||
+        (strcmp(argv[i], "-u") == 0)) {
       update_in_place = true;
       continue;
-    } else if ((strcmp(argv[i], "--log_change") == 0) || (strcmp(argv[i], "-l") == 0)) {
+    } else if ((strcmp(argv[i], "--log_change") == 0) ||
+               (strcmp(argv[i], "-l") == 0)) {
       log_change = true;
       continue;
-    } else if ((strcmp(argv[i], "-h") == 0) || (strcmp(argv[i], "--help") == 0)) {
+    } else if ((strcmp(argv[i], "-h") == 0) ||
+               (strcmp(argv[i], "--help") == 0)) {
       printf("Usage:\n");
       printf("\t%s [--update_in_place|-u] [--log_change|-l] [PIN]\n", argv[0]);
       printf("\n");
@@ -65,7 +68,8 @@ int main(int argc, char **argv) {
     return 1;
   }
 
-  gpio_reg_t *gpio_mem = mmap(NULL, GPIO_MEM_SZ, PROT_READ | PROT_WRITE, MAP_SHARED, gpio_fd, 0);
+  gpio_reg_t *gpio_mem =
+      mmap(NULL, GPIO_MEM_SZ, PROT_READ | PROT_WRITE, MAP_SHARED, gpio_fd, 0);
   if (gpio_mem == MAP_FAILED) {
     perror("Error mmap GPIO");
     close(gpio_fd);

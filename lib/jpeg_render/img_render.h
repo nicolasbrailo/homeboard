@@ -36,14 +36,18 @@ struct img_render_cfg {
 
 static enum rotation img_render_cfg_parse_rot(uint32_t r) {
   switch (r) {
-    case 90: return ROT_90;
-    case 180: return ROT_180;
-    case 270: return ROT_270;
-    default: return ROT_0;
+  case 90:
+    return ROT_90;
+  case 180:
+    return ROT_180;
+  case 270:
+    return ROT_270;
+  default:
+    return ROT_0;
   }
 }
 
-static enum interpolation img_render_cfg_parse_interpolation(const char* x) {
+static enum interpolation img_render_cfg_parse_interpolation(const char *x) {
   if (strcmp(x, "nearest") == 0) {
     return INTERP_NEAREST;
   } else {
@@ -51,7 +55,8 @@ static enum interpolation img_render_cfg_parse_interpolation(const char* x) {
   }
 }
 
-static enum horizontal_align img_render_cfg_parse_horizontal_align(const char* x) {
+static enum horizontal_align
+img_render_cfg_parse_horizontal_align(const char *x) {
   if (strcmp(x, "center") == 0) {
     return HORIZONTAL_ALIGN_CENTER;
   } else if (strcmp(x, "left") == 0) {
@@ -63,7 +68,7 @@ static enum horizontal_align img_render_cfg_parse_horizontal_align(const char* x
   }
 }
 
-static enum vertical_align img_render_cfg_parse_vertical_align(const char* x) {
+static enum vertical_align img_render_cfg_parse_vertical_align(const char *x) {
   if (strcmp(x, "center") == 0) {
     return VERTICAL_ALIGN_CENTER;
   } else if (strcmp(x, "top") == 0) {
@@ -83,5 +88,7 @@ static enum vertical_align img_render_cfg_parse_vertical_align(const char* x) {
 // `dst` must be at least `fb_height * fb_stride` bytes. It may be
 // the scanout framebuffer (expect tearing) or a caller-owned scratch
 // buffer that's memcpy'd to the fb after any further composition.
-void img_render(uint32_t *dst, uint32_t fb_width, uint32_t fb_height, uint32_t fb_stride, const uint8_t *img_pixels,
-                uint32_t img_width, uint32_t img_height, const struct img_render_cfg *cfg);
+void img_render(uint32_t *dst, uint32_t fb_width, uint32_t fb_height,
+                uint32_t fb_stride, const uint8_t *img_pixels,
+                uint32_t img_width, uint32_t img_height,
+                const struct img_render_cfg *cfg);

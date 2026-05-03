@@ -86,19 +86,18 @@ int ambience_config_load(const char *path, struct ambience_config *cfg) {
   }
 
   json_object_put(root);
-  printf(
-      "Service config:\n"
-      "\ttransition_time_s=%u\n"
-      "\trotation=%u\n"
-      "\tinterpolation=%s\n"
-      "\th_align=%s\n"
-      "\tv_align=%s\n"
-      "\tembed_qr=%d\n"
-      "\tuse_eink_for_metadata=%d\n"
-      "\tfallback_image=%s\n",
-      cfg->transition_time_s, (uint32_t)cfg->render.rot,
-      cfg->render.interp == INTERP_BILINEAR ? "bilinear" : "nearest",
-      h_align_name(cfg->render.h_align), v_align_name(cfg->render.v_align),
-      cfg->embed_qr, cfg->use_eink_for_metadata, cfg->fallback_image);
+  printf("Service config:\n"
+         "\ttransition_time_s=%u\n"
+         "\trotation=%u\n"
+         "\tinterpolation=%s\n"
+         "\th_align=%s\n"
+         "\tv_align=%s\n"
+         "\tembed_qr=%d\n"
+         "\tuse_eink_for_metadata=%d\n"
+         "\tfallback_image=%s\n",
+         cfg->transition_time_s, (uint32_t)cfg->render.rot,
+         cfg->render.interp == INTERP_BILINEAR ? "bilinear" : "nearest",
+         h_align_name(cfg->render.h_align), v_align_name(cfg->render.v_align),
+         cfg->embed_qr, cfg->use_eink_for_metadata, cfg->fallback_image);
   return 0;
 }

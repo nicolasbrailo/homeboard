@@ -29,8 +29,9 @@ int main(int argc, char *argv[]) {
 
   curl_global_init(CURL_GLOBAL_DEFAULT);
 
-  struct pp_www_session *ws = pp_www_session_init(cfg.server_url, cfg.target_w, cfg.target_h, cfg.embed_qr,
-                                                  cfg.connect_timeout_s, cfg.request_timeout_s);
+  struct pp_www_session *ws = pp_www_session_init(
+      cfg.server_url, cfg.target_w, cfg.target_h, cfg.embed_qr,
+      cfg.connect_timeout_s, cfg.request_timeout_s);
   if (!ws) {
     fprintf(stderr, "pp_www_session_init failed\n");
     curl_global_cleanup();

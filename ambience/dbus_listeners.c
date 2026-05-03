@@ -101,10 +101,10 @@ static int method_set_render_config(sd_bus_message *m, void *userdata,
     return r;
 
   struct img_render_cfg cfg = {
-    .rot = img_render_cfg_parse_rot(rotation),
-    .interp = img_render_cfg_parse_interpolation(interp),
-    .h_align = img_render_cfg_parse_horizontal_align(h_align),
-    .v_align = img_render_cfg_parse_vertical_align(v_align),
+      .rot = img_render_cfg_parse_rot(rotation),
+      .interp = img_render_cfg_parse_interpolation(interp),
+      .h_align = img_render_cfg_parse_horizontal_align(h_align),
+      .v_align = img_render_cfg_parse_vertical_align(v_align),
   };
   r = s->cbs.on_set_render_config(s->ud, &cfg);
   if (r < 0) {
@@ -118,14 +118,16 @@ static int method_set_render_config(sd_bus_message *m, void *userdata,
   return sd_bus_reply_method_return(m, NULL);
 }
 
-static int method_set_remote_control_server(sd_bus_message *m, void *userdata, sd_bus_error *err) {
+static int method_set_remote_control_server(sd_bus_message *m, void *userdata,
+                                            sd_bus_error *err) {
   struct DBusListeners *d = userdata;
   const char *url = NULL;
   const char *qr_img = NULL;
   int r = sd_bus_message_read(m, "ss", &url, &qr_img);
   if (r < 0)
     return r;
-  d->cbs.on_set_remote_control_server(d->ud, url ? url : "", qr_img ? qr_img : "");
+  d->cbs.on_set_remote_control_server(d->ud, url ? url : "",
+                                      qr_img ? qr_img : "");
   return sd_bus_reply_method_return(m, NULL);
 }
 
@@ -139,8 +141,8 @@ static const sd_bus_vtable g_vtable[] = {
                   SD_BUS_VTABLE_UNPRIVILEGED),
     SD_BUS_METHOD("SetRenderConfig", "usss", "", method_set_render_config,
                   SD_BUS_VTABLE_UNPRIVILEGED),
-    SD_BUS_METHOD("SetRemoteControlServer", "ss", "", method_set_remote_control_server,
-                  SD_BUS_VTABLE_UNPRIVILEGED),
+    SD_BUS_METHOD("SetRemoteControlServer", "ss", "",
+                  method_set_remote_control_server, SD_BUS_VTABLE_UNPRIVILEGED),
     SD_BUS_SIGNAL("DisplayingPhoto", "s", 0),
     SD_BUS_SIGNAL("SlideshowActive", "b", 0),
     SD_BUS_VTABLE_END,
@@ -179,13 +181,12 @@ static void on_drm_mgr_updown(void *ud, bool up) {
   s->cbs.on_drm_mgr_updown(s->ud, up);
 }
 
-
 //
 // Public API
 //
 
-struct DBusListeners *
-dbus_listeners_init(const struct dbus_listeners_cbs *cbs, void *ud, bool* all_deps_ready) {
+struct DBusListeners *dbus_listeners_init(const struct dbus_listeners_cbs *cbs,
+                                          void *ud, bool *all_deps_ready) {
   *all_deps_ready = false;
   struct DBusListeners *s = calloc(1, sizeof(*s));
   if (!s)
@@ -229,7 +230,8 @@ dbus_listeners_init(const struct dbus_listeners_cbs *cbs, void *ud, bool* all_de
     dbus_listeners_free(s);
     return NULL;
   }
-  s->presence_updown_slot = on_service_updown(s->bus, DBUS_PRESENCE_SERVICE, on_presence_updown, s);
+  s->presence_updown_slot =
+      on_service_updown(s->bus, DBUS_PRESENCE_SERVICE, on_presence_updown, s);
   if (!is_service_up(s->bus, DBUS_PRESENCE_SERVICE)) {
     fprintf(stderr,
             "WARNING: %s not running; no presence signals until it starts\n",
@@ -238,16 +240,23 @@ dbus_listeners_init(const struct dbus_listeners_cbs *cbs, void *ud, bool* all_de
   }
 
   // Listen for photo provider signals
-  s->photo_updown_slot = on_service_updown(s->bus, DBUS_PHOTO_SERVICE, on_photo_updown, s);
+  s->photo_updown_slot =
+      on_service_updown(s->bus, DBUS_PHOTO_SERVICE, on_photo_updown, s);
   if (!is_service_up(s->bus, DBUS_PHOTO_SERVICE)) {
-    fprintf(stderr, "WARNING: %s is not running; photos can't be displayed until it starts\n", DBUS_PHOTO_SERVICE);
+    fprintf(stderr,
+            "WARNING: %s is not running; photos can't be displayed until it "
+            "starts\n",
+            DBUS_PHOTO_SERVICE);
     *all_deps_ready = false;
   }
 
   // Listen for drm manager signals
-  s->drm_mgr_updown_slot = on_service_updown(s->bus, DBUS_DRM_MGR_SERVICE, on_drm_mgr_updown, s);
+  s->drm_mgr_updown_slot =
+      on_service_updown(s->bus, DBUS_DRM_MGR_SERVICE, on_drm_mgr_updown, s);
   if (!is_service_up(s->bus, DBUS_DRM_MGR_SERVICE)) {
-    fprintf(stderr, "WARNING: %s DRM manager isn't up, no display until it starts\n", DBUS_DRM_MGR_SERVICE);
+    fprintf(stderr,
+            "WARNING: %s DRM manager isn't up, no display until it starts\n",
+            DBUS_DRM_MGR_SERVICE);
     *all_deps_ready = false;
   }
 

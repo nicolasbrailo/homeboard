@@ -21,7 +21,8 @@ static void show_demo(struct EInkDisplay *display) {
   const size_t height = cairo_image_surface_get_height(surface);
 
   cairo_set_source_rgba(cr, 0, 0, 0, 1);
-  cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+  cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL,
+                         CAIRO_FONT_WEIGHT_BOLD);
   cairo_set_font_size(cr, 20);
 
   cairo_text_extents_t extents;
@@ -34,7 +35,8 @@ static void show_demo(struct EInkDisplay *display) {
   cairo_show_text(cr, text);
 
   cairo_set_line_width(cr, 2);
-  cairo_rectangle(cr, x + extents.x_bearing - 10, y + extents.y_bearing - 10, extents.width + 20, extents.height + 20);
+  cairo_rectangle(cr, x + extents.x_bearing - 10, y + extents.y_bearing - 10,
+                  extents.width + 20, extents.height + 20);
   cairo_stroke(cr);
 
   eink_render(display);

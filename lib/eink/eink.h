@@ -49,6 +49,7 @@ void eink_render_partial(struct EInkDisplay *display);
 
 // Mark an area from the Cairo surface which has changed, and must be re-drawn
 // on the next call to eink_render_partial
-void eink_invalidate_rect(struct EInkDisplay *display, size_t x_start, size_t y_start, size_t x_end, size_t y_end);
+void eink_invalidate_rect(struct EInkDisplay *display, size_t x_start,
+                          size_t y_start, size_t x_end, size_t y_end);
 
 void eink_quick_announce(struct EInkDisplay *display, const char *text);

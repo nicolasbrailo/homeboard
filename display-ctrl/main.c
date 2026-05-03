@@ -7,7 +7,9 @@
 #define DBUS_INTERFACE "io.homeboard.Display1"
 
 int main(int argc, char *argv[]) {
-  if (argc != 2 || !(strcmp(argv[1], "on") == 0 || strcmp(argv[1], "off") == 0 || strcmp(argv[1], "status") == 0)) {
+  if (argc != 2 ||
+      !(strcmp(argv[1], "on") == 0 || strcmp(argv[1], "off") == 0 ||
+        strcmp(argv[1], "status") == 0)) {
     fprintf(stderr, "Usage: %s on|off|status\n", argv[0]);
     return 1;
   }
@@ -24,7 +26,8 @@ int main(int argc, char *argv[]) {
   int rc = 1;
 
   if (strcmp(argv[1], "status") == 0) {
-    r = sd_bus_call_method(bus, DBUS_SERVICE, DBUS_PATH, DBUS_INTERFACE, "Status", &err, &reply, "");
+    r = sd_bus_call_method(bus, DBUS_SERVICE, DBUS_PATH, DBUS_INTERFACE,
+                           "Status", &err, &reply, "");
     if (r < 0) {
       fprintf(stderr, "Status: %s\n", err.message ? err.message : strerror(-r));
       goto out;
@@ -37,9 +40,11 @@ int main(int argc, char *argv[]) {
     printf("%s\n", state);
   } else {
     const char *method = strcmp(argv[1], "on") == 0 ? "On" : "Off";
-    r = sd_bus_call_method(bus, DBUS_SERVICE, DBUS_PATH, DBUS_INTERFACE, method, &err, &reply, "");
+    r = sd_bus_call_method(bus, DBUS_SERVICE, DBUS_PATH, DBUS_INTERFACE, method,
+                           &err, &reply, "");
     if (r < 0) {
-      fprintf(stderr, "%s: %s\n", method, err.message ? err.message : strerror(-r));
+      fprintf(stderr, "%s: %s\n", method,
+              err.message ? err.message : strerror(-r));
       goto out;
     }
     printf("ok\n");

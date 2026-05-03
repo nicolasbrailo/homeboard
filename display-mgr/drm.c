@@ -54,7 +54,7 @@ void drm_free(struct DRM_state *s) {
   free(s);
 }
 
-static int drm_try_open(const char* card_path, bool perror_failure) {
+static int drm_try_open(const char *card_path, bool perror_failure) {
   const int fd = open(card_path, O_RDWR);
   if (fd < 0) {
     if (perror_failure) {
@@ -117,7 +117,9 @@ struct DRM_state *drm_init(void) {
   s->num_outputs = 0;
   for (int i = 0; i < res->count_connectors; i++) {
     if (s->num_outputs >= MAX_OUTS) {
-      fprintf(stderr, "More than max (%d) supported display outputs detected.\n", MAX_OUTS);
+      fprintf(stderr,
+              "More than max (%d) supported display outputs detected.\n",
+              MAX_OUTS);
       break;
     }
 
@@ -158,7 +160,8 @@ struct DRM_state *drm_init(void) {
 
 void drm_display_off(struct DRM_state *s) {
   for (size_t i = 0; i < s->num_outputs; i++) {
-    if (drmModeSetCrtc(s->fd, s->outputs[i].crtc_id, 0, 0, 0, NULL, 0, NULL) < 0)
+    if (drmModeSetCrtc(s->fd, s->outputs[i].crtc_id, 0, 0, 0, NULL, 0, NULL) <
+        0)
       perror("Failed to turn display off: drmModeSetCrtc (disable)");
   }
 }
@@ -168,7 +171,8 @@ void drm_display_on(struct DRM_state *s) {
     drmModeCrtc *c = s->outputs[i].saved_crtc;
     if (!c || !c->mode_valid)
       continue;
-    if (drmModeSetCrtc(s->fd, s->outputs[i].crtc_id, s->fb_id, 0, 0, &s->outputs[i].conn_id, 1, &c->mode) < 0)
+    if (drmModeSetCrtc(s->fd, s->outputs[i].crtc_id, s->fb_id, 0, 0,
+                       &s->outputs[i].conn_id, 1, &c->mode) < 0)
       perror("Failed to turn display on: drmModeSetCrtc (enable)");
   }
 }
@@ -208,13 +212,15 @@ int drm_create_framebuffer(struct DRM_state *s) {
 
   s->fb_handle = create.handle;
 
-  if (drmModeAddFB(s->fd, width, height, 24, 32, create.pitch, s->fb_handle, &s->fb_id) < 0) {
+  if (drmModeAddFB(s->fd, width, height, 24, 32, create.pitch, s->fb_handle,
+                   &s->fb_id) < 0) {
     perror("drmModeAddFB");
     return -1;
   }
 
   int dmabuf_fd = -1;
-  if (drmPrimeHandleToFD(s->fd, s->fb_handle, DRM_CLOEXEC | DRM_RDWR, &dmabuf_fd) < 0) {
+  if (drmPrimeHandleToFD(s->fd, s->fb_handle, DRM_CLOEXEC | DRM_RDWR,
+                         &dmabuf_fd) < 0) {
     perror("drmPrimeHandleToFD");
     return -1;
   }
@@ -226,21 +232,25 @@ int drm_create_framebuffer(struct DRM_state *s) {
   s->fb_info.format = DRM_FORMAT_XRGB8888;
   s->fb_info.size = (uint32_t)create.size;
 
-  fprintf(stderr, "framebuffer: %ux%u stride=%u size=%u\n", width, height, s->fb_info.stride, s->fb_info.size);
+  fprintf(stderr, "framebuffer: %ux%u stride=%u size=%u\n", width, height,
+          s->fb_info.stride, s->fb_info.size);
 
   // Set this framebuffer on all CRTCs
   for (size_t i = 0; i < s->num_outputs; i++) {
     drmModeCrtc *c = s->outputs[i].saved_crtc;
     if (!c || !c->mode_valid)
       continue;
-    if (drmModeSetCrtc(s->fd, s->outputs[i].crtc_id, s->fb_id, 0, 0, &s->outputs[i].conn_id, 1, &c->mode) < 0)
+    if (drmModeSetCrtc(s->fd, s->outputs[i].crtc_id, s->fb_id, 0, 0,
+                       &s->outputs[i].conn_id, 1, &c->mode) < 0)
       perror("drmModeSetCrtc (set fb)");
   }
 
   return 0;
 }
 
-const struct fb_info *drm_get_fb_info(const struct DRM_state *s) { return &s->fb_info; }
+const struct fb_info *drm_get_fb_info(const struct DRM_state *s) {
+  return &s->fb_info;
+}
 
 int drm_get_dmabuf_fd(const struct DRM_state *s) { return s->dmabuf_fd; }
 

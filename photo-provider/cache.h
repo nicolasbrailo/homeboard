@@ -28,7 +28,8 @@ void pp_cache_invalidate(void *cache);
 // *fd_out is an owned memfd (caller closes) and *meta_out is a malloc'd
 // JSON string (caller frees). Blocks up to timeout_ms. Returns 0 on
 // success, -1 on timeout/error.
-int pp_cache_pop(struct pp_cache *c, int *fd_out, char **meta_out, int timeout_ms);
+int pp_cache_pop(struct pp_cache *c, int *fd_out, char **meta_out,
+                 int timeout_ms);
 
 // Retreats the cursor to the previous photo (still within the history
 // window) and returns a copy. Non-blocking: returns -1 immediately if the

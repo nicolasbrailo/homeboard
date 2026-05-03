@@ -89,7 +89,8 @@ static size_t write_to_fd(void *ptr, size_t size, size_t nmemb, void *ud) {
   return n;
 }
 
-static int do_get_mem(struct pp_www_session *s, CURL *curl, const char *url, struct mem_buf *out) {
+static int do_get_mem(struct pp_www_session *s, CURL *curl, const char *url,
+                      struct mem_buf *out) {
   curl_easy_reset(curl);
   curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, s->connect_timeout_s);
   curl_easy_setopt(curl, CURLOPT_TIMEOUT, s->request_timeout_s);
@@ -122,11 +123,11 @@ static int http_register(struct pp_www_session *s, char *out, size_t out_sz) {
     return -1;
   }
   size_t start = 0, end = b.len;
-  while (start < end &&
-         (b.data[start] == ' ' || b.data[start] == '\n' || b.data[start] == '\r' || b.data[start] == '\t'))
+  while (start < end && (b.data[start] == ' ' || b.data[start] == '\n' ||
+                         b.data[start] == '\r' || b.data[start] == '\t'))
     start++;
-  while (end > start &&
-         (b.data[end - 1] == ' ' || b.data[end - 1] == '\n' || b.data[end - 1] == '\r' || b.data[end - 1] == '\t'))
+  while (end > start && (b.data[end - 1] == ' ' || b.data[end - 1] == '\n' ||
+                         b.data[end - 1] == '\r' || b.data[end - 1] == '\t'))
     end--;
   size_t n = end - start;
   if (n == 0 || n >= out_sz) {
@@ -139,18 +140,22 @@ static int http_register(struct pp_www_session *s, char *out, size_t out_sz) {
   return 0;
 }
 
-static int http_push_embed_qr(struct pp_www_session *s, const char *id, bool v) {
+static int http_push_embed_qr(struct pp_www_session *s, const char *id,
+                              bool v) {
   char url[512];
-  snprintf(url, sizeof(url), "%s/client_cfg/%s/embed_info_qr_code/%s", s->url_base, id, v ? "true" : "false");
+  snprintf(url, sizeof(url), "%s/client_cfg/%s/embed_info_qr_code/%s",
+           s->url_base, id, v ? "true" : "false");
   struct mem_buf b = {0};
   int r = do_get_mem(s, s->curl_ctrl, url, &b);
   free(b.data);
   return r;
 }
 
-static int http_push_target_size(struct pp_www_session *s, const char *id, uint32_t w, uint32_t h) {
+static int http_push_target_size(struct pp_www_session *s, const char *id,
+                                 uint32_t w, uint32_t h) {
   char url[512];
-  snprintf(url, sizeof(url), "%s/client_cfg/%s/target_size/%ux%u", s->url_base, id, w, h);
+  snprintf(url, sizeof(url), "%s/client_cfg/%s/target_size/%ux%u", s->url_base,
+           id, w, h);
   struct mem_buf b = {0};
   int r = do_get_mem(s, s->curl_ctrl, url, &b);
   free(b.data);
@@ -184,8 +189,11 @@ static int reregister(struct pp_www_session *s) {
   return 0;
 }
 
-struct pp_www_session *pp_www_session_init(const char *server_url, uint32_t target_w, uint32_t target_h, bool embed_qr,
-                                           uint32_t connect_timeout_s, uint32_t request_timeout_s) {
+struct pp_www_session *pp_www_session_init(const char *server_url,
+                                           uint32_t target_w, uint32_t target_h,
+                                           bool embed_qr,
+                                           uint32_t connect_timeout_s,
+                                           uint32_t request_timeout_s) {
   if (!server_url || server_url[0] == '\0') {
     fprintf(stderr, "pp_www_session_init: empty server_url\n");
     return NULL;
@@ -232,7 +240,8 @@ struct pp_www_session *pp_www_session_init(const char *server_url, uint32_t targ
   return s;
 }
 
-int pp_www_session_start(struct pp_www_session *s, pp_ws_invalidate_fn on_invalidate, void *ud) {
+int pp_www_session_start(struct pp_www_session *s,
+                         pp_ws_invalidate_fn on_invalidate, void *ud) {
   s->on_invalidate = on_invalidate;
   s->on_invalidate_ud = ud;
   return reregister(s);
@@ -249,13 +258,17 @@ void pp_www_session_free(struct pp_www_session *s) {
   free(s);
 }
 
-int pp_www_session_set_target_size(struct pp_www_session *s, uint32_t w, uint32_t h) {
+int pp_www_session_set_target_size(struct pp_www_session *s, uint32_t w,
+                                   uint32_t h) {
   if (w < IMG_MIN_SZ || h < IMG_MIN_SZ) {
-    fprintf(stderr, "pp_www_session_set_target_size: Requested target size too small\n");
+    fprintf(
+        stderr,
+        "pp_www_session_set_target_size: Requested target size too small\n");
     return -1;
   }
   if (w > IMG_MAX_SZ || h > IMG_MAX_SZ) {
-    fprintf(stderr, "pp_www_session_set_target_size: Requested target size too big\n");
+    fprintf(stderr,
+            "pp_www_session_set_target_size: Requested target size too big\n");
     return -1;
   }
   uint32_t ow = atomic_exchange(&s->target_w, w);
@@ -322,7 +335,8 @@ static char *fetch_meta_str(struct pp_www_session *s, const char *id) {
   return b.data;
 }
 
-int pp_www_session_fetch_next(struct pp_www_session *s, int *fd_out, char **meta_out) {
+int pp_www_session_fetch_next(struct pp_www_session *s, int *fd_out,
+                              char **meta_out) {
   char id[MAX_CLIENT_ID];
 
   // Server evicts idle clients, so refresh the registration if we've been
@@ -332,7 +346,9 @@ int pp_www_session_fetch_next(struct pp_www_session *s, int *fd_out, char **meta
   long last = atomic_load(&s->last_activity_s);
   if (last != 0 && now_monotonic_s() - last > CLIENT_STALE_S) {
     if (reregister(s) < 0)
-      fprintf(stderr, "stale-client re-register failed; attempting fetch with old id\n");
+      fprintf(
+          stderr,
+          "stale-client re-register failed; attempting fetch with old id\n");
   }
 
   // Snapshots the current client_id into `out`. Returns -1 if no id is set
@@ -340,7 +356,8 @@ int pp_www_session_fetch_next(struct pp_www_session *s, int *fd_out, char **meta
   // window when a re-register is between failing and retrying).
   pthread_mutex_lock(&s->id_mu);
   if (s->client_id[0] == '\0') {
-    fprintf(stderr, "Failed to fetch new image: client not registered or invalid id received\n");
+    fprintf(stderr, "Failed to fetch new image: client not registered or "
+                    "invalid id received\n");
     pthread_mutex_unlock(&s->id_mu);
     return -1;
   }

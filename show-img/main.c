@@ -18,9 +18,14 @@ static void sig_handler(int sig) {
 static void usage(const char *prog) {
   fprintf(stderr, "Usage: %s [options] <image.jpg>\n", prog);
   fprintf(stderr, "  -r <0|90|180|270>           rotation (default: 0)\n");
-  fprintf(stderr, "  -i <nearest|bilinear>       interpolation (default: bilinear)\n");
-  fprintf(stderr, "  -h <left|center|right>      horizontal alignment (default: center)\n");
-  fprintf(stderr, "  -v <top|center|bottom>      vertical alignment (default: center)\n");
+  fprintf(stderr,
+          "  -i <nearest|bilinear>       interpolation (default: bilinear)\n");
+  fprintf(
+      stderr,
+      "  -h <left|center|right>      horizontal alignment (default: center)\n");
+  fprintf(
+      stderr,
+      "  -v <top|center|bottom>      vertical alignment (default: center)\n");
 }
 
 int main(int argc, char *argv[]) {
@@ -114,7 +119,8 @@ int main(int argc, char *argv[]) {
 
   printf("loaded %s: %ux%u\n", image_path, img->width, img->height);
 
-  img_render(fb, fbi.width, fbi.height, fbi.stride, img->pixels, img->width, img->height, &cfg);
+  img_render(fb, fbi.width, fbi.height, fbi.stride, img->pixels, img->width,
+             img->height, &cfg);
   jpeg_free(img);
 
   while (!g_quit)

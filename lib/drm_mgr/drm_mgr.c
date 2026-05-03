@@ -37,7 +37,7 @@ struct DRM_Mgr *drm_mgr_init() {
   return self;
 }
 
-struct DRM_Mgr *drm_mgr_init_acquire_fb(uint32_t** fb, struct fb_info *info) {
+struct DRM_Mgr *drm_mgr_init_acquire_fb(uint32_t **fb, struct fb_info *info) {
   struct DRM_Mgr *drm_mgr = drm_mgr_init();
   if (!drm_mgr) {
     fprintf(stderr, "drm_mgr_init failed\n");

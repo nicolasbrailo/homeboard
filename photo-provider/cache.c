@@ -57,7 +57,9 @@ static void entry_close(struct entry *e) {
   e->meta = NULL;
 }
 
-static struct entry *slot(struct pp_cache *c, int64_t pos) { return &c->buf[(uint64_t)pos % c->buf_cap]; }
+static struct entry *slot(struct pp_cache *c, int64_t pos) {
+  return &c->buf[(uint64_t)pos % c->buf_cap];
+}
 
 static void flush_locked(struct pp_cache *c) {
   for (int64_t i = c->head; i < c->tail; i++)
@@ -223,7 +225,8 @@ void pp_cache_free(struct pp_cache *c) {
   free(c);
 }
 
-int pp_cache_pop(struct pp_cache *c, int *fd_out, char **meta_out, int timeout_ms) {
+int pp_cache_pop(struct pp_cache *c, int *fd_out, char **meta_out,
+                 int timeout_ms) {
   struct timespec deadline;
   clock_gettime(CLOCK_REALTIME, &deadline);
   deadline.tv_sec += timeout_ms / 1000;

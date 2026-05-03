@@ -16,8 +16,10 @@
 static void usage(const char *argv0) {
   fprintf(stderr,
           "Usage:\n"
-          "  %s <out.jpg>           fetch next photo, save to <out.jpg>, print metadata\n"
-          "  %s -prev <out.jpg>     fetch previous photo from history, save to <out.jpg>\n"
+          "  %s <out.jpg>           fetch next photo, save to <out.jpg>, print "
+          "metadata\n"
+          "  %s -prev <out.jpg>     fetch previous photo from history, save to "
+          "<out.jpg>\n"
           "  %s -qr <0|1>           set embed-QR flag\n"
           "  %s -size <WxH>         set target size (eg. 1024x768)\n",
           argv0, argv0, argv0, argv0);
@@ -29,7 +31,8 @@ static int call_simple(sd_bus *bus, const char *method, const char *sig, ...) {
   va_list ap;
   va_start(ap, sig);
   sd_bus_message *call = NULL;
-  int r = sd_bus_message_new_method_call(bus, &call, DBUS_SERVICE, DBUS_PATH, DBUS_INTERFACE, method);
+  int r = sd_bus_message_new_method_call(bus, &call, DBUS_SERVICE, DBUS_PATH,
+                                         DBUS_INTERFACE, method);
   if (r < 0)
     goto out;
   r = sd_bus_message_appendv(call, sig, ap);
@@ -39,19 +42,23 @@ static int call_simple(sd_bus *bus, const char *method, const char *sig, ...) {
 out:
   va_end(ap);
   if (r < 0)
-    fprintf(stderr, "%s failed: %s\n", method, err.message ? err.message : strerror(-r));
+    fprintf(stderr, "%s failed: %s\n", method,
+            err.message ? err.message : strerror(-r));
   sd_bus_error_free(&err);
   sd_bus_message_unref(call);
   sd_bus_message_unref(reply);
   return r < 0 ? -1 : 0;
 }
 
-static int cmd_get_photo(sd_bus *bus, const char *method, const char *out_path) {
+static int cmd_get_photo(sd_bus *bus, const char *method,
+                         const char *out_path) {
   sd_bus_error err = SD_BUS_ERROR_NULL;
   sd_bus_message *reply = NULL;
-  int r = sd_bus_call_method(bus, DBUS_SERVICE, DBUS_PATH, DBUS_INTERFACE, method, &err, &reply, "");
+  int r = sd_bus_call_method(bus, DBUS_SERVICE, DBUS_PATH, DBUS_INTERFACE,
+                             method, &err, &reply, "");
   if (r < 0) {
-    fprintf(stderr, "%s failed: %s\n", method, err.message ? err.message : strerror(-r));
+    fprintf(stderr, "%s failed: %s\n", method,
+            err.message ? err.message : strerror(-r));
     sd_bus_error_free(&err);
     return -1;
   }
@@ -147,7 +154,9 @@ int main(int argc, char *argv[]) {
       fprintf(stderr, "bad size '%s' (expected WxH)\n", argv[2]);
       goto out;
     }
-    rc = call_simple(bus, "SetTargetSize", "uu", (uint32_t)w, (uint32_t)h) < 0 ? 1 : 0;
+    rc = call_simple(bus, "SetTargetSize", "uu", (uint32_t)w, (uint32_t)h) < 0
+             ? 1
+             : 0;
   } else if (strcmp(argv[1], "-prev") == 0) {
     if (argc != 3) {
       usage(argv[0]);
