@@ -85,6 +85,8 @@ size_t cairo_render_text(cairo_t *cr, const char *text, size_t ln_offset) {
                     ln_start, next_space_pos);
       rendered_lines++;
 
+      if (text[next_space_pos] == '\0')
+        break;
       ln_start = next_space_pos + 1;
       prev_space_pos = next_space_pos + 1;
       next_space_pos += 1;
