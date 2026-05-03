@@ -157,7 +157,7 @@ static int send_cmd(struct transport *f, uint16_t cmd_word, const void *data,
   size_t payload_len = 2 + data_len;
 
   if (payload_len > TRANSPORT_MAX_DATA) {
-    fprintf(stderr, "Err: payload too large (%zu, max is %zu\n", payload_len,
+    fprintf(stderr, "Err: payload too large (%zu, max is %d\n", payload_len,
             TRANSPORT_MAX_DATA);
     return -1;
   }

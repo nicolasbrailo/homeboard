@@ -1,7 +1,8 @@
 BIN_NAME = homeboard-eink-write
 CFLAGS += -I../lib/
 LDFLAGS += -Wl,--gc-sections \
-	-Wl,-Bstatic -lcairo -lfontconfig -lfreetype -lpng -lz -lexpat -lbz2 -lbrotlidec -lbrotlicommon \
+	-lcairo \
+	-Wl,-Bstatic -lfontconfig -lfreetype -lpng -lz -lexpat -lbz2 -lbrotlidec -lbrotlicommon \
 	-Wl,-Bdynamic -lpixman-1 -lm -lpthread
 
 SRCS = \
