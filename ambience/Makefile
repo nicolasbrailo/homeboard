@@ -10,8 +10,9 @@ SRCS = main.c config.c dbus_listeners.c render.c photo_client.c eink_meta.c over
        ../lib/eink/eink.c \
        ../lib/eink/cairo_helpers.c
 CFLAGS += -I../lib/
-LDFLAGS += -Wl,-Bstatic -ljson-c  -ljpeg -lpthread \
-           -Wl,-Bstatic -lcairo -lfontconfig -lfreetype -lpng -lz -lexpat -lbz2 -lbrotlidec -lbrotlicommon -lm \
+LDFLAGS += -lcairo \
+           -Wl,-Bstatic -ljson-c  -ljpeg -lpthread \
+           -Wl,-Bstatic -lfontconfig -lfreetype -lpng -lz -lexpat -lbz2 -lbrotlidec -lbrotlicommon -lm \
            -Wl,-Bdynamic -lpixman-1 -lpthread -lsystemd
 
 all: $(BIN_NAME)

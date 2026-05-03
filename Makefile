@@ -8,7 +8,10 @@ DEPLOY_TGT_DIR=/home/batman/homeboard
 .PHONY: all clean format $(SUBDIRS)
 
 all:
-	@for dir in $(SUBDIRS); do $(MAKE) -C $$dir ; done
+	@set -e; for dir in $(SUBDIRS); do \
+		if [ -f $$dir/Makefile ]; then $(MAKE) -C $$dir || exit 1; \
+		else echo "Skipping $$dir (no Makefile)"; fi; \
+	done
 
 clean:
 	@for dir in $(SUBDIRS); do $(MAKE) -C $$dir clean; done

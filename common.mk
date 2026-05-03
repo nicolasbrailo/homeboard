@@ -1,19 +1,29 @@
 .PHONY: clean xcompile-start xcompile-end format
 
+# Use the xcompiler, or target local platform
+LOCAL_BUILD ?= 0
+
+ifeq ($(LOCAL_BUILD),1)
+DEPLOY_TGT_HOST=batman@127.0.0.1
+else
 DEPLOY_TGT_HOST=batman@10.0.0.78
+endif
 DEPLOY_TGT_DIR=/home/batman/homeboard/
 DEPLOY_USER=batman
 SSH ?= ssh $(DEPLOY_TGT_HOST)
 
+ifeq ($(LOCAL_BUILD),0)
 XCOMPILE+=\
 	-target arm-linux-gnueabihf \
 	-mcpu=arm1176jzf-s \
 	--sysroot ~/src/xcomp-rpiz-env/mnt/  \
 	-isystem ~/src/xcomp-rpiz-env/mnt/usr/include/libdrm
+else
+XCOMPILE=
+endif
 
 CFLAGS+=\
 	$(XCOMPILE) \
-	$(SANS) \
 	-fdiagnostics-color=always \
 	-ffunction-sections -fdata-sections \
 	-ggdb -O3 \
@@ -56,10 +66,12 @@ VPATH = $(sort $(dir $(SRCS)))
 
 build/%.o: %.c
 	mkdir -p build
+ifeq ($(LOCAL_BUILD),0)
 	@if [ ! -d ~/src/xcomp-rpiz-env/mnt/lib/raspberrypi-sys-mods ]; then \
 		echo "xcompiler sysroot not detected, try 'make xcompile-start'"; \
 		exit 1; \
 	fi ;
+endif
 	clang $(CFLAGS) $< -c -o $@
 
 .PHONY: $(BIN_NAME)
