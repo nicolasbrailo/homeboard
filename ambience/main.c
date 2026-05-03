@@ -148,6 +148,7 @@ int main(int argc, char *argv[]) {
     fprintf(stderr, "overlay_init failed\n");
     return 1;
   }
+  overlay_set_from_file(g_ambience_ctx.overlay, "/tmp/test.svg");
   bool all_deps_ready = false;
   struct DBusListeners *listeners =
       dbus_listeners_init(&cbs, &g_ambience_ctx, &all_deps_ready);

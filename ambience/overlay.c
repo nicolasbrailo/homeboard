@@ -7,6 +7,20 @@
 #include <stdlib.h>
 #include <string.h>
 
+// NanoSVG triggers a few warnings the project treats as errors (anonymous
+// unions under -std=gnu99 and float-equal comparisons). Suppress them just
+// for these headers — we don't want to modify the upstream library.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wfloat-equal"
+#ifdef __clang__
+#pragma clang diagnostic ignored "-Wc11-extensions"
+#endif
+#define NANOSVG_IMPLEMENTATION
+#include "nanosvg/src/nanosvg.h"
+#define NANOSVGRAST_IMPLEMENTATION
+#include "nanosvg/src/nanosvgrast.h"
+#pragma GCC diagnostic pop
+
 #define DATA_URL_PREFIX "data:image/png;base64,"
 #define QR_SIZE_PCT 0.15
 #define QR_PAD_PCT 0.02
@@ -14,6 +28,8 @@
 struct Overlay {
   pthread_mutex_t mutex;
   cairo_surface_t *qr;
+  NSVGimage *svg;
+  NSVGrasterizer *rast;
 };
 
 static uint8_t *base64_decode(const char *src, size_t src_len,
@@ -103,6 +119,12 @@ struct Overlay *overlay_init(void) {
   struct Overlay *o = calloc(1, sizeof(*o));
   if (!o)
     return NULL;
+  o->rast = nsvgCreateRasterizer();
+  if (!o->rast) {
+    fprintf(stderr, "overlay: nsvgCreateRasterizer failed\n");
+    free(o);
+    return NULL;
+  }
   pthread_mutex_init(&o->mutex, NULL);
   return o;
 }
@@ -112,6 +134,10 @@ void overlay_free(struct Overlay *o) {
     return;
   if (o->qr)
     cairo_surface_destroy(o->qr);
+  if (o->svg)
+    nsvgDelete(o->svg);
+  if (o->rast)
+    nsvgDeleteRasterizer(o->rast);
   pthread_mutex_destroy(&o->mutex);
   free(o);
 }
@@ -128,16 +154,30 @@ void overlay_set_qr(struct Overlay *o, const char *qr_data_url) {
     cairo_surface_destroy(old);
 }
 
-void overlay_render(struct Overlay *o, uint32_t *fb,
-                    const struct fb_info *fbi) {
-  if (!o || !fb || !fbi)
-    return;
-  pthread_mutex_lock(&o->mutex);
-  if (!o->qr) {
-    pthread_mutex_unlock(&o->mutex);
-    return;
+void overlay_set_from_file(struct Overlay *o, const char *filename) {
+  NSVGimage *new_svg = NULL;
+  if (filename) {
+    new_svg = nsvgParseFromFile(filename, "px", 96.0f);
+    if (!new_svg) {
+      fprintf(stderr, "overlay: failed to parse SVG: %s\n", filename);
+      return;
+    }
+    if (new_svg->width <= 0 || new_svg->height <= 0) {
+      fprintf(stderr, "overlay: SVG has no usable dimensions: %s\n", filename);
+      nsvgDelete(new_svg);
+      return;
+    }
   }
+  pthread_mutex_lock(&o->mutex);
+  NSVGimage *old = o->svg;
+  o->svg = new_svg;
+  pthread_mutex_unlock(&o->mutex);
+  if (old)
+    nsvgDelete(old);
+}
 
+static void render_qr(struct Overlay *o, uint32_t *fb,
+                      const struct fb_info *fbi) {
   int qr_w = cairo_image_surface_get_width(o->qr);
   int qr_h = cairo_image_surface_get_height(o->qr);
   int qr_max = qr_w > qr_h ? qr_w : qr_h;
@@ -163,6 +203,61 @@ void overlay_render(struct Overlay *o, uint32_t *fb,
   cairo_destroy(cr);
   cairo_surface_flush(fb_surf);
   cairo_surface_destroy(fb_surf);
+}
 
+// Rasterize SVG to fb dimensions and alpha-blend over the framebuffer.
+// Cheap-and-cheerful prototype: rasterize on every render. Cache later.
+static void render_svg(struct Overlay *o, uint32_t *fb,
+                       const struct fb_info *fbi) {
+  float scale_x = (float)fbi->width / o->svg->width;
+  float scale_y = (float)fbi->height / o->svg->height;
+  float scale = scale_x < scale_y ? scale_x : scale_y;
+
+  unsigned char *rgba = malloc((size_t)fbi->width * fbi->height * 4);
+  if (!rgba) {
+    fprintf(stderr, "overlay: failed to alloc SVG raster buffer\n");
+    return;
+  }
+  memset(rgba, 0, (size_t)fbi->width * fbi->height * 4);
+  nsvgRasterize(o->rast, o->svg, 0, 0, scale, rgba, (int)fbi->width,
+                (int)fbi->height, (int)fbi->width * 4);
+
+  for (uint32_t y = 0; y < fbi->height; y++) {
+    uint32_t *fb_row = (uint32_t *)((uint8_t *)fb + (size_t)y * fbi->stride);
+    const uint8_t *src_row = rgba + (size_t)y * fbi->width * 4;
+    for (uint32_t x = 0; x < fbi->width; x++) {
+      uint8_t r = src_row[x * 4 + 0];
+      uint8_t g = src_row[x * 4 + 1];
+      uint8_t b = src_row[x * 4 + 2];
+      uint8_t a = src_row[x * 4 + 3];
+      if (a == 0)
+        continue;
+      if (a == 255) {
+        fb_row[x] = (0xffu << 24) | ((uint32_t)r << 16) | ((uint32_t)g << 8) | b;
+        continue;
+      }
+      uint32_t fbpx = fb_row[x];
+      uint8_t fr = (fbpx >> 16) & 0xff;
+      uint8_t fg = (fbpx >> 8) & 0xff;
+      uint8_t fbb = fbpx & 0xff;
+      uint8_t inv = 255 - a;
+      uint8_t nr = (uint8_t)((r * a + fr * inv) / 255);
+      uint8_t ng = (uint8_t)((g * a + fg * inv) / 255);
+      uint8_t nb = (uint8_t)((b * a + fbb * inv) / 255);
+      fb_row[x] =
+          (0xffu << 24) | ((uint32_t)nr << 16) | ((uint32_t)ng << 8) | nb;
+    }
+  }
+
+  free(rgba);
+}
+
+void overlay_render(struct Overlay *o, uint32_t *fb,
+                    const struct fb_info *fbi) {
+  pthread_mutex_lock(&o->mutex);
+  if (o->qr)
+    render_qr(o, fb, fbi);
+  if (o->svg)
+    render_svg(o, fb, fbi);
   pthread_mutex_unlock(&o->mutex);
 }

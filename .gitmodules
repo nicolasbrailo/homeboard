@@ -4,3 +4,6 @@
 [submodule "occupancy-sensor-ld2410s/debugScript"]
 	path = occupancy-sensor-ld2410s/debugScript
 	url = git@github.com:nicolasbrailo/ld2410s.git
+[submodule "ambience/nanosvg"]
+	path = ambience/nanosvg
+	url = https://github.com/memononen/nanosvg.git
