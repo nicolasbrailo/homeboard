@@ -22,8 +22,6 @@ int rc_config_load(const char *path, struct rc_config *cfg) {
 
   copy_str(cfg->mqtt_host, sizeof(cfg->mqtt_host), "127.0.0.1");
   cfg->mqtt_port = 1883;
-  copy_str(cfg->mqtt_client_id, sizeof(cfg->mqtt_client_id),
-           "homeboard-bridge");
   cfg->mqtt_user[0] = '\0';
   cfg->mqtt_pass[0] = '\0';
   cfg->mqtt_keepalive_s = 30;
@@ -41,9 +39,6 @@ int rc_config_load(const char *path, struct rc_config *cfg) {
       fprintf(stderr, "Invalid mqtt_port %d, using default %u\n", n,
               cfg->mqtt_port);
   }
-  if (json_object_object_get_ex(root, "mqtt_client_id", &val))
-    copy_str(cfg->mqtt_client_id, sizeof(cfg->mqtt_client_id),
-             json_object_get_string(val));
   if (json_object_object_get_ex(root, "mqtt_user", &val))
     copy_str(cfg->mqtt_user, sizeof(cfg->mqtt_user),
              json_object_get_string(val));
@@ -68,7 +63,7 @@ int rc_config_load(const char *path, struct rc_config *cfg) {
   }
 
   json_object_put(root);
-  printf("Config: broker=%s:%u client_id=%s topic_prefix=%s\n", cfg->mqtt_host,
-         cfg->mqtt_port, cfg->mqtt_client_id, cfg->topic_prefix);
+  printf("Config: broker=%s:%u topic_prefix=%s\n", cfg->mqtt_host,
+         cfg->mqtt_port, cfg->topic_prefix);
   return 0;
 }

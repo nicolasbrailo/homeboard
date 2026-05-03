@@ -5,7 +5,6 @@
 struct rc_config {
   char mqtt_host[128];
   uint16_t mqtt_port;
-  char mqtt_client_id[64];
   char mqtt_user[64];
   char mqtt_pass[128];
   uint16_t mqtt_keepalive_s;
