@@ -221,6 +221,28 @@ int rc_dbus_ambience_set_transition_time(struct rc_dbus *d, uint32_t secs) {
   return ret;
 }
 
+int rc_dbus_ambience_announce(struct rc_dbus *d, uint32_t timeout_secs,
+                              const char *msg) {
+  sd_bus_error err = SD_BUS_ERROR_NULL;
+  int r = sd_bus_call_method(d->bus, AMBIENCE_SERVICE, AMBIENCE_PATH,
+                             AMBIENCE_INTERFACE, "Announce", &err, NULL, "us",
+                             timeout_secs, msg ? msg : "");
+  int ret = (r < 0) ? log_err("Announce", r, &err) : 0;
+  sd_bus_error_free(&err);
+  return ret;
+}
+
+int rc_dbus_ambience_set_svg_overlay(struct rc_dbus *d, uint32_t timeout_secs,
+                                     const char *svg) {
+  sd_bus_error err = SD_BUS_ERROR_NULL;
+  int r = sd_bus_call_method(d->bus, AMBIENCE_SERVICE, AMBIENCE_PATH,
+                             AMBIENCE_INTERFACE, "SetSvgOverlay", &err, NULL,
+                             "us", timeout_secs, svg ? svg : "");
+  int ret = (r < 0) ? log_err("SetSvgOverlay", r, &err) : 0;
+  sd_bus_error_free(&err);
+  return ret;
+}
+
 int rc_dbus_ambience_set_render_config(struct rc_dbus *d, uint32_t rotation,
                                        const char *interp, const char *h_align,
                                        const char *v_align) {

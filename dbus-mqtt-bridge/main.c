@@ -3,16 +3,22 @@
 #include "mqtt.h"
 
 #include <errno.h>
+#include <json-c/json.h>
 #include <poll.h>
 #include <signal.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <strings.h>
 #include <systemd/sd-bus.h>
 #include <time.h>
 #include <unistd.h>
+
+// Hard cap on a single inbound MQTT command payload. The biggest legitimate
+// command is set_svg_overlay; SVG content is capped at 128 KB and JSON
+// envelope/escaping fits comfortably below this.
+#define CMD_PAYLOAD_HARD_CAP (192 * 1024)
+#define SVG_CONTENT_CAP (128 * 1024)
 
 static volatile sig_atomic_t g_quit;
 
@@ -44,7 +50,7 @@ static void on_displayed_photo_changed(const char *meta, void *ud) {
 
 static void on_slideshow_active_changed(bool active, void *ud) {
   struct app_ctx *ctx = ud;
-  const char *payload = active ? "true" : "false";
+  const char *payload = active ? "{\"active\":true}" : "{\"active\":false}";
   rc_mqtt_publish(ctx->mqtt, "state/slideshow_active", payload, strlen(payload),
                   true);
 }
@@ -55,82 +61,144 @@ static void on_active_server(const char *url, const char *qr_img, void *ud) {
   rc_dbus_ambience_set_remote_control_server(ctx->dbus, url, qr_img);
 }
 
-static int parse_bool(const char *p, size_t n, bool *out) {
-  if (n == 1 && (p[0] == '0' || p[0] == '1')) {
-    *out = (p[0] == '1');
-    return 0;
+// Parses payload as a JSON object. Returns NULL and logs on failure (not an
+// object, malformed JSON, or empty). Caller owns the returned object and must
+// json_object_put() it.
+static struct json_object *parse_obj(const char *suffix, const char *payload,
+                                     size_t len) {
+  if (len == 0) {
+    fprintf(stderr, "%s: empty payload\n", suffix);
+    return NULL;
   }
-  if (n == 4 && strncasecmp(p, "true", 4) == 0) {
-    *out = true;
-    return 0;
+  struct json_tokener *tok = json_tokener_new();
+  if (!tok)
+    return NULL;
+  struct json_object *obj = json_tokener_parse_ex(tok, payload, (int)len);
+  enum json_tokener_error err = json_tokener_get_error(tok);
+  json_tokener_free(tok);
+  if (!obj || err != json_tokener_success) {
+    fprintf(stderr, "%s: invalid JSON: %s\n", suffix,
+            json_tokener_error_desc(err));
+    if (obj)
+      json_object_put(obj);
+    return NULL;
   }
-  if (n == 5 && strncasecmp(p, "false", 5) == 0) {
-    *out = false;
-    return 0;
+  if (!json_object_is_type(obj, json_type_object)) {
+    fprintf(stderr, "%s: payload is not a JSON object\n", suffix);
+    json_object_put(obj);
+    return NULL;
   }
-  return -1;
+  return obj;
 }
 
-static int parse_u32(const char *p, size_t n, uint32_t *out) {
-  if (n == 0 || n > 10)
+static int get_u32(struct json_object *o, const char *key, uint32_t *out) {
+  struct json_object *v;
+  if (!json_object_object_get_ex(o, key, &v))
     return -1;
-  char buf[11];
-  memcpy(buf, p, n);
-  buf[n] = '\0';
-  char *end;
-  unsigned long v = strtoul(buf, &end, 10);
-  if (*end != '\0' || v > UINT32_MAX)
+  if (!json_object_is_type(v, json_type_int))
     return -1;
-  *out = (uint32_t)v;
+  int64_t n = json_object_get_int64(v);
+  if (n < 0 || n > UINT32_MAX)
+    return -1;
+  *out = (uint32_t)n;
   return 0;
 }
 
-static int parse_render_cfg(const char *p, size_t n, char *buf, size_t bufcap,
-                            uint32_t *rot, const char **interp,
-                            const char **h_align, const char **v_align) {
-  if (n == 0 || n + 1 > bufcap)
+static int get_string(struct json_object *o, const char *key,
+                      const char **out) {
+  struct json_object *v;
+  if (!json_object_object_get_ex(o, key, &v))
     return -1;
-  memcpy(buf, p, n);
-  buf[n] = '\0';
-  char *save = NULL;
-  char *t1 = strtok_r(buf, " ", &save);
-  char *t2 = strtok_r(NULL, " ", &save);
-  char *t3 = strtok_r(NULL, " ", &save);
-  char *t4 = strtok_r(NULL, " ", &save);
-  char *t5 = strtok_r(NULL, " ", &save);
-  if (!t1 || !t2 || !t3 || !t4 || t5)
+  if (!json_object_is_type(v, json_type_string))
     return -1;
-  char *end;
-  unsigned long v = strtoul(t1, &end, 10);
-  if (*end != '\0' || v > UINT32_MAX)
-    return -1;
-  *rot = (uint32_t)v;
-  *interp = t2;
-  *h_align = t3;
-  *v_align = t4;
+  *out = json_object_get_string(v);
   return 0;
 }
 
-static int parse_size(const char *p, size_t n, uint32_t *w, uint32_t *h) {
-  if (n == 0 || n > 20)
+static int get_bool(struct json_object *o, const char *key, bool *out) {
+  struct json_object *v;
+  if (!json_object_object_get_ex(o, key, &v))
     return -1;
-  char buf[21];
-  memcpy(buf, p, n);
-  buf[n] = '\0';
-  char *x = strchr(buf, 'x');
-  if (!x)
+  if (!json_object_is_type(v, json_type_boolean))
     return -1;
-  *x = '\0';
-  char *e1, *e2;
-  unsigned long ww = strtoul(buf, &e1, 10);
-  unsigned long hh = strtoul(x + 1, &e2, 10);
-  if (*e1 != '\0' || *e2 != '\0')
-    return -1;
-  if (ww == 0 || hh == 0 || ww > 10000 || hh > 10000)
-    return -1;
-  *w = (uint32_t)ww;
-  *h = (uint32_t)hh;
+  *out = json_object_get_boolean(v) ? true : false;
   return 0;
+}
+
+static void cmd_set_transition_time(struct app_ctx *ctx, const char *suffix,
+                                    struct json_object *o) {
+  uint32_t secs;
+  if (get_u32(o, "secs", &secs) < 0) {
+    fprintf(stderr, "%s: missing/invalid 'secs'\n", suffix);
+    return;
+  }
+  rc_dbus_ambience_set_transition_time(ctx->dbus, secs);
+}
+
+static void cmd_announce(struct app_ctx *ctx, const char *suffix,
+                         struct json_object *o) {
+  uint32_t timeout;
+  const char *msg;
+  if (get_u32(o, "timeout", &timeout) < 0 || get_string(o, "msg", &msg) < 0) {
+    fprintf(stderr, "%s: missing/invalid 'timeout' or 'msg'\n", suffix);
+    return;
+  }
+  rc_dbus_ambience_announce(ctx->dbus, timeout, msg);
+}
+
+static void cmd_set_svg_overlay(struct app_ctx *ctx, const char *suffix,
+                                struct json_object *o) {
+  uint32_t timeout;
+  const char *svg;
+  if (get_u32(o, "timeout", &timeout) < 0 || get_string(o, "svg", &svg) < 0) {
+    fprintf(stderr, "%s: missing/invalid 'timeout' or 'svg'\n", suffix);
+    return;
+  }
+  if (strlen(svg) > SVG_CONTENT_CAP) {
+    fprintf(stderr, "%s: svg exceeds %d bytes\n", suffix, SVG_CONTENT_CAP);
+    return;
+  }
+  rc_dbus_ambience_set_svg_overlay(ctx->dbus, timeout, svg);
+}
+
+static void cmd_set_render_config(struct app_ctx *ctx, const char *suffix,
+                                  struct json_object *o) {
+  uint32_t rot;
+  const char *interp, *h_align, *v_align;
+  if (get_u32(o, "rotation", &rot) < 0 ||
+      get_string(o, "interp", &interp) < 0 ||
+      get_string(o, "h_align", &h_align) < 0 ||
+      get_string(o, "v_align", &v_align) < 0) {
+    fprintf(stderr,
+            "%s: need {rotation:uint, interp:str, h_align:str, v_align:str}\n",
+            suffix);
+    return;
+  }
+  rc_dbus_ambience_set_render_config(ctx->dbus, rot, interp, h_align, v_align);
+}
+
+static void cmd_set_embed_qr(struct app_ctx *ctx, const char *suffix,
+                             struct json_object *o) {
+  bool on;
+  if (get_bool(o, "on", &on) < 0) {
+    fprintf(stderr, "%s: missing/invalid 'on'\n", suffix);
+    return;
+  }
+  rc_dbus_photo_set_embed_qr(ctx->dbus, on);
+}
+
+static void cmd_set_target_size(struct app_ctx *ctx, const char *suffix,
+                                struct json_object *o) {
+  uint32_t w, h;
+  if (get_u32(o, "w", &w) < 0 || get_u32(o, "h", &h) < 0) {
+    fprintf(stderr, "%s: need {w:uint, h:uint}\n", suffix);
+    return;
+  }
+  if (w == 0 || h == 0 || w > 10000 || h > 10000) {
+    fprintf(stderr, "%s: dimensions out of range (1..10000)\n", suffix);
+    return;
+  }
+  rc_dbus_photo_set_target_size(ctx->dbus, w, h);
 }
 
 static void on_cmd(const char *suffix, const char *payload, size_t len,
@@ -138,45 +206,47 @@ static void on_cmd(const char *suffix, const char *payload, size_t len,
   struct app_ctx *ctx = ud;
   printf("cmd: %s (%zu bytes)\n", suffix, len);
 
+  // Void commands ignore payload entirely — no JSON parse needed.
   if (strcmp(suffix, "ambience/next") == 0) {
     rc_dbus_ambience_call_void(ctx->dbus, "Next");
+    return;
   } else if (strcmp(suffix, "ambience/prev") == 0) {
     rc_dbus_ambience_call_void(ctx->dbus, "Prev");
+    return;
   } else if (strcmp(suffix, "presence/force_on") == 0) {
     rc_dbus_presence_call_void(ctx->dbus, "ForceOn");
+    return;
   } else if (strcmp(suffix, "presence/force_off") == 0) {
     rc_dbus_presence_call_void(ctx->dbus, "ForceOff");
-  } else if (strcmp(suffix, "ambience/set_transition_time_secs") == 0) {
-    uint32_t s;
-    if (parse_u32(payload, len, &s) == 0)
-      rc_dbus_ambience_set_transition_time(ctx->dbus, s);
-    else
-      fprintf(stderr, "set_transition_time_secs: invalid payload\n");
-  } else if (strcmp(suffix, "ambience/set_render_config") == 0) {
-    char buf[64];
-    uint32_t rot;
-    const char *interp, *h_align, *v_align;
-    if (parse_render_cfg(payload, len, buf, sizeof(buf), &rot, &interp,
-                         &h_align, &v_align) == 0)
-      rc_dbus_ambience_set_render_config(ctx->dbus, rot, interp, h_align,
-                                         v_align);
-    else
-      fprintf(stderr, "set_render_config: invalid payload\n");
-  } else if (strcmp(suffix, "photo_provider/set_embed_qr") == 0) {
-    bool b;
-    if (parse_bool(payload, len, &b) == 0)
-      rc_dbus_photo_set_embed_qr(ctx->dbus, b);
-    else
-      fprintf(stderr, "set_embed_qr: invalid payload\n");
-  } else if (strcmp(suffix, "photo_provider/set_target_size") == 0) {
-    uint32_t w, h;
-    if (parse_size(payload, len, &w, &h) == 0)
-      rc_dbus_photo_set_target_size(ctx->dbus, w, h);
-    else
-      fprintf(stderr, "set_target_size: invalid payload\n");
-  } else {
-    fprintf(stderr, "Unknown cmd: %s\n", suffix);
+    return;
   }
+
+  if (len > CMD_PAYLOAD_HARD_CAP) {
+    fprintf(stderr, "%s: payload too large (%zu bytes, cap %d)\n", suffix, len,
+            CMD_PAYLOAD_HARD_CAP);
+    return;
+  }
+
+  struct json_object *o = parse_obj(suffix, payload, len);
+  if (!o)
+    return;
+
+  if (strcmp(suffix, "ambience/set_transition_time_secs") == 0)
+    cmd_set_transition_time(ctx, suffix, o);
+  else if (strcmp(suffix, "ambience/announce") == 0)
+    cmd_announce(ctx, suffix, o);
+  else if (strcmp(suffix, "ambience/set_svg_overlay") == 0)
+    cmd_set_svg_overlay(ctx, suffix, o);
+  else if (strcmp(suffix, "ambience/set_render_config") == 0)
+    cmd_set_render_config(ctx, suffix, o);
+  else if (strcmp(suffix, "photo_provider/set_embed_qr") == 0)
+    cmd_set_embed_qr(ctx, suffix, o);
+  else if (strcmp(suffix, "photo_provider/set_target_size") == 0)
+    cmd_set_target_size(ctx, suffix, o);
+  else
+    fprintf(stderr, "Unknown cmd: %s\n", suffix);
+
+  json_object_put(o);
 }
 
 int main(int argc, char *argv[]) {

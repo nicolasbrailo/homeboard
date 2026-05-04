@@ -102,7 +102,9 @@ static void on_connect_cb(struct mosquitto *mosq, void *obj, int rc) {
             mosquitto_strerror(r));
 
   rc_mqtt_claim_republish(m->claim, mosq);
-  mosquitto_publish(mosq, NULL, m->bridge_state_topic, 6, "online", 0, true);
+  static const char online_payload[] = "{\"state\":\"online\"}";
+  mosquitto_publish(mosq, NULL, m->bridge_state_topic,
+                    (int)(sizeof(online_payload) - 1), online_payload, 0, true);
 }
 
 static void on_disconnect_cb(struct mosquitto *mosq, void *obj, int rc) {
@@ -197,8 +199,10 @@ struct rc_mqtt *rc_mqtt_init(const struct rc_config *cfg, rc_mqtt_cmd_cb on_cmd,
   // MQTT 3.1.1 supports only one LWT per connection. Use it for the
   // user-visible online/offline indicator; mqtt_claim clears bridge_info
   // manually on graceful shutdown.
-  int r =
-      mosquitto_will_set(m->mosq, m->bridge_state_topic, 7, "offline", 0, true);
+  static const char offline_payload[] = "{\"state\":\"offline\"}";
+  int r = mosquitto_will_set(m->mosq, m->bridge_state_topic,
+                             (int)(sizeof(offline_payload) - 1),
+                             offline_payload, 0, true);
   if (r != MOSQ_ERR_SUCCESS)
     fprintf(stderr, "mosquitto_will_set: %s\n", mosquitto_strerror(r));
 
@@ -235,7 +239,9 @@ struct rc_mqtt *rc_mqtt_init(const struct rc_config *cfg, rc_mqtt_cmd_cb on_cmd,
 
   // Claim already published bridge_info; do the rest of the first-connect
   // setup that on_connect_cb would do on a reconnect.
-  mosquitto_publish(m->mosq, NULL, m->bridge_state_topic, 6, "online", 0, true);
+  static const char online_payload[] = "{\"state\":\"online\"}";
+  mosquitto_publish(m->mosq, NULL, m->bridge_state_topic,
+                    (int)(sizeof(online_payload) - 1), online_payload, 0, true);
 
   char sub[128];
   snprintf(sub, sizeof(sub), "%scmd/#", m->topic_prefix);
@@ -256,7 +262,9 @@ void rc_mqtt_free(struct rc_mqtt *m) {
     return;
   if (m->mosq) {
     rc_mqtt_claim_free(m->claim, m->mosq);
-    mosquitto_publish(m->mosq, NULL, m->bridge_state_topic, 7, "offline", 0,
+    static const char offline_payload[] = "{\"state\":\"offline\"}";
+    mosquitto_publish(m->mosq, NULL, m->bridge_state_topic,
+                      (int)(sizeof(offline_payload) - 1), offline_payload, 0,
                       true);
     mosquitto_loop_write(m->mosq, 1);
     mosquitto_disconnect(m->mosq);

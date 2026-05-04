@@ -7,20 +7,20 @@ A bridge between the homeboard's D-Bus services and an MQTT broker. Exposes sele
 The RPi Zero is constrained and the security goal is to keep the attack surface on the device as small as possible. This service:
 
 - Opens **only outbound** TCP connections (to the broker). There is no listening socket on the device, so a LAN attacker cannot reach this process directly — they have to go through the broker.
-- Keeps the message parser minimal (short, strict payloads; length-capped; no HTTP).
+- Keeps the wire format strict (JSON objects, length-capped, no HTTP). json-c is already linked in for config parsing, so the only added cost is the per-command parse.
 - Runs fine without TLS on a trusted LAN. The "no listening port on the device" property holds regardless.
 
 If the broker or a web UI in front of it is compromised, the blast radius on the device is limited to whatever D-Bus methods this bridge explicitly forwards.
 
 ## What it does
 
-- Connects to an MQTT broker as a client, with Last-Will-and-Testament set to `<prefix>state/bridge` = `"offline"` (retained).
-- Subscribes to `<prefix>cmd/#`. Each known topic suffix maps to one D-Bus method call.
-- Listens for `io.homeboard.Occupancy1.Report` on the system bus and republishes it as retained JSON on `<prefix>state/occupancy` (every second; retained).
-- Listens for `io.homeboard.Ambience1.DisplayingPhoto` and republishes the raw metadata string as a retained message on `<prefix>state/displayed_photo`.
-- Listens for `io.homeboard.Ambience1.SlideshowActive` and republishes `"true"` / `"false"` as a retained message on `<prefix>state/slideshow_active`.
+- Connects to an MQTT broker as a client, with Last-Will-and-Testament set to `<prefix>state/bridge` = `{"state":"offline"}` (retained).
+- Subscribes to `<prefix>cmd/#`. Each known topic suffix maps to one D-Bus method call. Payloads are JSON objects (see table below).
+- Listens for `io.homeboard.Occupancy1.Report` on the system bus and republishes it as retained JSON on `<prefix>state/occupancy`.
+- Listens for `io.homeboard.Ambience1.DisplayingPhoto` and republishes the photo-provider metadata JSON verbatim on `<prefix>state/displayed_photo` (passthrough, not re-wrapped).
+- Listens for `io.homeboard.Ambience1.SlideshowActive` and republishes `{"active":true}` / `{"active":false}` retained on `<prefix>state/slideshow_active`.
 - Auto-reconnects to both the broker and (implicitly) D-Bus on failure.
-- Publishes `"online"` retained to `<prefix>state/bridge` on successful connect and `"offline"` on graceful shutdown.
+- Publishes `{"state":"online"}` retained to `<prefix>state/bridge` on successful connect and `{"state":"offline"}` on graceful shutdown.
 
 This service is a **client** on every bus it touches: it doesn't own a D-Bus name, and it doesn't accept incoming TCP.
 
@@ -39,7 +39,7 @@ No worker threads. No `mosquitto_loop_start`. We own the loop explicitly because
 
 | File | Purpose |
 |------|---------|
-| `main.c` | Entry point, event loop, command dispatch table, payload parsers |
+| `main.c` | Entry point, event loop, command dispatch table, JSON payload parsers (json-c) |
 | `config.c/h` | JSON config loader (json-c), defaults, `topic_prefix` validation |
 | `mqtt.c/h` | libmosquitto wrapper: connect, LWT, subscribe/publish, non-blocking loop primitives |
 | `dbus_client.c/h` | sd-bus client: method-call helpers for Ambience/Presence/PhotoProvider, signal subscribers for Occupancy and Ambience |
@@ -51,27 +51,33 @@ Default topic prefix `homeboard/` (configurable). Every topic below is relative 
 
 ### Commands (bridge subscribes)
 
+All command payloads are **JSON objects**. Field names and types must match exactly; missing or wrong-type fields cause the command to be logged and dropped. Void commands ignore their payload entirely (any value, including empty, is fine).
+
 | Topic | D-Bus target | Payload | Notes |
 |-------|--------------|---------|-------|
 | `cmd/ambience/next` | `Ambience.Next` | ignored | advance slideshow |
 | `cmd/ambience/prev` | `Ambience.Prev` | ignored | previous picture |
 | `cmd/presence/force_on` | `Presence.ForceOn` | ignored | force presence=true |
 | `cmd/presence/force_off` | `Presence.ForceOff` | ignored | latch presence=false until next genuine vacancy |
-| `cmd/ambience/set_transition_time_secs` | `Ambience.SetTransitionTimeSecs` (`u`) | decimal string, e.g. `"30"` | |
-| `cmd/ambience/set_render_config` | `Ambience.SetRenderConfig` (`usss`) | space-separated `"<rotation> <interp> <h_align> <v_align>"`, e.g. `"180 bilinear center top"` | rotation `0`/`90`/`180`/`270`; interp `nearest`/`bilinear`; aligns as on the D-Bus method. Validation happens service-side |
-| `cmd/photo_provider/set_embed_qr` | `PhotoProvider.SetEmbedQr` (`b`) | `"0"`/`"1"` or `"true"`/`"false"` (case-insensitive) | |
-| `cmd/photo_provider/set_target_size` | `PhotoProvider.SetTargetSize` (`uu`) | `"<W>x<H>"`, e.g. `"1024x768"` | |
+| `cmd/ambience/set_transition_time_secs` | `Ambience.SetTransitionTimeSecs` (`u`) | `{"secs": <uint>}` | e.g. `{"secs":30}` |
+| `cmd/ambience/announce` | `Ambience.Announce` (`us`) | `{"timeout": <uint>, "msg": <string>}` | timeout `0` means no auto-clear |
+| `cmd/ambience/set_svg_overlay` | `Ambience.SetSvgOverlay` (`us`) | `{"timeout": <uint>, "svg": <string>}` | timeout `0` means no auto-clear. SVG string capped at 128 KB; total payload capped at 192 KB. nanosvg is the parser — no `<text>`, no filters, limited gradients. Empty `svg` clears the overlay |
+| `cmd/ambience/set_render_config` | `Ambience.SetRenderConfig` (`usss`) | `{"rotation": <uint>, "interp": <string>, "h_align": <string>, "v_align": <string>}` | rotation `0`/`90`/`180`/`270`; interp `nearest`/`bilinear`; aligns as on the D-Bus method. Validation happens service-side |
+| `cmd/photo_provider/set_embed_qr` | `PhotoProvider.SetEmbedQr` (`b`) | `{"on": <bool>}` | |
+| `cmd/photo_provider/set_target_size` | `PhotoProvider.SetTargetSize` (`uu`) | `{"w": <uint>, "h": <uint>}` | each in 1..10000 |
 
-Unknown topics and malformed payloads are logged and dropped. Payloads have hard length caps in the parser.
+Unknown topics and malformed payloads are logged and dropped. The whole MQTT payload is hard-capped at 192 KB before JSON parsing.
 
 ### State (bridge publishes)
 
+All state payloads are JSON. `state/displayed_photo` is a passthrough of `photo-provider`'s metadata blob — itself JSON, but its schema is owned by `photo-provider`, not the bridge.
+
 | Topic | Payload | Retained |
 |-------|---------|----------|
-| `state/bridge` | `"online"` / `"offline"` | yes (LWT sets `offline` on ungraceful disconnect) |
-| `state/occupancy` | JSON `{"occupied":bool,"distance_cm":uint,"ts":unix_seconds}` | yes — late-joining clients get current state |
-| `state/displayed_photo` | raw metadata string from `photo-provider` (opaque, not parsed) | yes — late-joining clients see the currently-displayed photo |
-| `state/slideshow_active` | `"true"` or `"false"` | yes — reflects whether the ambience screen is currently on and the slideshow is running |
+| `state/bridge` | `{"state":"online"}` / `{"state":"offline"}` | yes (LWT pre-formatted; broker publishes the offline payload on ungraceful disconnect) |
+| `state/occupancy` | `{"occupied":<bool>,"distance_cm":<uint>,"ts":<unix_seconds>}` | yes — late-joining clients get current state |
+| `state/displayed_photo` | photo-provider's metadata JSON, passed through verbatim | yes — late-joining clients see the currently-displayed photo |
+| `state/slideshow_active` | `{"active":<bool>}` | yes — reflects whether the ambience screen is currently on and the slideshow is running |
 
 All publishes are QoS 0.
 

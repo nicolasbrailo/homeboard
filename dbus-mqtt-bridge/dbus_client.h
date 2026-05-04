@@ -21,6 +21,10 @@ sd_bus *rc_dbus_bus(struct rc_dbus *d);
 
 int rc_dbus_ambience_call_void(struct rc_dbus *d, const char *method);
 int rc_dbus_ambience_set_transition_time(struct rc_dbus *d, uint32_t secs);
+int rc_dbus_ambience_announce(struct rc_dbus *d, uint32_t timeout_secs,
+                              const char *msg);
+int rc_dbus_ambience_set_svg_overlay(struct rc_dbus *d, uint32_t timeout_secs,
+                                     const char *svg);
 int rc_dbus_ambience_set_render_config(struct rc_dbus *d, uint32_t rotation,
                                        const char *interp, const char *h_align,
                                        const char *v_align);

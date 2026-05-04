@@ -88,6 +88,48 @@ static int method_announce(sd_bus_message *m, void *userdata,
   return sd_bus_reply_method_return(m, NULL);
 }
 
+static int method_overlay_requested(sd_bus_message *m, void *userdata,
+                                    sd_bus_error *err) {
+  struct DBusListeners *s = userdata;
+  uint32_t timeout_seconds = 0;
+  const char *svg = NULL;
+  int r = sd_bus_message_read(m, "us", &timeout_seconds, &svg);
+  if (r < 0)
+    return r;
+  r = s->cbs.on_overlay_requested(s->ud, timeout_seconds, svg ? svg : "");
+  if (r < 0) {
+    const char *errmsg;
+    if (r == -EINVAL)
+      errmsg = "invalid timeout";
+    else
+      errmsg = "unknown error";
+    sd_bus_error_setf(err, SD_BUS_ERROR_INVALID_ARGS, "%s", errmsg);
+    return r;
+  }
+  return sd_bus_reply_method_return(m, NULL);
+}
+
+static int method_overlay_from_file(sd_bus_message *m, void *userdata,
+                                    sd_bus_error *err) {
+  struct DBusListeners *s = userdata;
+  uint32_t timeout_seconds = 0;
+  const char *path = NULL;
+  int r = sd_bus_message_read(m, "us", &timeout_seconds, &path);
+  if (r < 0)
+    return r;
+  r = s->cbs.on_overlay_from_file(s->ud, timeout_seconds, path ? path : "");
+  if (r < 0) {
+    const char *errmsg;
+    if (r == -EINVAL)
+      errmsg = "invalid timeout or path";
+    else
+      errmsg = "unknown error";
+    sd_bus_error_setf(err, SD_BUS_ERROR_INVALID_ARGS, "%s", errmsg);
+    return r;
+  }
+  return sd_bus_reply_method_return(m, NULL);
+}
+
 static int method_set_render_config(sd_bus_message *m, void *userdata,
                                     sd_bus_error *err) {
   struct DBusListeners *s = userdata;
@@ -138,6 +180,10 @@ static const sd_bus_vtable g_vtable[] = {
     SD_BUS_METHOD("SetTransitionTimeSecs", "u", "", method_set_transition_time,
                   SD_BUS_VTABLE_UNPRIVILEGED),
     SD_BUS_METHOD("Announce", "us", "", method_announce,
+                  SD_BUS_VTABLE_UNPRIVILEGED),
+    SD_BUS_METHOD("SetSvgOverlay", "us", "", method_overlay_requested,
+                  SD_BUS_VTABLE_UNPRIVILEGED),
+    SD_BUS_METHOD("SetSvgOverlayFromFile", "us", "", method_overlay_from_file,
                   SD_BUS_VTABLE_UNPRIVILEGED),
     SD_BUS_METHOD("SetRenderConfig", "usss", "", method_set_render_config,
                   SD_BUS_VTABLE_UNPRIVILEGED),

@@ -50,10 +50,41 @@ int on_set_render_config(void *ud, const struct img_render_cfg *cfg) {
   return 0;
 }
 int on_announce(void *ud, uint32_t timeout_seconds, const char *msg) {
-  // TODO
+  // TODO build announcement
+  // TODO build timeout
   printf("Announcement requested [%d seconds]: '%s'\n", timeout_seconds, msg);
   return 0;
 }
+int on_overlay_requested(void *ud, uint32_t timeout_seconds, const char *svg) {
+  // TODO build timeout
+  struct AmbienceCtx *ctx = ud;
+  size_t svg_len = svg ? strlen(svg) : 0;
+  printf("New SVG overlay requested ");
+  if (timeout_seconds > 0) {
+    printf("[timeout %d seconds]", timeout_seconds);
+  } else {
+    printf("[no timeout]");
+  }
+  printf(" (%zu bytes), will appear in the next picture displayed.\n", svg_len);
+
+  overlay_set_from_svg_data(ctx->overlay, svg, svg_len);
+  return 0;
+}
+
+int on_overlay_from_file(void *ud, uint32_t timeout_seconds, const char *path) {
+  struct AmbienceCtx *ctx = ud;
+  printf("New SVG overlay requested from file '%s' ", path ? path : "");
+  if (timeout_seconds > 0) {
+    printf("[timeout %d seconds]", timeout_seconds);
+  } else {
+    printf("[no timeout]");
+  }
+  printf(", will appear in the next picture displayed.\n");
+
+  overlay_set_from_file(ctx->overlay, (path && *path) ? path : NULL);
+  return 0;
+}
+
 void on_presence_changed(void *ud, bool present) {
   struct AmbienceCtx *s = ud;
   render_slideshow_set_active(s->render, present);
@@ -116,6 +147,8 @@ static const struct dbus_listeners_cbs cbs = {
     .on_set_transition_time = on_set_transition_time,
     .on_set_render_config = on_set_render_config,
     .on_announce = on_announce,
+    .on_overlay_requested = on_overlay_requested,
+    .on_overlay_from_file = on_overlay_from_file,
     .on_presence_changed = on_presence_changed,
     .on_set_remote_control_server = on_set_remote_control_server,
     .on_presence_service_updown = on_presence_service_updown,
@@ -148,7 +181,6 @@ int main(int argc, char *argv[]) {
     fprintf(stderr, "overlay_init failed\n");
     return 1;
   }
-  overlay_set_from_file(g_ambience_ctx.overlay, "/tmp/test.svg");
   bool all_deps_ready = false;
   struct DBusListeners *listeners =
       dbus_listeners_init(&cbs, &g_ambience_ctx, &all_deps_ready);

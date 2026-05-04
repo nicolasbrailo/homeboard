@@ -18,8 +18,9 @@ and exposes a D-Bus interface for manual control of the slideshow.
   re-armed. Single thread, no synchronization.
 - Exposes `io.homeboard.Ambience1` for external triggers: `Next` / `Prev` to
   advance, `SetTransitionTimeSecs(u)` to retune the wait, `SetRenderConfig`
-  to reconfigure rotation/interpolation/alignment at runtime, and `Announce`
-  to overlay a transient message on the current photo.
+  to reconfigure rotation/interpolation/alignment at runtime, `Announce` to
+  overlay a transient message, and `SetSvgOverlay` to overlay a transient
+  SVG on the current photo.
 - Optional e-ink metadata strip: when `use_eink_for_metadata` is true, photo
   metadata is rendered to a secondary e-ink panel via the `eink` lib.
 - Emits `DisplayingPhoto(s)` after each successful render (carrying the
@@ -101,6 +102,8 @@ Methods:
 | `SetTransitionTimeSecs` | `(u)` → `()` | Update the wait between pictures. Returns `InvalidArgs` if outside the supported range. |
 | `SetRenderConfig` | `(usss)` → `()` | Update rotation / interpolation / horizontal-align / vertical-align at runtime. Args: `u` rotation (`0`/`90`/`180`/`270`), `s` interpolation (`nearest`/`bilinear`), `s` horizontal_align (`left`/`center`/`right`), `s` vertical_align (`top`/`center`/`bottom`). Re-renders the current picture in place. When rotation flips between portrait/landscape, the new target size is pushed to `photo-provider` so future photos arrive with the correct aspect ratio. Returns `InvalidArgs` if any field is unrecognized. |
 | `Announce` | `(us)` → `()` | Overlay a string on top of the current picture for `u` seconds. Returns `InvalidArgs` if the timeout is invalid or an announcement is already active. |
+| `SetSvgOverlay` | `(us)` → `()` | Overlay an SVG (parsed in-memory by nanosvg) on top of the current picture for `u` seconds. `u=0` means no auto-clear. Pass an empty string to clear. Parser is limited (see nanosvg for limitations; most prominent, no text). |
+| `SetSvgOverlayFromFile` | `(us)` → `()` | Local-test variant of `SetSvgOverlay`: loads the SVG from a file path on the device instead of receiving bytes inline. |
 
 Slideshow on/off control lives on `io.homeboard.Presence1.ForceOn` /
 `ForceOff` — there are no equivalent methods on Ambience.
@@ -141,7 +144,8 @@ dbus_helpers.{c,h}    is_service_up + NameOwnerChanged subscription helper
 dbus_listeners.{c,h}  owns its own sd_bus (attached to sd_event) and the
                       well-known name io.homeboard.Ambience. Hosts the
                       Ambience1 vtable (Next / Prev / SetTransitionTimeSecs
-                      / SetRenderConfig / Announce), subscribes to
+                      / SetRenderConfig / Announce / SetSvgOverlay),
+                      subscribes to
                       Presence.PresenceChanged and presence/photo service
                       up/down, and emits SlideshowActive + DisplayingPhoto.
                       Single dispatch surface for the Ambience interface.

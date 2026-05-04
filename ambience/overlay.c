@@ -176,6 +176,40 @@ void overlay_set_from_file(struct Overlay *o, const char *filename) {
     nsvgDelete(old);
 }
 
+void overlay_set_from_svg_data(struct Overlay *o, const char *data,
+                               size_t len) {
+  if (!o)
+    return;
+  NSVGimage *new_svg = NULL;
+  if (data && len > 0) {
+    // nsvgParse mutates the input buffer and requires NUL termination.
+    char *buf = malloc(len + 1);
+    if (!buf) {
+      fprintf(stderr, "overlay: out of memory parsing SVG\n");
+      return;
+    }
+    memcpy(buf, data, len);
+    buf[len] = '\0';
+    new_svg = nsvgParse(buf, "px", 96.0f);
+    free(buf);
+    if (!new_svg) {
+      fprintf(stderr, "overlay: failed to parse SVG (%zu bytes)\n", len);
+      return;
+    }
+    if (new_svg->width <= 0 || new_svg->height <= 0) {
+      fprintf(stderr, "overlay: SVG has no usable dimensions\n");
+      nsvgDelete(new_svg);
+      return;
+    }
+  }
+  pthread_mutex_lock(&o->mutex);
+  NSVGimage *old = o->svg;
+  o->svg = new_svg;
+  pthread_mutex_unlock(&o->mutex);
+  if (old)
+    nsvgDelete(old);
+}
+
 static void render_qr(struct Overlay *o, uint32_t *fb,
                       const struct fb_info *fbi) {
   int qr_w = cairo_image_surface_get_width(o->qr);
@@ -233,7 +267,8 @@ static void render_svg(struct Overlay *o, uint32_t *fb,
       if (a == 0)
         continue;
       if (a == 255) {
-        fb_row[x] = (0xffu << 24) | ((uint32_t)r << 16) | ((uint32_t)g << 8) | b;
+        fb_row[x] =
+            (0xffu << 24) | ((uint32_t)r << 16) | ((uint32_t)g << 8) | b;
         continue;
       }
       uint32_t fbpx = fb_row[x];

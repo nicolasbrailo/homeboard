@@ -14,7 +14,13 @@ struct dbus_listeners_cbs {
   bool (*on_set_transition_time)(void *ud, uint32_t seconds);
   // Returns 0 on success, negative errno on failure (-EINVAL, -EBUSY, ...).
   int (*on_set_render_config)(void *ud, const struct img_render_cfg *cfg);
+
   int (*on_announce)(void *ud, uint32_t timeout_seconds, const char *msg);
+  int (*on_overlay_requested)(void *ud, uint32_t timeout_seconds,
+                              const char *svg);
+  // Local test hook: load the SVG overlay directly from a file on the device.
+  int (*on_overlay_from_file)(void *ud, uint32_t timeout_seconds,
+                              const char *path);
 
   // Presence status change (present=true => someone is in the room, false =>
   // room is vacant)
