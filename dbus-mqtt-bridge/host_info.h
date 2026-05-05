@@ -17,5 +17,8 @@ struct rc_host_info {
 
 int rc_host_info_collect(struct rc_host_info *info);
 
-int rc_host_info_format_json(const struct rc_host_info *info, char *buf,
-                             size_t buf_sz);
+// Format the host info as a JSON object. `state` is required and is emitted
+// as the first field ("state":"online" / "state":"offline"); it lets a single
+// retained payload double as both the live indicator and the LWT.
+int rc_host_info_format_json(const struct rc_host_info *info, const char *state,
+                             char *buf, size_t buf_sz);

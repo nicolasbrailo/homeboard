@@ -14,13 +14,13 @@ If the broker or a web UI in front of it is compromised, the blast radius on the
 
 ## What it does
 
-- Connects to an MQTT broker as a client, with Last-Will-and-Testament set to `<prefix>state/bridge` = `{"state":"offline"}` (retained).
+- Connects to an MQTT broker as a client, with Last-Will-and-Testament set to `<prefix>state/bridge` = `{"state":"offline", machine_id, hostname, ip, host_model, ...}` (retained). The LWT payload is pre-formatted from host info collected at startup, so an ungraceful disconnect leaves a useful last-known record on the broker rather than an anonymous "offline" marker.
 - Subscribes to `<prefix>cmd/#`. Each known topic suffix maps to one D-Bus method call. Payloads are JSON objects (see table below).
 - Listens for `io.homeboard.Occupancy1.Report` on the system bus and republishes it as retained JSON on `<prefix>state/occupancy`.
 - Listens for `io.homeboard.Ambience1.DisplayingPhoto` and republishes the photo-provider metadata JSON verbatim on `<prefix>state/displayed_photo` (passthrough, not re-wrapped).
 - Listens for `io.homeboard.Ambience1.SlideshowActive` and republishes `{"active":true}` / `{"active":false}` retained on `<prefix>state/slideshow_active`.
 - Auto-reconnects to both the broker and (implicitly) D-Bus on failure.
-- Publishes `{"state":"online"}` retained to `<prefix>state/bridge` on successful connect and `{"state":"offline"}` on graceful shutdown.
+- Publishes the online variant of the same payload retained to `<prefix>state/bridge` on successful connect, and the offline variant on graceful shutdown — so the topic always carries a single record per device, with `state` toggling between `online` and `offline`. IP and other host info are captured at startup and do not refresh; a process restart is required to pick up changes.
 
 This service is a **client** on every bus it touches: it doesn't own a D-Bus name, and it doesn't accept incoming TCP.
 
@@ -74,7 +74,7 @@ All state payloads are JSON. `state/displayed_photo` is a passthrough of `photo-
 
 | Topic | Payload | Retained |
 |-------|---------|----------|
-| `state/bridge` | `{"state":"online"}` / `{"state":"offline"}` | yes (LWT pre-formatted; broker publishes the offline payload on ungraceful disconnect) |
+| `state/bridge` | `{"state":"online"\|"offline","machine_id":...,"hostname":...,"ip":...,"host_model":...,"started_at":...,"started_at_iso":...,"rotation":<uint>,"interp":...,"h_align":...,"v_align":...}` | yes (LWT pre-formatted with the offline variant; broker publishes it on ungraceful disconnect, retaining a last-known record for stale-device cleanup). The `rotation`/`interp`/`h_align`/`v_align` fields mirror the current Ambience render config; they default at startup and can be updated live via `rc_mqtt_claim_set_render_cfg`. The LWT carries the startup defaults — a crash after a render_cfg change will deliver stale render fields in the offline payload |
 | `state/occupancy` | `{"occupied":<bool>,"distance_cm":<uint>,"ts":<unix_seconds>}` | yes — late-joining clients get current state |
 | `state/displayed_photo` | photo-provider's metadata JSON, passed through verbatim | yes — late-joining clients see the currently-displayed photo |
 | `state/slideshow_active` | `{"active":<bool>}` | yes — reflects whether the ambience screen is currently on and the slideshow is running |

@@ -9,18 +9,21 @@ struct rc_mqtt_claim;
 #define RC_MQTT_CLAIM_CONFLICT (-1)
 #define RC_MQTT_CLAIM_TRANSPORT (-2)
 
-// Allocate claim state. Reads /host info, and prepares for MQTT deliver.
-// Returns NULL if host info cannot be collected.
-struct rc_mqtt_claim *rc_mqtt_claim_new(const char *topic_prefix);
+// Allocate claim state. Reads host info and pre-formats both the online and
+// offline JSON payloads for the merged state/bridge topic. Returns NULL if
+// host info cannot be collected.
+// The instance of mosq must be valid but may not be connected yet
+struct rc_mqtt_claim *rc_mqtt_claim_new(const char *topic_prefix,
+                                        struct mosquitto *mosq);
 
 // Free claim state. If `mosq` is non-NULL AND the claim was previously
-// successful, also publishes an empty retained bridge_info to clear our
-// claim, so the next bridge starting on this prefix sees a free slot. Safe
-// to call with a NULL claim or in any failed-init state.
+// successful, also publishes our offline payload retained so consumers see
+// the device as last-known-offline. Safe to call with a NULL claim or in any
+// failed-init state.
 void rc_mqtt_claim_free(struct rc_mqtt_claim *c, struct mosquitto *mosq);
 
-// Synchronously verify no other machine currently owns the bridge_info
-// topic and publish our retained claim.
+// Synchronously verify no other machine currently owns the state/bridge
+// topic and publish our retained online claim.
 //
 // `mosq` must already have had mosquitto_connect() called on it (TCP-level)
 // but CONNACK may still be pending. The function takes over the connect and
@@ -33,7 +36,8 @@ void rc_mqtt_claim_free(struct rc_mqtt_claim *c, struct mosquitto *mosq);
 int rc_mqtt_claim_run(struct rc_mqtt_claim *c, struct mosquitto *mosq,
                       char *conflict_summary, size_t conflict_summary_sz);
 
-// Republish our retained bridge_info. Call from on_connect_cb on reconnect
-// after the LWT may have cleared our retained payload from the broker.
-void rc_mqtt_claim_republish(const struct rc_mqtt_claim *c,
-                             struct mosquitto *mosq);
+// Republish the online payload. Call from on_connect_cb on reconnect, since
+// the broker will have applied the LWT (offline payload) when our previous
+// session dropped, and we need to overwrite it with the live online state.
+void rc_mqtt_claim_publish_online(const struct rc_mqtt_claim *c,
+                                  struct mosquitto *mosq);

@@ -114,8 +114,8 @@ static size_t json_escape(const char *src, char *dst, size_t dst_sz) {
   return j;
 }
 
-int rc_host_info_format_json(const struct rc_host_info *info, char *buf,
-                             size_t buf_sz) {
+int rc_host_info_format_json(const struct rc_host_info *info, const char *state,
+                             char *buf, size_t buf_sz) {
   char hostname_e[256];
   char model_e[256];
   char ip_e[64];
@@ -132,17 +132,19 @@ int rc_host_info_format_json(const struct rc_host_info *info, char *buf,
   int n;
   if (ip_e[0]) {
     n = snprintf(buf, buf_sz,
-                 "{\"machine_id\":\"%s\",\"hostname\":\"%s\","
+                 "{\"state\":\"%s\","
+                 "\"machine_id\":\"%s\",\"hostname\":\"%s\","
                  "\"ip\":\"%s\",\"host_model\":\"%s\","
                  "\"started_at\":%lld,\"started_at_iso\":\"%s\"}",
-                 info->machine_id, hostname_e, ip_e, model_e,
+                 state, info->machine_id, hostname_e, ip_e, model_e,
                  (long long)info->started_at, iso);
   } else {
     n = snprintf(buf, buf_sz,
-                 "{\"machine_id\":\"%s\",\"hostname\":\"%s\","
+                 "{\"state\":\"%s\","
+                 "\"machine_id\":\"%s\",\"hostname\":\"%s\","
                  "\"host_model\":\"%s\","
                  "\"started_at\":%lld,\"started_at_iso\":\"%s\"}",
-                 info->machine_id, hostname_e, model_e,
+                 state, info->machine_id, hostname_e, model_e,
                  (long long)info->started_at, iso);
   }
   if (n < 0 || (size_t)n >= buf_sz)

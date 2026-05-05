@@ -80,6 +80,41 @@ static enum vertical_align img_render_cfg_parse_vertical_align(const char *x) {
   }
 }
 
+static const char *img_render_cfg_interpolation_name(enum interpolation v) {
+  switch (v) {
+  case INTERP_NEAREST:
+    return "nearest";
+  case INTERP_BILINEAR:
+    return "bilinear";
+  }
+  return "bilinear";
+}
+
+static const char *
+img_render_cfg_horizontal_align_name(enum horizontal_align v) {
+  switch (v) {
+  case HORIZONTAL_ALIGN_LEFT:
+    return "left";
+  case HORIZONTAL_ALIGN_CENTER:
+    return "center";
+  case HORIZONTAL_ALIGN_RIGHT:
+    return "right";
+  }
+  return "center";
+}
+
+static const char *img_render_cfg_vertical_align_name(enum vertical_align v) {
+  switch (v) {
+  case VERTICAL_ALIGN_TOP:
+    return "top";
+  case VERTICAL_ALIGN_CENTER:
+    return "center";
+  case VERTICAL_ALIGN_BOTTOM:
+    return "bottom";
+  }
+  return "center";
+}
+
 // Render an RGB image into an XRGB8888 destination buffer.
 // Scales to fit (preserving aspect ratio on the smallest axis),
 // aligns per `cfg`, and applies rotation. Pixels outside the scaled

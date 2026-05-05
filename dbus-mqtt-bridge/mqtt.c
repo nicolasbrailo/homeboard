@@ -23,7 +23,6 @@ struct rc_mqtt {
   char topic_prefix[64];
   char cmd_prefix[96];
   size_t cmd_prefix_len;
-  char bridge_state_topic[128];
   char host[128];
   uint16_t port;
   uint16_t keepalive_s;
@@ -101,10 +100,7 @@ static void on_connect_cb(struct mosquitto *mosq, void *obj, int rc) {
     fprintf(stderr, "subscribe(%s): %s\n", ACTIVE_SERVER_TOPIC,
             mosquitto_strerror(r));
 
-  rc_mqtt_claim_republish(m->claim, mosq);
-  static const char online_payload[] = "{\"state\":\"online\"}";
-  mosquitto_publish(mosq, NULL, m->bridge_state_topic,
-                    (int)(sizeof(online_payload) - 1), online_payload, 0, true);
+  rc_mqtt_claim_publish_online(m->claim, mosq);
 }
 
 static void on_disconnect_cb(struct mosquitto *mosq, void *obj, int rc) {
@@ -135,7 +131,7 @@ static void on_message_cb(struct mosquitto *mosq, void *obj,
 }
 
 static void cleanup_failed_init(struct rc_mqtt *m) {
-  // claim_free with our mosq publishes the empty-retained cleanup only if
+  // claim_free with our mosq publishes the offline retained payload only if
   // the claim was successful; safe to call in any failed-init state.
   rc_mqtt_claim_free(m->claim, m->mosq);
   if (m->mosq) {
@@ -167,15 +163,6 @@ struct rc_mqtt *rc_mqtt_init(const struct rc_config *cfg, rc_mqtt_cmd_cb on_cmd,
   strncpy(m->topic_prefix, cfg->topic_prefix, sizeof(m->topic_prefix) - 1);
   snprintf(m->cmd_prefix, sizeof(m->cmd_prefix), "%scmd/", m->topic_prefix);
   m->cmd_prefix_len = strlen(m->cmd_prefix);
-  snprintf(m->bridge_state_topic, sizeof(m->bridge_state_topic),
-           "%sstate/bridge", m->topic_prefix);
-
-  m->claim = rc_mqtt_claim_new(m->topic_prefix);
-  if (!m->claim) {
-    free(m);
-    mosquitto_lib_cleanup();
-    return NULL;
-  }
 
   // NULL client_id + clean_session=true → broker assigns a unique id.
   m->mosq = mosquitto_new(NULL, true, m);
@@ -191,27 +178,23 @@ struct rc_mqtt *rc_mqtt_init(const struct rc_config *cfg, rc_mqtt_cmd_cb on_cmd,
     printf("Set mqtt user %s\n", cfg->mqtt_user);
   }
 
-  // The disconnect callback survives the claim handoff; the connect/message
-  // callbacks are installed by mqtt_claim during the claim, then replaced
-  // below.
+  // The callbacks will be taken over by the claim mechanism, but not the
+  // disconnect CB, so we can set it early
   mosquitto_disconnect_callback_set(m->mosq, on_disconnect_cb);
 
-  // MQTT 3.1.1 supports only one LWT per connection. Use it for the
-  // user-visible online/offline indicator; mqtt_claim clears bridge_info
-  // manually on graceful shutdown.
-  static const char offline_payload[] = "{\"state\":\"offline\"}";
-  int r = mosquitto_will_set(m->mosq, m->bridge_state_topic,
-                             (int)(sizeof(offline_payload) - 1),
-                             offline_payload, 0, true);
-  if (r != MOSQ_ERR_SUCCESS)
-    fprintf(stderr, "mosquitto_will_set: %s\n", mosquitto_strerror(r));
+  m->claim = rc_mqtt_claim_new(m->topic_prefix, m->mosq);
+  if (!m->claim) {
+    free(m);
+    mosquitto_lib_cleanup();
+    return NULL;
+  }
 
   strncpy(m->host, cfg->mqtt_host, sizeof(m->host) - 1);
   m->port = cfg->mqtt_port;
   m->keepalive_s = cfg->mqtt_keepalive_s;
   m->next_reconnect_ts = 0;
 
-  r = mosquitto_connect(m->mosq, m->host, m->port, m->keepalive_s);
+  int r = mosquitto_connect(m->mosq, m->host, m->port, m->keepalive_s);
   if (r != MOSQ_ERR_SUCCESS) {
     fprintf(stderr, "Initial MQTT connect to %s:%u failed: %s\n", m->host,
             m->port, mosquitto_strerror(r));
@@ -237,12 +220,8 @@ struct rc_mqtt *rc_mqtt_init(const struct rc_config *cfg, rc_mqtt_cmd_cb on_cmd,
     return NULL;
   }
 
-  // Claim already published bridge_info; do the rest of the first-connect
-  // setup that on_connect_cb would do on a reconnect.
-  static const char online_payload[] = "{\"state\":\"online\"}";
-  mosquitto_publish(m->mosq, NULL, m->bridge_state_topic,
-                    (int)(sizeof(online_payload) - 1), online_payload, 0, true);
-
+  // Claim already published the online state; do the rest of the
+  // first-connect setup that on_connect_cb would do on a reconnect.
   char sub[128];
   snprintf(sub, sizeof(sub), "%scmd/#", m->topic_prefix);
   r = mosquitto_subscribe(m->mosq, NULL, sub, 0);
@@ -262,10 +241,6 @@ void rc_mqtt_free(struct rc_mqtt *m) {
     return;
   if (m->mosq) {
     rc_mqtt_claim_free(m->claim, m->mosq);
-    static const char offline_payload[] = "{\"state\":\"offline\"}";
-    mosquitto_publish(m->mosq, NULL, m->bridge_state_topic,
-                      (int)(sizeof(offline_payload) - 1), offline_payload, 0,
-                      true);
     mosquitto_loop_write(m->mosq, 1);
     mosquitto_disconnect(m->mosq);
     mosquitto_destroy(m->mosq);
