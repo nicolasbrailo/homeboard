@@ -1,6 +1,7 @@
 #include "dbus_client.h"
 #include "dbus_helpers/dbus_helpers.h"
 
+#include <jpeg_render/img_render.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -62,12 +63,23 @@ static int on_displaying_photo(sd_bus_message *m, void *userdata,
   (void)err;
   struct rc_dbus *d = userdata;
   const char *meta = NULL;
-  int r = sd_bus_message_read(m, "s", &meta);
+  uint32_t rot = 0;
+  const char *interp = NULL;
+  const char *h_align = NULL;
+  const char *v_align = NULL;
+  int r =
+      sd_bus_message_read(m, "susss", &meta, &rot, &interp, &h_align, &v_align);
   if (r < 0) {
     fprintf(stderr, "DisplayingPhoto: parse failed: %s\n", strerror(-r));
     return 0;
   }
-  d->on_displayed_photo(meta ? meta : "", d->ud);
+  struct img_render_cfg cfg = {
+      .rot = img_render_cfg_parse_rot(rot),
+      .interp = img_render_cfg_parse_interpolation(interp ? interp : ""),
+      .h_align = img_render_cfg_parse_horizontal_align(h_align ? h_align : ""),
+      .v_align = img_render_cfg_parse_vertical_align(v_align ? v_align : ""),
+  };
+  d->on_displayed_photo(meta ? meta : "", &cfg, d->ud);
   return 0;
 }
 

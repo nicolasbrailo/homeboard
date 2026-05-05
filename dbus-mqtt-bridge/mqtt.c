@@ -294,3 +294,10 @@ int rc_mqtt_publish(struct rc_mqtt *m, const char *topic_suffix,
             mosquitto_strerror(r));
   return r == MOSQ_ERR_SUCCESS ? 0 : -1;
 }
+
+void rc_mqtt_set_render_cfg(struct rc_mqtt *m,
+                            const struct img_render_cfg *cfg) {
+  if (!m)
+    return;
+  rc_mqtt_claim_set_render_cfg(m->claim, m->mosq, cfg);
+}

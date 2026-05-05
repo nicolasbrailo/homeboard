@@ -114,8 +114,8 @@ static size_t json_escape(const char *src, char *dst, size_t dst_sz) {
   return j;
 }
 
-int rc_host_info_format_json(const struct rc_host_info *info, const char *state,
-                             char *buf, size_t buf_sz) {
+int rc_host_info_format_online_json(const struct rc_host_info *info, char *buf,
+                                    size_t buf_sz) {
   char hostname_e[256];
   char model_e[256];
   char ip_e[64];
@@ -132,21 +132,40 @@ int rc_host_info_format_json(const struct rc_host_info *info, const char *state,
   int n;
   if (ip_e[0]) {
     n = snprintf(buf, buf_sz,
-                 "{\"state\":\"%s\","
+                 "{\"state\":\"online\","
                  "\"machine_id\":\"%s\",\"hostname\":\"%s\","
                  "\"ip\":\"%s\",\"host_model\":\"%s\","
                  "\"started_at\":%lld,\"started_at_iso\":\"%s\"}",
-                 state, info->machine_id, hostname_e, ip_e, model_e,
+                 info->machine_id, hostname_e, ip_e, model_e,
                  (long long)info->started_at, iso);
   } else {
     n = snprintf(buf, buf_sz,
-                 "{\"state\":\"%s\","
+                 "{\"state\":\"online\","
                  "\"machine_id\":\"%s\",\"hostname\":\"%s\","
                  "\"host_model\":\"%s\","
                  "\"started_at\":%lld,\"started_at_iso\":\"%s\"}",
-                 state, info->machine_id, hostname_e, model_e,
+                 info->machine_id, hostname_e, model_e,
                  (long long)info->started_at, iso);
   }
+  if (n < 0 || (size_t)n >= buf_sz)
+    return -1;
+  return n;
+}
+
+int rc_host_info_format_offline_json(const struct rc_host_info *info, char *buf,
+                                     size_t buf_sz) {
+  char hostname_e[256];
+  char model_e[256];
+  json_escape(info->hostname, hostname_e, sizeof(hostname_e));
+  json_escape(info->host_model, model_e, sizeof(model_e));
+
+  int n = snprintf(buf, buf_sz,
+                   "{\"state\":\"offline\","
+                   "\"machine_id\":\"%s\",\"hostname\":\"%s\","
+                   "\"host_model\":\"%s\","
+                   "\"started_at\":%lld}",
+                   info->machine_id, hostname_e, model_e,
+                   (long long)info->started_at);
   if (n < 0 || (size_t)n >= buf_sz)
     return -1;
   return n;

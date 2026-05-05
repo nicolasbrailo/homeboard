@@ -11,14 +11,21 @@ struct rc_host_info {
   time_t started_at;
 };
 
-// Upper bound on bytes written by rc_host_info_format_json, accounting for
-// worst-case JSON escaping (2x) of string fields plus syntax and timestamp.
+// Upper bound on bytes written by rc_host_info_format_online_json,
+// accounting for worst-case JSON escaping (2x) of string fields plus syntax
+// and timestamp.
 #define RC_HOST_INFO_JSON_MAX 1024
 
 int rc_host_info_collect(struct rc_host_info *info);
 
-// Format the host info as a JSON object. `state` is required and is emitted
-// as the first field ("state":"online" / "state":"offline"); it lets a single
-// retained payload double as both the live indicator and the LWT.
-int rc_host_info_format_json(const struct rc_host_info *info, const char *state,
-                             char *buf, size_t buf_sz);
+// Format the canonical online payload: full host info, with the leading
+// "state":"online" field. Pair with rc_host_info_format_offline_json for
+// the offline shape.
+int rc_host_info_format_online_json(const struct rc_host_info *info, char *buf,
+                                    size_t buf_sz);
+
+// Format the canonical offline payload: only fields that stay valid after
+// the bridge has stopped serving — state (always "offline"), machine_id,
+// hostname, host_model, started_at.
+int rc_host_info_format_offline_json(const struct rc_host_info *info, char *buf,
+                                     size_t buf_sz);

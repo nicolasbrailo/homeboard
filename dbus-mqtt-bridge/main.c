@@ -43,9 +43,12 @@ static void on_occupancy(bool occupied, uint32_t distance, void *ud) {
     rc_mqtt_publish(ctx->mqtt, "state/occupancy", payload, (size_t)n, true);
 }
 
-static void on_displayed_photo_changed(const char *meta, void *ud) {
+static void on_displayed_photo_changed(const char *meta,
+                                       const struct img_render_cfg *cfg,
+                                       void *ud) {
   struct app_ctx *ctx = ud;
   rc_mqtt_publish(ctx->mqtt, "state/displayed_photo", meta, strlen(meta), true);
+  rc_mqtt_set_render_cfg(ctx->mqtt, cfg);
 }
 
 static void on_slideshow_active_changed(bool active, void *ud) {

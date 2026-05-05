@@ -13,15 +13,41 @@
 #define CLAIM_WAIT_MS 2000
 #define CLAIM_TOTAL_TIMEOUT_S 10
 
+// Buffer big enough for host_info plus the appended render_cfg fields
+// (rotation, interp, h_align, v_align — ~90 bytes worst case).
+#define RC_CLAIM_PAYLOAD_MAX (RC_HOST_INFO_JSON_MAX + 128)
+
 struct rc_mqtt_claim {
   char topic[160];
   struct rc_host_info host_info;
-  char online_payload[RC_HOST_INFO_JSON_MAX];
+  struct img_render_cfg render_cfg;
+  char online_payload[RC_CLAIM_PAYLOAD_MAX];
   size_t online_payload_len;
-  char offline_payload[RC_HOST_INFO_JSON_MAX];
+  char offline_payload[RC_CLAIM_PAYLOAD_MAX];
   size_t offline_payload_len;
   bool claimed;
 };
+
+// Format the full online claim payload: host info JSON with the render_cfg
+// fields spliced in before the closing brace. Returns bytes written, or -1
+// on failure (host info formatter failed, or buffer too small).
+static int format_online_payload(const struct rc_mqtt_claim *c, char *buf,
+                                 size_t buf_sz) {
+  int n = rc_host_info_format_online_json(&c->host_info, buf, buf_sz);
+  if (n <= 0 || buf[n - 1] != '}')
+    return -1;
+  int extra =
+      snprintf(buf + n - 1, buf_sz - (size_t)(n - 1),
+               ",\"rotation\":%u,\"interp\":\"%s\","
+               "\"h_align\":\"%s\",\"v_align\":\"%s\"}",
+               (unsigned)c->render_cfg.rot,
+               img_render_cfg_interpolation_name(c->render_cfg.interp),
+               img_render_cfg_horizontal_align_name(c->render_cfg.h_align),
+               img_render_cfg_vertical_align_name(c->render_cfg.v_align));
+  if (extra < 0 || (size_t)(n - 1) + (size_t)extra >= buf_sz)
+    return -1;
+  return n - 1 + extra;
+}
 
 struct claim_state {
   const char *topic;
@@ -152,8 +178,16 @@ struct rc_mqtt_claim *rc_mqtt_claim_new(const char *topic_prefix,
          c->host_info.ip[0] ? c->host_info.ip : "(none)",
          c->host_info.host_model);
 
-  int n = rc_host_info_format_json(&c->host_info, "online", c->online_payload,
-                                   sizeof(c->online_payload));
+  // Default render_cfg matches the parser's fallback for unknown inputs:
+  // ROT_0 / BILINEAR / CENTER / CENTER. Callers should overwrite via
+  // rc_mqtt_claim_set_render_cfg once the real cfg is known.
+  c->render_cfg.rot = ROT_0;
+  c->render_cfg.interp = INTERP_BILINEAR;
+  c->render_cfg.h_align = HORIZONTAL_ALIGN_CENTER;
+  c->render_cfg.v_align = VERTICAL_ALIGN_CENTER;
+
+  int n =
+      format_online_payload(c, c->online_payload, sizeof(c->online_payload));
   if (n < 0) {
     n = snprintf(c->online_payload, sizeof(c->online_payload),
                  "{\"state\":\"online\",\"machine_id\":\"%s\"}",
@@ -161,8 +195,14 @@ struct rc_mqtt_claim *rc_mqtt_claim_new(const char *topic_prefix,
   }
   c->online_payload_len = (n > 0) ? (size_t)n : 0;
 
-  n = rc_host_info_format_json(&c->host_info, "offline", c->offline_payload,
-                               sizeof(c->offline_payload));
+  // The offline payload carries only immutable identity fields. Once the
+  // bridge stops serving, anything else (ip, render_cfg, ...) is a
+  // frozen-at-shutdown value that would otherwise be presented as
+  // authoritative — so we strip those out and use the same payload for
+  // both the LWT (crash path) and the graceful-shutdown publish in
+  // rc_mqtt_claim_free.
+  n = rc_host_info_format_offline_json(&c->host_info, c->offline_payload,
+                                       sizeof(c->offline_payload));
   if (n < 0) {
     n = snprintf(c->offline_payload, sizeof(c->offline_payload),
                  "{\"state\":\"offline\",\"machine_id\":\"%s\"}",
@@ -170,11 +210,12 @@ struct rc_mqtt_claim *rc_mqtt_claim_new(const char *topic_prefix,
   }
   c->offline_payload_len = (n > 0) ? (size_t)n : 0;
 
-  // Set mosquitto's LWT. The claim's offline payload carries
-  // machine_id/hostname/ip alongside "state":"offline" so an ungraceful
-  // disconnect leaves a useful last-known record retained on the broker.
-  // mqtt_claim publishes the same payload manually on graceful exit.
-  int r = mosquitto_will_set(mosq, c->topic, c->offline_payload_len, c->offline_payload, 0, true);
+  // MQTT 3.1.1 latches the LWT from the CONNECT packet and offers no way
+  // to update it on a live session, so it MUST be set before connecting.
+  // Since our offline payload is already immutable-only, we can hand it
+  // straight to mosquitto without a separate buffer.
+  int r = mosquitto_will_set(mosq, c->topic, (int)c->offline_payload_len,
+                             c->offline_payload, 0, true);
   if (r != MOSQ_ERR_SUCCESS)
     fprintf(stderr, "No LWT, mosquitto_will_set: %s\n", mosquitto_strerror(r));
 
@@ -185,9 +226,9 @@ void rc_mqtt_claim_free(struct rc_mqtt_claim *c, struct mosquitto *mosq) {
   if (!c)
     return;
   if (mosq && c->claimed && c->offline_payload_len > 0) {
-    // Leave a last-known-offline record retained on graceful shutdown,
-    // mirroring what the LWT would have done on a crash. A separate cleanup
-    // mechanism is responsible for evicting permanently-dead devices.
+    // Leave a last-known-offline record retained on graceful shutdown.
+    // Same payload shape as the LWT, so the offline view of a device is
+    // identical regardless of whether it died gracefully or crashed.
     mosquitto_publish(mosq, NULL, c->topic, (int)c->offline_payload_len,
                       c->offline_payload, 0, true);
   }
@@ -208,6 +249,29 @@ void rc_mqtt_claim_publish_online(const struct rc_mqtt_claim *c,
   if (r != MOSQ_ERR_SUCCESS) {
     fprintf(stderr, "online publish(%s): %s\n", c->topic,
             mosquitto_strerror(r));
+  }
+}
+
+void rc_mqtt_claim_set_render_cfg(struct rc_mqtt_claim *c,
+                                  struct mosquitto *mosq,
+                                  const struct img_render_cfg *cfg) {
+  if (!c || !cfg)
+    return;
+  c->render_cfg = *cfg;
+
+  // Only the online payload carries render_cfg; the offline payload is
+  // immutable-only by design and does not need refreshing here.
+  int n =
+      format_online_payload(c, c->online_payload, sizeof(c->online_payload));
+  c->online_payload_len = (n > 0) ? (size_t)n : 0;
+
+  if (mosq && c->claimed && c->online_payload_len > 0) {
+    int r = mosquitto_publish(mosq, NULL, c->topic, (int)c->online_payload_len,
+                              c->online_payload, 0, true);
+    if (r != MOSQ_ERR_SUCCESS) {
+      fprintf(stderr, "render_cfg republish(%s): %s\n", c->topic,
+              mosquitto_strerror(r));
+    }
   }
 }
 

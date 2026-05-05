@@ -5,10 +5,13 @@
 #include <systemd/sd-bus.h>
 
 struct rc_dbus;
+struct img_render_cfg;
 
 typedef void (*rc_dbus_occupancy_cb)(bool occupied, uint32_t distance_cm,
                                      void *ud);
-typedef void (*rc_dbus_displayed_photo_cb)(const char *meta, void *ud);
+typedef void (*rc_dbus_displayed_photo_cb)(const char *meta,
+                                           const struct img_render_cfg *cfg,
+                                           void *ud);
 typedef void (*rc_dbus_slideshow_active_cb)(bool active, void *ud);
 
 struct rc_dbus *rc_dbus_init(rc_dbus_occupancy_cb on_occupancy,

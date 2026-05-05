@@ -2,6 +2,8 @@
 
 #include <stddef.h>
 
+#include <jpeg_render/img_render.h>
+
 struct mosquitto;
 struct rc_mqtt_claim;
 
@@ -12,7 +14,8 @@ struct rc_mqtt_claim;
 // Allocate claim state. Reads host info and pre-formats both the online and
 // offline JSON payloads for the merged state/bridge topic. Returns NULL if
 // host info cannot be collected.
-// The instance of mosq must be valid but may not be connected yet
+// The instance of mosq must be valid but not connected yet (the LWT needs to be
+// set before calling mosquitto_connect)
 struct rc_mqtt_claim *rc_mqtt_claim_new(const char *topic_prefix,
                                         struct mosquitto *mosq);
 
@@ -41,3 +44,10 @@ int rc_mqtt_claim_run(struct rc_mqtt_claim *c, struct mosquitto *mosq,
 // session dropped, and we need to overwrite it with the live online state.
 void rc_mqtt_claim_publish_online(const struct rc_mqtt_claim *c,
                                   struct mosquitto *mosq);
+
+// Update the img_render_cfg embedded in the claim payload and (if `mosq` is
+// non-NULL and the claim is live) republish the retained online payload so
+// subscribers see the new values immediately.
+void rc_mqtt_claim_set_render_cfg(struct rc_mqtt_claim *c,
+                                  struct mosquitto *mosq,
+                                  const struct img_render_cfg *cfg);

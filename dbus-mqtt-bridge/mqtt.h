@@ -5,6 +5,7 @@
 
 struct rc_mqtt;
 struct rc_config;
+struct img_render_cfg;
 
 typedef void (*rc_mqtt_cmd_cb)(const char *topic_suffix, const char *payload,
                                size_t len, void *ud);
@@ -25,3 +26,6 @@ int rc_mqtt_loop_misc(struct rc_mqtt *m);
 
 int rc_mqtt_publish(struct rc_mqtt *m, const char *topic_suffix,
                     const char *payload, size_t len, bool retain);
+
+void rc_mqtt_set_render_cfg(struct rc_mqtt *m,
+                            const struct img_render_cfg *cfg);

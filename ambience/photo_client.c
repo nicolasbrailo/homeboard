@@ -6,6 +6,8 @@
 #include <systemd/sd-bus.h>
 #include <unistd.h>
 
+#include "jpeg_render/img_render.h"
+
 #define DBUS_PHOTO_SERVICE "io.homeboard.PhotoProvider"
 #define DBUS_PHOTO_PATH "/io/homeboard/PhotoProvider"
 #define DBUS_PHOTO_INTERFACE "io.homeboard.PhotoProvider1"
@@ -40,7 +42,8 @@ void photo_client_free(struct PhotoClient *pc) {
 }
 
 int photo_client_fetch_one(struct PhotoClient *pc, const char *method,
-                           int *fd_out, char **meta_out) {
+                           int *fd_out, char **meta_out,
+                           const struct img_render_cfg *render_cfg) {
   printf("Fetching new photo with %s.%s\n", DBUS_PHOTO_SERVICE, method);
   sd_bus_error err = SD_BUS_ERROR_NULL;
   sd_bus_message *reply = NULL;
@@ -96,8 +99,15 @@ int photo_client_fetch_one(struct PhotoClient *pc, const char *method,
   // better in render.c, but since this object already has a bus, render is
   // already too heavy and the only reasonable thing to do with a fetched
   // picture is display it, it's the photo client that emits this)
+  static const struct img_render_cfg default_cfg = {
+      ROT_0, INTERP_BILINEAR, HORIZONTAL_ALIGN_CENTER, VERTICAL_ALIGN_CENTER};
+  const struct img_render_cfg *cfg = render_cfg ? render_cfg : &default_cfg;
   r = sd_bus_emit_signal(pc->bus, DBUS_AMBIENCE_PATH, DBUS_AMBIENCE_INTERFACE,
-                         "DisplayingPhoto", "s", *meta_out ? *meta_out : "");
+                         "DisplayingPhoto", "susss", *meta_out ? *meta_out : "",
+                         (uint32_t)cfg->rot,
+                         img_render_cfg_interpolation_name(cfg->interp),
+                         img_render_cfg_horizontal_align_name(cfg->h_align),
+                         img_render_cfg_vertical_align_name(cfg->v_align));
   if (r < 0)
     fprintf(stderr, "Emit DisplayingPhoto: %s\n", strerror(-r));
   return r;

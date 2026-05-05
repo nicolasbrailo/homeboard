@@ -167,7 +167,14 @@ static void *render_thread_fn(void *arg) {
 
     int fd;
     char *meta = NULL;
-    photo_client_fetch_one(s->photo_client, method, &fd, &meta);
+
+    // Retrieve img_cfg in case photo client wants to optimize the request for a
+    // specific config type
+    pthread_mutex_lock(&s->drm_mutex);
+    const struct img_render_cfg render_cfg = s->img_cfg;
+    pthread_mutex_unlock(&s->drm_mutex);
+
+    photo_client_fetch_one(s->photo_client, method, &fd, &meta, &render_cfg);
 
     // Re-check active under the mutex: if pause raced with our fetch, the pause
     // path has already painted the fallback and we must not stomp on it.
