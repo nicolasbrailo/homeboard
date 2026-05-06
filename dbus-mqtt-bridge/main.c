@@ -2,6 +2,8 @@
 #include "dbus_client.h"
 #include "mqtt.h"
 
+#include <jpeg_render/img_render.h>
+
 #include <errno.h>
 #include <json-c/json.h>
 #include <poll.h>
@@ -30,6 +32,8 @@ static void sig_handler(int sig) {
 struct app_ctx {
   struct rc_dbus *dbus;
   struct rc_mqtt *mqtt;
+  struct img_render_cfg last_render_cfg;
+  bool have_last_render_cfg;
 };
 
 static void on_occupancy(bool occupied, uint32_t distance, void *ud) {
@@ -48,7 +52,12 @@ static void on_displayed_photo_changed(const char *meta,
                                        void *ud) {
   struct app_ctx *ctx = ud;
   rc_mqtt_publish(ctx->mqtt, "state/displayed_photo", meta, strlen(meta), true);
-  rc_mqtt_set_render_cfg(ctx->mqtt, cfg);
+  if (!ctx->have_last_render_cfg ||
+      memcmp(&ctx->last_render_cfg, cfg, sizeof(*cfg)) != 0) {
+    ctx->last_render_cfg = *cfg;
+    ctx->have_last_render_cfg = true;
+    rc_mqtt_set_render_cfg(ctx->mqtt, cfg);
+  }
 }
 
 static void on_slideshow_active_changed(bool active, void *ud) {
