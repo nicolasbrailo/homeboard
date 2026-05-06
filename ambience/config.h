@@ -15,3 +15,5 @@ struct ambience_config {
 };
 
 int ambience_config_load(const char *path, struct ambience_config *cfg);
+
+int ambience_config_save(const char *path, const struct ambience_config *cfg);

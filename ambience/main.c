@@ -27,6 +27,10 @@ struct AmbienceCtx {
 
   // Remote-control overlay (QR code shown on the framebuffer)
   struct Overlay *overlay;
+
+  // Persisted config and the file it was loaded from / will be saved to
+  struct ambience_config cfg;
+  const char *cfg_path;
 } g_ambience_ctx;
 
 void on_next(void *ud) {
@@ -41,12 +45,18 @@ void on_prev(void *ud) {
 
 bool on_set_transition_time(void *ud, uint32_t seconds) {
   struct AmbienceCtx *s = ud;
-  return slideshow_set_transition_time_s(s->render, seconds);
+  if (!slideshow_set_transition_time_s(s->render, seconds))
+    return false;
+  s->cfg.transition_time_s = seconds;
+  ambience_config_save(s->cfg_path, &s->cfg);
+  return true;
 }
 
 int on_set_render_config(void *ud, const struct img_render_cfg *cfg) {
   struct AmbienceCtx *s = ud;
   render_set_img_render_config(s->render, cfg);
+  s->cfg.render = *cfg;
+  ambience_config_save(s->cfg_path, &s->cfg);
   return 0;
 }
 int on_announce(void *ud, uint32_t timeout_seconds, const char *msg) {
@@ -162,15 +172,16 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  struct ambience_config cfg = {0};
-  if (ambience_config_load(argv[1], &cfg) != 0) {
+  if (ambience_config_load(argv[1], &g_ambience_ctx.cfg) != 0) {
     fprintf(stderr, "Failed to load config\n");
     return 1;
   }
+  g_ambience_ctx.cfg_path = argv[1];
 
-  g_ambience_ctx.render = render_init(render_pre_commit_cb, &g_ambience_ctx,
-                                      cfg.fallback_image, cfg.transition_time_s,
-                                      cfg.use_eink_for_metadata, &cfg.render);
+  g_ambience_ctx.render = render_init(
+      render_pre_commit_cb, &g_ambience_ctx, g_ambience_ctx.cfg.fallback_image,
+      g_ambience_ctx.cfg.transition_time_s,
+      g_ambience_ctx.cfg.use_eink_for_metadata, &g_ambience_ctx.cfg.render);
   if (!g_ambience_ctx.render) {
     fprintf(stderr, "Failed to start display render service\n");
     return 1;
