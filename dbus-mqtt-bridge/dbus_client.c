@@ -32,9 +32,6 @@ struct rc_dbus {
   rc_dbus_displayed_photo_cb on_displayed_photo;
   rc_dbus_slideshow_active_cb on_slideshow_active;
   void *ud;
-
-  char *rc_server_url;
-  char *rc_server_qr_img;
 };
 
 static int log_err(const char *method, int r, sd_bus_error *err) {
@@ -86,25 +83,8 @@ static int on_displaying_photo(sd_bus_message *m, void *userdata,
   return 0;
 }
 
-static int propagate_ambience_remote_control_server(struct rc_dbus *d) {
-  if (!d->rc_server_url) {
-    return 0;
-  }
-
-  sd_bus_error err = SD_BUS_ERROR_NULL;
-  int r = sd_bus_call_method(d->bus, AMBIENCE_SERVICE, AMBIENCE_PATH,
-                             AMBIENCE_INTERFACE, "SetRemoteControlServer", &err,
-                             NULL, "ss", d->rc_server_url,
-                             d->rc_server_qr_img ? d->rc_server_qr_img : "");
-  int ret = (r < 0) ? log_err("SetRemoteControlServer", r, &err) : 0;
-  sd_bus_error_free(&err);
-  return ret;
-}
-
 static void on_ambience_updown(void *ud, bool up) {
-  if (up) {
-    propagate_ambience_remote_control_server(ud);
-  }
+  printf("Ambience service is now %s.\n", up? "up" : "down");
 }
 
 static int on_slideshow_active_signal(sd_bus_message *m, void *userdata,
@@ -132,8 +112,6 @@ struct rc_dbus *rc_dbus_init(rc_dbus_occupancy_cb on_occupancy,
   d->on_displayed_photo = on_displayed_photo;
   d->on_slideshow_active = on_slideshow_active;
   d->ud = ud;
-  d->rc_server_url = NULL;
-  d->rc_server_qr_img = NULL;
 
   int r = sd_bus_open_system(&d->bus);
   if (r < 0) {
@@ -201,8 +179,6 @@ void rc_dbus_free(struct rc_dbus *d) {
     sd_bus_slot_unref(d->slideshow_active_slot);
   if (d->bus)
     sd_bus_flush_close_unref(d->bus);
-  free(d->rc_server_url);
-  free(d->rc_server_qr_img);
   free(d);
 }
 
@@ -268,16 +244,6 @@ int rc_dbus_ambience_set_render_config(struct rc_dbus *d, uint32_t rotation,
   int ret = (r < 0) ? log_err("SetRenderConfig", r, &err) : 0;
   sd_bus_error_free(&err);
   return ret;
-}
-
-int rc_dbus_ambience_set_remote_control_server(struct rc_dbus *d,
-                                               const char *url,
-                                               const char *qr_img) {
-  free(d->rc_server_url);
-  free(d->rc_server_qr_img);
-  d->rc_server_url = strdup(url);
-  d->rc_server_qr_img = strdup(qr_img);
-  return propagate_ambience_remote_control_server(d);
 }
 
 int rc_dbus_photo_set_embed_qr(struct rc_dbus *d, bool on) {

@@ -13,12 +13,10 @@
 #include <time.h>
 
 #define RECONNECT_THROTTLE_S 30
-#define ACTIVE_SERVER_TOPIC "homeboard_remote_control/active_server"
 
 struct rc_mqtt {
   struct mosquitto *mosq;
   rc_mqtt_cmd_cb on_cmd;
-  rc_mqtt_active_server_cb on_active_server;
   void *ud;
   char topic_prefix[64];
   char cmd_prefix[96];
@@ -52,35 +50,6 @@ static void try_connect(struct rc_mqtt *m) {
             mosquitto_strerror(r));
 }
 
-static void handle_active_server_msg(struct rc_mqtt *m,
-                                     const struct mosquitto_message *msg) {
-  if (!msg->payload || msg->payloadlen <= 0)
-    return;
-  struct json_tokener *tok = json_tokener_new();
-  if (!tok)
-    return;
-  struct json_object *root =
-      json_tokener_parse_ex(tok, (const char *)msg->payload, msg->payloadlen);
-  json_tokener_free(tok);
-  if (!root) {
-    fprintf(stderr, "active_server: invalid JSON payload\n");
-    return;
-  }
-  struct json_object *o;
-  const char *url = NULL;
-  const char *qr = "";
-  if (json_object_object_get_ex(root, "url", &o))
-    url = json_object_get_string(o);
-  if (json_object_object_get_ex(root, "qr_img", &o)) {
-    const char *s = json_object_get_string(o);
-    if (s)
-      qr = s;
-  }
-  if (url && m->on_active_server)
-    m->on_active_server(url, qr, m->ud);
-  json_object_put(root);
-}
-
 static void on_connect_cb(struct mosquitto *mosq, void *obj, int rc) {
   struct rc_mqtt *m = obj;
   if (rc != 0) {
@@ -94,11 +63,6 @@ static void on_connect_cb(struct mosquitto *mosq, void *obj, int rc) {
   int r = mosquitto_subscribe(mosq, NULL, sub, 0);
   if (r != MOSQ_ERR_SUCCESS)
     fprintf(stderr, "subscribe(%s): %s\n", sub, mosquitto_strerror(r));
-
-  r = mosquitto_subscribe(mosq, NULL, ACTIVE_SERVER_TOPIC, 0);
-  if (r != MOSQ_ERR_SUCCESS)
-    fprintf(stderr, "subscribe(%s): %s\n", ACTIVE_SERVER_TOPIC,
-            mosquitto_strerror(r));
 
   rc_mqtt_claim_publish_online(m->claim, mosq);
 }
@@ -116,10 +80,6 @@ static void on_message_cb(struct mosquitto *mosq, void *obj,
   if (!msg->topic)
     return;
 
-  if (strcmp(msg->topic, ACTIVE_SERVER_TOPIC) == 0) {
-    handle_active_server_msg(m, msg);
-    return;
-  }
   size_t tlen = strlen(msg->topic);
   if (tlen <= m->cmd_prefix_len ||
       memcmp(msg->topic, m->cmd_prefix, m->cmd_prefix_len) != 0)
@@ -149,16 +109,13 @@ static void install_runtime_callbacks(struct rc_mqtt *m) {
   // disconnect callback never changed during claim, so it's already set.
 }
 
-struct rc_mqtt *rc_mqtt_init(const struct rc_config *cfg, rc_mqtt_cmd_cb on_cmd,
-                             rc_mqtt_active_server_cb on_active_server,
-                             void *ud) {
+struct rc_mqtt *rc_mqtt_init(const struct rc_config *cfg, rc_mqtt_cmd_cb on_cmd, void *ud) {
   mosquitto_lib_init();
 
   struct rc_mqtt *m = calloc(1, sizeof(*m));
   if (!m)
     return NULL;
   m->on_cmd = on_cmd;
-  m->on_active_server = on_active_server;
   m->ud = ud;
   strncpy(m->topic_prefix, cfg->topic_prefix, sizeof(m->topic_prefix) - 1);
   snprintf(m->cmd_prefix, sizeof(m->cmd_prefix), "%scmd/", m->topic_prefix);
@@ -227,11 +184,6 @@ struct rc_mqtt *rc_mqtt_init(const struct rc_config *cfg, rc_mqtt_cmd_cb on_cmd,
   r = mosquitto_subscribe(m->mosq, NULL, sub, 0);
   if (r != MOSQ_ERR_SUCCESS)
     fprintf(stderr, "subscribe(%s): %s\n", sub, mosquitto_strerror(r));
-
-  r = mosquitto_subscribe(m->mosq, NULL, ACTIVE_SERVER_TOPIC, 0);
-  if (r != MOSQ_ERR_SUCCESS)
-    fprintf(stderr, "subscribe(%s): %s\n", ACTIVE_SERVER_TOPIC,
-            mosquitto_strerror(r));
 
   return m;
 }

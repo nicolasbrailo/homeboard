@@ -59,12 +59,6 @@ int on_set_render_config(void *ud, const struct img_render_cfg *cfg) {
   ambience_config_save(s->cfg_path, &s->cfg);
   return 0;
 }
-int on_announce(void *ud, uint32_t timeout_seconds, const char *msg) {
-  // TODO build announcement
-  // TODO build timeout
-  printf("Announcement requested [%d seconds]: '%s'\n", timeout_seconds, msg);
-  return 0;
-}
 int on_overlay_requested(void *ud, uint32_t timeout_seconds, const char *svg) {
   // TODO build timeout
   struct AmbienceCtx *ctx = ud;
@@ -98,12 +92,6 @@ int on_overlay_from_file(void *ud, uint32_t timeout_seconds, const char *path) {
 void on_presence_changed(void *ud, bool present) {
   struct AmbienceCtx *s = ud;
   render_slideshow_set_active(s->render, present);
-}
-void on_set_remote_control_server(void *ud, const char *url,
-                                  const char *qr_img) {
-  printf("Remote control available @ %s\n", url);
-  struct AmbienceCtx *s = ud;
-  overlay_set_qr(s->overlay, qr_img);
 }
 void on_presence_service_updown(void *ud, bool up) {
   struct AmbienceCtx *s = ud;
@@ -156,11 +144,9 @@ static const struct dbus_listeners_cbs cbs = {
     .on_prev = on_prev,
     .on_set_transition_time = on_set_transition_time,
     .on_set_render_config = on_set_render_config,
-    .on_announce = on_announce,
     .on_overlay_requested = on_overlay_requested,
     .on_overlay_from_file = on_overlay_from_file,
     .on_presence_changed = on_presence_changed,
-    .on_set_remote_control_server = on_set_remote_control_server,
     .on_presence_service_updown = on_presence_service_updown,
     .on_photo_service_updown = on_photo_service_updown,
     .on_drm_mgr_updown = on_drm_mgr_updown,

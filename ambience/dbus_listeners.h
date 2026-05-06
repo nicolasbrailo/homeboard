@@ -15,7 +15,6 @@ struct dbus_listeners_cbs {
   // Returns 0 on success, negative errno on failure (-EINVAL, -EBUSY, ...).
   int (*on_set_render_config)(void *ud, const struct img_render_cfg *cfg);
 
-  int (*on_announce)(void *ud, uint32_t timeout_seconds, const char *msg);
   int (*on_overlay_requested)(void *ud, uint32_t timeout_seconds,
                               const char *svg);
   // Local test hook: load the SVG overlay directly from a file on the device.
@@ -25,10 +24,6 @@ struct dbus_listeners_cbs {
   // Presence status change (present=true => someone is in the room, false =>
   // room is vacant)
   void (*on_presence_changed)(void *ud, bool present);
-
-  // A remote control server is available
-  void (*on_set_remote_control_server)(void *ud, const char *url,
-                                       const char *qr_img);
 
   // Invoked when a service we depend on goes away or appears from the bus.
   // `up=true` means the service is now reachable.

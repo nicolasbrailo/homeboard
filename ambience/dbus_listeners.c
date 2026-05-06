@@ -65,29 +65,6 @@ static int method_set_transition_time(sd_bus_message *m, void *userdata,
   return sd_bus_reply_method_return(m, NULL);
 }
 
-static int method_announce(sd_bus_message *m, void *userdata,
-                           sd_bus_error *err) {
-  struct DBusListeners *s = userdata;
-  uint32_t timeout_seconds = 0;
-  const char *msg = NULL;
-  int r = sd_bus_message_read(m, "us", &timeout_seconds, &msg);
-  if (r < 0)
-    return r;
-  r = s->cbs.on_announce(s->ud, timeout_seconds, msg);
-  if (r < 0) {
-    const char *errmsg;
-    if (r == -EINVAL)
-      errmsg = "invalid timeout";
-    else if (r == -EBUSY)
-      errmsg = "announcement already active";
-    else
-      errmsg = "unknown error";
-    sd_bus_error_setf(err, SD_BUS_ERROR_INVALID_ARGS, "%s", errmsg);
-    return r;
-  }
-  return sd_bus_reply_method_return(m, NULL);
-}
-
 static int method_overlay_requested(sd_bus_message *m, void *userdata,
                                     sd_bus_error *err) {
   struct DBusListeners *s = userdata;
@@ -160,26 +137,11 @@ static int method_set_render_config(sd_bus_message *m, void *userdata,
   return sd_bus_reply_method_return(m, NULL);
 }
 
-static int method_set_remote_control_server(sd_bus_message *m, void *userdata,
-                                            sd_bus_error *err) {
-  struct DBusListeners *d = userdata;
-  const char *url = NULL;
-  const char *qr_img = NULL;
-  int r = sd_bus_message_read(m, "ss", &url, &qr_img);
-  if (r < 0)
-    return r;
-  d->cbs.on_set_remote_control_server(d->ud, url ? url : "",
-                                      qr_img ? qr_img : "");
-  return sd_bus_reply_method_return(m, NULL);
-}
-
 static const sd_bus_vtable g_vtable[] = {
     SD_BUS_VTABLE_START(0),
     SD_BUS_METHOD("Next", "", "", method_next, SD_BUS_VTABLE_UNPRIVILEGED),
     SD_BUS_METHOD("Prev", "", "", method_prev, SD_BUS_VTABLE_UNPRIVILEGED),
     SD_BUS_METHOD("SetTransitionTimeSecs", "u", "", method_set_transition_time,
-                  SD_BUS_VTABLE_UNPRIVILEGED),
-    SD_BUS_METHOD("Announce", "us", "", method_announce,
                   SD_BUS_VTABLE_UNPRIVILEGED),
     SD_BUS_METHOD("SetSvgOverlay", "us", "", method_overlay_requested,
                   SD_BUS_VTABLE_UNPRIVILEGED),
@@ -187,8 +149,6 @@ static const sd_bus_vtable g_vtable[] = {
                   SD_BUS_VTABLE_UNPRIVILEGED),
     SD_BUS_METHOD("SetRenderConfig", "usss", "", method_set_render_config,
                   SD_BUS_VTABLE_UNPRIVILEGED),
-    SD_BUS_METHOD("SetRemoteControlServer", "ss", "",
-                  method_set_remote_control_server, SD_BUS_VTABLE_UNPRIVILEGED),
     SD_BUS_SIGNAL("DisplayingPhoto", "s", 0),
     SD_BUS_SIGNAL("SlideshowActive", "b", 0),
     SD_BUS_VTABLE_END,

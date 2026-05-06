@@ -73,12 +73,6 @@ static void on_slideshow_active_changed(bool active, void *ud) {
                   true);
 }
 
-static void on_active_server(const char *url, const char *qr_img, void *ud) {
-  struct app_ctx *ctx = ud;
-  printf("active_server: %s\n", url);
-  rc_dbus_ambience_set_remote_control_server(ctx->dbus, url, qr_img);
-}
-
 // Parses payload as a JSON object. Returns NULL and logs on failure (not an
 // object, malformed JSON, or empty). Caller owns the returned object and must
 // json_object_put() it.
@@ -151,17 +145,6 @@ static void cmd_set_transition_time(struct app_ctx *ctx, const char *suffix,
     return;
   }
   rc_dbus_ambience_set_transition_time(ctx->dbus, secs);
-}
-
-static void cmd_announce(struct app_ctx *ctx, const char *suffix,
-                         struct json_object *o) {
-  uint32_t timeout;
-  const char *msg;
-  if (get_u32(o, "timeout", &timeout) < 0 || get_string(o, "msg", &msg) < 0) {
-    fprintf(stderr, "%s: missing/invalid 'timeout' or 'msg'\n", suffix);
-    return;
-  }
-  rc_dbus_ambience_announce(ctx->dbus, timeout, msg);
 }
 
 static void cmd_set_svg_overlay(struct app_ctx *ctx, const char *suffix,
@@ -251,8 +234,6 @@ static void on_cmd(const char *suffix, const char *payload, size_t len,
 
   if (strcmp(suffix, "ambience/set_transition_time_secs") == 0)
     cmd_set_transition_time(ctx, suffix, o);
-  else if (strcmp(suffix, "ambience/announce") == 0)
-    cmd_announce(ctx, suffix, o);
   else if (strcmp(suffix, "ambience/set_svg_overlay") == 0)
     cmd_set_svg_overlay(ctx, suffix, o);
   else if (strcmp(suffix, "ambience/set_render_config") == 0)
@@ -285,7 +266,7 @@ int main(int argc, char *argv[]) {
                           on_slideshow_active_changed, &ctx);
   if (!ctx.dbus)
     return 1;
-  ctx.mqtt = rc_mqtt_init(&cfg, on_cmd, on_active_server, &ctx);
+  ctx.mqtt = rc_mqtt_init(&cfg, on_cmd, &ctx);
   if (!ctx.mqtt) {
     rc_dbus_free(ctx.dbus);
     return 1;
