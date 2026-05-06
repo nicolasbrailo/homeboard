@@ -295,9 +295,10 @@ int rc_mqtt_publish(struct rc_mqtt *m, const char *topic_suffix,
   return r == MOSQ_ERR_SUCCESS ? 0 : -1;
 }
 
-void rc_mqtt_set_render_cfg(struct rc_mqtt *m,
-                            const struct img_render_cfg *cfg) {
+void rc_mqtt_set_render_cfg(struct rc_mqtt *m, const struct img_render_cfg *cfg,
+                            uint32_t display_w_px, uint32_t display_h_px) {
   if (!m)
     return;
-  rc_mqtt_claim_set_render_cfg(m->claim, m->mosq, cfg);
+  rc_mqtt_claim_set_render_cfg(m->claim, m->mosq, cfg, display_w_px,
+                               display_h_px);
 }

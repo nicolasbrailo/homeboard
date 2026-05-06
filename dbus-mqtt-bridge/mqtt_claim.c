@@ -21,6 +21,8 @@ struct rc_mqtt_claim {
   char topic[160];
   struct rc_host_info host_info;
   struct img_render_cfg render_cfg;
+  uint32_t display_w_px;
+  uint32_t display_h_px;
   char online_payload[RC_CLAIM_PAYLOAD_MAX];
   size_t online_payload_len;
   char offline_payload[RC_CLAIM_PAYLOAD_MAX];
@@ -39,11 +41,13 @@ static int format_online_payload(const struct rc_mqtt_claim *c, char *buf,
   int extra =
       snprintf(buf + n - 1, buf_sz - (size_t)(n - 1),
                ",\"rotation\":%u,\"interp\":\"%s\","
-               "\"h_align\":\"%s\",\"v_align\":\"%s\"}",
+               "\"h_align\":\"%s\",\"v_align\":\"%s\",\"display_w_px\":%u,"
+               "\"display_h_px\":%u}",
                (unsigned)c->render_cfg.rot,
                img_render_cfg_interpolation_name(c->render_cfg.interp),
                img_render_cfg_horizontal_align_name(c->render_cfg.h_align),
-               img_render_cfg_vertical_align_name(c->render_cfg.v_align));
+               img_render_cfg_vertical_align_name(c->render_cfg.v_align),
+               c->display_w_px, c->display_h_px);
   if (extra < 0 || (size_t)(n - 1) + (size_t)extra >= buf_sz)
     return -1;
   return n - 1 + extra;
@@ -185,6 +189,8 @@ struct rc_mqtt_claim *rc_mqtt_claim_new(const char *topic_prefix,
   c->render_cfg.interp = INTERP_BILINEAR;
   c->render_cfg.h_align = HORIZONTAL_ALIGN_CENTER;
   c->render_cfg.v_align = VERTICAL_ALIGN_CENTER;
+  c->display_w_px = 0;
+  c->display_h_px = 0;
 
   int n =
       format_online_payload(c, c->online_payload, sizeof(c->online_payload));
@@ -254,10 +260,14 @@ void rc_mqtt_claim_publish_online(const struct rc_mqtt_claim *c,
 
 void rc_mqtt_claim_set_render_cfg(struct rc_mqtt_claim *c,
                                   struct mosquitto *mosq,
-                                  const struct img_render_cfg *cfg) {
+                                  const struct img_render_cfg *cfg,
+                                  uint32_t display_w_px,
+                                  uint32_t display_h_px) {
   if (!c || !cfg)
     return;
   c->render_cfg = *cfg;
+  c->display_w_px = display_w_px;
+  c->display_h_px = display_h_px;
 
   // Only the online payload carries render_cfg; the offline payload is
   // immutable-only by design and does not need refreshing here.

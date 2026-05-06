@@ -50,4 +50,5 @@ void rc_mqtt_claim_publish_online(const struct rc_mqtt_claim *c,
 // subscribers see the new values immediately.
 void rc_mqtt_claim_set_render_cfg(struct rc_mqtt_claim *c,
                                   struct mosquitto *mosq,
-                                  const struct img_render_cfg *cfg);
+                                  const struct img_render_cfg *cfg,
+                                  uint32_t display_w_px, uint32_t display_h_px);

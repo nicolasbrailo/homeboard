@@ -115,7 +115,8 @@ int ambience_config_save(const char *path, const struct ambience_config *cfg) {
                          json_object_new_int((int)cfg->render.rot));
   json_object_object_add(
       root, "interpolation",
-      json_object_new_string(img_render_cfg_interpolation_name(cfg->render.interp)));
+      json_object_new_string(
+          img_render_cfg_interpolation_name(cfg->render.interp)));
   json_object_object_add(
       root, "horizontal_align",
       json_object_new_string(
@@ -131,9 +132,8 @@ int ambience_config_save(const char *path, const struct ambience_config *cfg) {
   json_object_object_add(root, "fallback_image",
                          json_object_new_string(cfg->fallback_image));
 
-  int rc = json_object_to_file_ext(path, root,
-                                   JSON_C_TO_STRING_PRETTY |
-                                       JSON_C_TO_STRING_SPACED);
+  int rc = json_object_to_file_ext(
+      path, root, JSON_C_TO_STRING_PRETTY | JSON_C_TO_STRING_SPACED);
   if (rc != 0) {
     fprintf(stderr, "Failed to write config to %s\n", path);
   }

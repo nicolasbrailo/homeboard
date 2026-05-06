@@ -34,6 +34,8 @@ struct app_ctx {
   struct rc_mqtt *mqtt;
   struct img_render_cfg last_render_cfg;
   bool have_last_render_cfg;
+  uint32_t display_w_px;
+  uint32_t display_h_px;
 };
 
 static void on_occupancy(bool occupied, uint32_t distance, void *ud) {
@@ -49,14 +51,18 @@ static void on_occupancy(bool occupied, uint32_t distance, void *ud) {
 
 static void on_displayed_photo_changed(const char *meta,
                                        const struct img_render_cfg *cfg,
-                                       void *ud) {
+                                       uint32_t display_w_px,
+                                       uint32_t display_h_px, void *ud) {
   struct app_ctx *ctx = ud;
   rc_mqtt_publish(ctx->mqtt, "state/displayed_photo", meta, strlen(meta), true);
-  if (!ctx->have_last_render_cfg ||
+  if (!ctx->have_last_render_cfg || (display_w_px != ctx->display_w_px) ||
+      (display_h_px != ctx->display_h_px) ||
       memcmp(&ctx->last_render_cfg, cfg, sizeof(*cfg)) != 0) {
     ctx->last_render_cfg = *cfg;
     ctx->have_last_render_cfg = true;
-    rc_mqtt_set_render_cfg(ctx->mqtt, cfg);
+    ctx->display_w_px = display_w_px;
+    ctx->display_h_px = display_h_px;
+    rc_mqtt_set_render_cfg(ctx->mqtt, cfg, display_w_px, display_h_px);
   }
 }
 

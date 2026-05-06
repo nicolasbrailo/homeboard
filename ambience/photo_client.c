@@ -18,6 +18,8 @@
 
 struct PhotoClient {
   sd_bus *bus;
+  uint32_t requested_w;
+  uint32_t requested_h;
 };
 
 struct PhotoClient *photo_client_init() {
@@ -103,11 +105,12 @@ int photo_client_fetch_one(struct PhotoClient *pc, const char *method,
       ROT_0, INTERP_BILINEAR, HORIZONTAL_ALIGN_CENTER, VERTICAL_ALIGN_CENTER};
   const struct img_render_cfg *cfg = render_cfg ? render_cfg : &default_cfg;
   r = sd_bus_emit_signal(pc->bus, DBUS_AMBIENCE_PATH, DBUS_AMBIENCE_INTERFACE,
-                         "DisplayingPhoto", "susss", *meta_out ? *meta_out : "",
-                         (uint32_t)cfg->rot,
+                         "DisplayingPhoto", "susssuu",
+                         *meta_out ? *meta_out : "", (uint32_t)cfg->rot,
                          img_render_cfg_interpolation_name(cfg->interp),
                          img_render_cfg_horizontal_align_name(cfg->h_align),
-                         img_render_cfg_vertical_align_name(cfg->v_align));
+                         img_render_cfg_vertical_align_name(cfg->v_align),
+                         pc->requested_w, pc->requested_h);
   if (r < 0)
     fprintf(stderr, "Emit DisplayingPhoto: %s\n", strerror(-r));
   return r;
@@ -120,6 +123,9 @@ int photo_client_fetch_one(struct PhotoClient *pc, const char *method,
 // correct aspect ratio) and embed_qr.
 int push_initial_config(struct PhotoClient *pc, uint32_t w, uint32_t h,
                         bool embed_qr) {
+  pc->requested_w = w;
+  pc->requested_h = h;
+
   sd_bus_error err = SD_BUS_ERROR_NULL;
   int r = sd_bus_call_method(pc->bus, DBUS_PHOTO_SERVICE, DBUS_PHOTO_PATH,
                              DBUS_PHOTO_INTERFACE, "SetTargetSize", &err, NULL,

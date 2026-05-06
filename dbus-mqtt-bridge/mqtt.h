@@ -2,6 +2,7 @@
 
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 
 struct rc_mqtt;
 struct rc_config;
@@ -27,5 +28,5 @@ int rc_mqtt_loop_misc(struct rc_mqtt *m);
 int rc_mqtt_publish(struct rc_mqtt *m, const char *topic_suffix,
                     const char *payload, size_t len, bool retain);
 
-void rc_mqtt_set_render_cfg(struct rc_mqtt *m,
-                            const struct img_render_cfg *cfg);
+void rc_mqtt_set_render_cfg(struct rc_mqtt *m, const struct img_render_cfg *cfg,
+                            uint32_t display_w_px, uint32_t display_h_px);

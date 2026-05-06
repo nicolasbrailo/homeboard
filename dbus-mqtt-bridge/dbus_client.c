@@ -67,8 +67,10 @@ static int on_displaying_photo(sd_bus_message *m, void *userdata,
   const char *interp = NULL;
   const char *h_align = NULL;
   const char *v_align = NULL;
-  int r =
-      sd_bus_message_read(m, "susss", &meta, &rot, &interp, &h_align, &v_align);
+  uint32_t display_w_px = 0;
+  uint32_t display_h_px = 0;
+  int r = sd_bus_message_read(m, "susssuu", &meta, &rot, &interp, &h_align,
+                              &v_align, &display_w_px, &display_h_px);
   if (r < 0) {
     fprintf(stderr, "DisplayingPhoto: parse failed: %s\n", strerror(-r));
     return 0;
@@ -79,7 +81,8 @@ static int on_displaying_photo(sd_bus_message *m, void *userdata,
       .h_align = img_render_cfg_parse_horizontal_align(h_align ? h_align : ""),
       .v_align = img_render_cfg_parse_vertical_align(v_align ? v_align : ""),
   };
-  d->on_displayed_photo(meta ? meta : "", &cfg, d->ud);
+  d->on_displayed_photo(meta ? meta : "", &cfg, display_w_px, display_h_px,
+                        d->ud);
   return 0;
 }
 
