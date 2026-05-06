@@ -25,6 +25,9 @@ struct Overlay {
   pthread_mutex_t mutex;
   NSVGimage *svg;
   NSVGrasterizer *rast;
+  unsigned char *cache_rgba;
+  uint32_t cache_w;
+  uint32_t cache_h;
 };
 
 struct Overlay *overlay_init(void) {
@@ -48,6 +51,7 @@ void overlay_free(struct Overlay *o) {
     nsvgDelete(o->svg);
   if (o->rast)
     nsvgDeleteRasterizer(o->rast);
+  free(o->cache_rgba);
   pthread_mutex_destroy(&o->mutex);
   free(o);
 }
@@ -69,9 +73,14 @@ void overlay_set_from_file(struct Overlay *o, const char *filename) {
   pthread_mutex_lock(&o->mutex);
   NSVGimage *old = o->svg;
   o->svg = new_svg;
+  unsigned char *old_cache = o->cache_rgba;
+  o->cache_rgba = NULL;
+  o->cache_w = 0;
+  o->cache_h = 0;
   pthread_mutex_unlock(&o->mutex);
   if (old)
     nsvgDelete(old);
+  free(old_cache);
 }
 
 void overlay_set_from_svg_data(struct Overlay *o, const char *data,
@@ -103,28 +112,47 @@ void overlay_set_from_svg_data(struct Overlay *o, const char *data,
   pthread_mutex_lock(&o->mutex);
   NSVGimage *old = o->svg;
   o->svg = new_svg;
+  unsigned char *old_cache = o->cache_rgba;
+  o->cache_rgba = NULL;
+  o->cache_w = 0;
+  o->cache_h = 0;
   pthread_mutex_unlock(&o->mutex);
   if (old)
     nsvgDelete(old);
+  free(old_cache);
 }
 
 // Rasterize SVG to fb dimensions and alpha-blend over the framebuffer.
-// Cheap-and-cheerful prototype: rasterize on every render. Cache later.
+// Rasterization output is cached and reused until the SVG or fb dims change.
 static void render_svg(struct Overlay *o, uint32_t *fb,
                        const struct fb_info *fbi) {
-  float scale_x = (float)fbi->width / o->svg->width;
-  float scale_y = (float)fbi->height / o->svg->height;
-  float scale = scale_x < scale_y ? scale_x : scale_y;
+  if (!o->cache_rgba || o->cache_w != fbi->width ||
+      o->cache_h != fbi->height) {
+    free(o->cache_rgba);
+    o->cache_rgba = NULL;
+    o->cache_w = 0;
+    o->cache_h = 0;
 
-  unsigned char *rgba = malloc((size_t)fbi->width * fbi->height * 4);
-  if (!rgba) {
-    fprintf(stderr, "overlay: failed to alloc SVG raster buffer\n");
-    return;
+    size_t bytes = (size_t)fbi->width * fbi->height * 4;
+    unsigned char *rgba = malloc(bytes);
+    if (!rgba) {
+      fprintf(stderr, "overlay: failed to alloc SVG raster buffer\n");
+      return;
+    }
+    memset(rgba, 0, bytes);
+
+    float scale_x = (float)fbi->width / o->svg->width;
+    float scale_y = (float)fbi->height / o->svg->height;
+    float scale = scale_x < scale_y ? scale_x : scale_y;
+    nsvgRasterize(o->rast, o->svg, 0, 0, scale, rgba, (int)fbi->width,
+                  (int)fbi->height, (int)fbi->width * 4);
+
+    o->cache_rgba = rgba;
+    o->cache_w = fbi->width;
+    o->cache_h = fbi->height;
   }
-  memset(rgba, 0, (size_t)fbi->width * fbi->height * 4);
-  nsvgRasterize(o->rast, o->svg, 0, 0, scale, rgba, (int)fbi->width,
-                (int)fbi->height, (int)fbi->width * 4);
 
+  const unsigned char *rgba = o->cache_rgba;
   for (uint32_t y = 0; y < fbi->height; y++) {
     uint32_t *fb_row = (uint32_t *)((uint8_t *)fb + (size_t)y * fbi->stride);
     const uint8_t *src_row = rgba + (size_t)y * fbi->width * 4;
@@ -152,8 +180,6 @@ static void render_svg(struct Overlay *o, uint32_t *fb,
           (0xffu << 24) | ((uint32_t)nr << 16) | ((uint32_t)ng << 8) | nb;
     }
   }
-
-  free(rgba);
 }
 
 void overlay_render(struct Overlay *o, uint32_t *fb,
