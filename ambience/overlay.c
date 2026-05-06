@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 // NanoSVG triggers a few warnings the project treats as errors (anonymous
 // unions under -std=gnu99 and float-equal comparisons). Suppress them just
@@ -28,7 +29,32 @@ struct Overlay {
   unsigned char *cache_rgba;
   uint32_t cache_w;
   uint32_t cache_h;
+  // 0 = no timeout; otherwise CLOCK_MONOTONIC nanoseconds at which to drop svg.
+  uint64_t deadline_ns;
 };
+
+static uint64_t monotonic_ns(void) {
+  struct timespec ts;
+  clock_gettime(CLOCK_MONOTONIC, &ts);
+  return (uint64_t)ts.tv_sec * 1000000000ull + (uint64_t)ts.tv_nsec;
+}
+
+// Replace o->svg with new_svg and reset deadline + raster cache. Caller owns
+// freeing the returned pointers (outside the mutex).
+static void overlay_swap_locked(struct Overlay *o, NSVGimage *new_svg,
+                                uint32_t timeout_seconds, NSVGimage **out_old,
+                                unsigned char **out_old_cache) {
+  *out_old = o->svg;
+  o->svg = new_svg;
+  *out_old_cache = o->cache_rgba;
+  o->cache_rgba = NULL;
+  o->cache_w = 0;
+  o->cache_h = 0;
+  o->deadline_ns = (new_svg && timeout_seconds > 0)
+                       ? monotonic_ns() +
+                             (uint64_t)timeout_seconds * 1000000000ull
+                       : 0;
+}
 
 struct Overlay *overlay_init(void) {
   struct Overlay *o = calloc(1, sizeof(*o));
@@ -56,7 +82,8 @@ void overlay_free(struct Overlay *o) {
   free(o);
 }
 
-void overlay_set_from_file(struct Overlay *o, const char *filename) {
+void overlay_set_from_file(struct Overlay *o, const char *filename,
+                           uint32_t timeout_seconds) {
   NSVGimage *new_svg = NULL;
   if (filename) {
     new_svg = nsvgParseFromFile(filename, "px", 96.0f);
@@ -70,21 +97,18 @@ void overlay_set_from_file(struct Overlay *o, const char *filename) {
       return;
     }
   }
+  NSVGimage *old;
+  unsigned char *old_cache;
   pthread_mutex_lock(&o->mutex);
-  NSVGimage *old = o->svg;
-  o->svg = new_svg;
-  unsigned char *old_cache = o->cache_rgba;
-  o->cache_rgba = NULL;
-  o->cache_w = 0;
-  o->cache_h = 0;
+  overlay_swap_locked(o, new_svg, timeout_seconds, &old, &old_cache);
   pthread_mutex_unlock(&o->mutex);
   if (old)
     nsvgDelete(old);
   free(old_cache);
 }
 
-void overlay_set_from_svg_data(struct Overlay *o, const char *data,
-                               size_t len) {
+void overlay_set_from_svg_data(struct Overlay *o, const char *data, size_t len,
+                               uint32_t timeout_seconds) {
   if (!o)
     return;
   NSVGimage *new_svg = NULL;
@@ -109,13 +133,10 @@ void overlay_set_from_svg_data(struct Overlay *o, const char *data,
       return;
     }
   }
+  NSVGimage *old;
+  unsigned char *old_cache;
   pthread_mutex_lock(&o->mutex);
-  NSVGimage *old = o->svg;
-  o->svg = new_svg;
-  unsigned char *old_cache = o->cache_rgba;
-  o->cache_rgba = NULL;
-  o->cache_w = 0;
-  o->cache_h = 0;
+  overlay_swap_locked(o, new_svg, timeout_seconds, &old, &old_cache);
   pthread_mutex_unlock(&o->mutex);
   if (old)
     nsvgDelete(old);
@@ -184,8 +205,16 @@ static void render_svg(struct Overlay *o, uint32_t *fb,
 
 void overlay_render(struct Overlay *o, uint32_t *fb,
                     const struct fb_info *fbi) {
+  NSVGimage *expired_svg = NULL;
+  unsigned char *expired_cache = NULL;
   pthread_mutex_lock(&o->mutex);
+  if (o->svg && o->deadline_ns != 0 && monotonic_ns() >= o->deadline_ns) {
+    overlay_swap_locked(o, NULL, 0, &expired_svg, &expired_cache);
+  }
   if (o->svg)
     render_svg(o, fb, fbi);
   pthread_mutex_unlock(&o->mutex);
+  if (expired_svg)
+    nsvgDelete(expired_svg);
+  free(expired_cache);
 }

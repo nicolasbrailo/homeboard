@@ -60,7 +60,6 @@ int on_set_render_config(void *ud, const struct img_render_cfg *cfg) {
   return 0;
 }
 int on_overlay_requested(void *ud, uint32_t timeout_seconds, const char *svg) {
-  // TODO build timeout
   struct AmbienceCtx *ctx = ud;
   size_t svg_len = svg ? strlen(svg) : 0;
   printf("New SVG overlay requested ");
@@ -71,7 +70,7 @@ int on_overlay_requested(void *ud, uint32_t timeout_seconds, const char *svg) {
   }
   printf(" (%zu bytes), will appear in the next picture displayed.\n", svg_len);
 
-  overlay_set_from_svg_data(ctx->overlay, svg, svg_len);
+  overlay_set_from_svg_data(ctx->overlay, svg, svg_len, timeout_seconds);
   return 0;
 }
 
@@ -85,7 +84,8 @@ int on_overlay_from_file(void *ud, uint32_t timeout_seconds, const char *path) {
   }
   printf(", will appear in the next picture displayed.\n");
 
-  overlay_set_from_file(ctx->overlay, (path && *path) ? path : NULL);
+  overlay_set_from_file(ctx->overlay, (path && *path) ? path : NULL,
+                        timeout_seconds);
   return 0;
 }
 
