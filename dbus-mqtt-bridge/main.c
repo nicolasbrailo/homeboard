@@ -19,8 +19,8 @@
 // Hard cap on a single inbound MQTT command payload. The biggest legitimate
 // command is set_svg_overlay; SVG content is capped at 128 KB and JSON
 // envelope/escaping fits comfortably below this.
-#define CMD_PAYLOAD_HARD_CAP (192 * 1024)
-#define SVG_CONTENT_CAP (128 * 1024)
+#define CMD_PAYLOAD_HARD_CAP ((1024 * 1024)+(64 * 1024))
+#define SVG_CONTENT_CAP (1024 * 1024)
 
 static volatile sig_atomic_t g_quit;
 

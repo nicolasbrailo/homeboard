@@ -7,12 +7,13 @@ This version has no Wayland dependencies, instead writing to the DRM for image r
 
 # OS setup
 
-Create user, disable desktop:
-
-```
-sudo adduser batman
-sudo usermod -aG sudo batman
-
+1. Create Raspberry PI OS as usual.
+1. Headless setup: write echo "batman:`echo 'mypassword' | openssl passwd -6 -stdin`" > bootfs/userconf.txt (or maybe rootfs? Try both just in case)
+1. Also `touch bootfs/ssh` and `touch rootfs/ssh`
+1. After bootup, ssh should be available
+1. Set up ssh pub keys `ssh-copy-id batman@$IP`
+1. Convenience tools: `sudo apt install vim tmux`
+1. Disable GUI: ```
 sudo systemctl set-default multi-user.target
 sudo systemctl disable lightdm
 
@@ -21,27 +22,30 @@ sudo rm /etc/systemd/system/getty@tty1.service.d/autologin.conf
 sudo systemctl daemon-reload
 sudo reboot
 ```
-
-After reboot, remove default user (log in as new user)
-
+1. Make bootup faster, disable services we won't use: ```
+sudo systemctl disable --now bluetooth.service wpa_supplicant.service
+sudo systemctl disable --now lightdm.service
+sudo systemctl disable --now plymouth-start.service plymouth-quit-wait.service
+sudo systemctl disable --now glamor-test.service
+sudo systemctl disable --now accounts-daemon.service
+sudo systemctl disable --now packagekit.service
+systemctl disable --now cloud-init-main cloud-init-local cloud-config cloud-final
+sudo touch /etc/cloud/cloud-init.disabled
 ```
-sudo killall -u pi
-sudo userdel -r pi
-```
 
-Setup ssh keys:
-
-```
-ssh-copy-id batman@$IP
-```
+The target OS should now be ready to deploy xcompiled binaries:
 
 # Project build
 
-- Setup deps: `sudo apt-get install build-essential clang clang-format gcc-arm-linux-gnueabi gcc-arm-linux-gnueabihf`
-- Build test project: `cd xcompile-test && make && file build/xcompile-test`
-- `make deploy`
+In the build machine:
 
-This should verify the full dev cycle works (cross compile, deploy to target). Try running the binary on the target, too.
+1. Setup deps: `sudo apt-get install build-essential clang clang-format gcc-arm-linux-gnueabi gcc-arm-linux-gnueabihf`
+1. Ensure common.mk has xcompile target (if not building locally) and setup the target IP in DEPLOY_TGT_HOST. Also update IP in root Makefile.
+1. Build test project: `cd xcompile-test && make && file build/xcompile-test`
+1. `make deploy` will deploy the entire project to the target, and it will install configs and dbus policies, but no systemd targets.
+1. At this point, before installing systemd units, it's a good idea to test if services run as expected, and if all GPIO connections are set up properly.
+
+The target should be ready to run now.
 
 
 

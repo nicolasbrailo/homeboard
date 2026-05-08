@@ -29,6 +29,12 @@ deploy-all:
 	done
 	$(MAKE) -C stockimgs deploy-imgs
 
+deploy-bins:
+	@for dir in $(SUBDIRS); do \
+		$(MAKE) -C $$dir deploy-bin; \
+	done
+
+
 deploy-scripts:
 	scp scripts/* $(DEPLOY_TGT_HOST):$(DEPLOY_TGT_DIR)/bin/
 
