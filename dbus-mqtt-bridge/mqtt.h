@@ -13,7 +13,8 @@ typedef void (*rc_mqtt_cmd_cb)(const char *topic_suffix, const char *payload,
 typedef void (*rc_mqtt_active_server_cb)(const char *url, const char *qr_img,
                                          void *ud);
 
-struct rc_mqtt *rc_mqtt_init(const struct rc_config *cfg, rc_mqtt_cmd_cb on_cmd, void *ud);
+struct rc_mqtt *rc_mqtt_init(const struct rc_config *cfg, rc_mqtt_cmd_cb on_cmd,
+                             void *ud);
 void rc_mqtt_free(struct rc_mqtt *m);
 
 int rc_mqtt_socket(struct rc_mqtt *m);

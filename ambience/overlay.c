@@ -50,10 +50,10 @@ static void overlay_swap_locked(struct Overlay *o, NSVGimage *new_svg,
   o->cache_rgba = NULL;
   o->cache_w = 0;
   o->cache_h = 0;
-  o->deadline_ns = (new_svg && timeout_seconds > 0)
-                       ? monotonic_ns() +
-                             (uint64_t)timeout_seconds * 1000000000ull
-                       : 0;
+  o->deadline_ns =
+      (new_svg && timeout_seconds > 0)
+          ? monotonic_ns() + (uint64_t)timeout_seconds * 1000000000ull
+          : 0;
 }
 
 struct Overlay *overlay_init(void) {
@@ -147,8 +147,7 @@ void overlay_set_from_svg_data(struct Overlay *o, const char *data, size_t len,
 // Rasterization output is cached and reused until the SVG or fb dims change.
 static void render_svg(struct Overlay *o, uint32_t *fb,
                        const struct fb_info *fbi) {
-  if (!o->cache_rgba || o->cache_w != fbi->width ||
-      o->cache_h != fbi->height) {
+  if (!o->cache_rgba || o->cache_w != fbi->width || o->cache_h != fbi->height) {
     free(o->cache_rgba);
     o->cache_rgba = NULL;
     o->cache_w = 0;

@@ -84,7 +84,7 @@ static int on_displaying_photo(sd_bus_message *m, void *userdata,
 }
 
 static void on_ambience_updown(void *ud, bool up) {
-  printf("Ambience service is now %s.\n", up? "up" : "down");
+  printf("Ambience service is now %s.\n", up ? "up" : "down");
 }
 
 static int on_slideshow_active_signal(sd_bus_message *m, void *userdata,

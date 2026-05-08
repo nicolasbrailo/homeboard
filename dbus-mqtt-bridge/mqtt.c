@@ -109,7 +109,8 @@ static void install_runtime_callbacks(struct rc_mqtt *m) {
   // disconnect callback never changed during claim, so it's already set.
 }
 
-struct rc_mqtt *rc_mqtt_init(const struct rc_config *cfg, rc_mqtt_cmd_cb on_cmd, void *ud) {
+struct rc_mqtt *rc_mqtt_init(const struct rc_config *cfg, rc_mqtt_cmd_cb on_cmd,
+                             void *ud) {
   mosquitto_lib_init();
 
   struct rc_mqtt *m = calloc(1, sizeof(*m));
