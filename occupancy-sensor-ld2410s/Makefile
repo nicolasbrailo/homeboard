@@ -25,9 +25,9 @@ dbus-listen:
 config-target:
 	$(SSH) 'grep -q "^dtoverlay=disable-bt" $(BOOT_CONFIG) || echo "dtoverlay=disable-bt" | sudo tee -a $(BOOT_CONFIG) > /dev/null'
 	$(SSH) 'grep -q "^enable_uart=1" $(BOOT_CONFIG) || echo "enable_uart=1" | sudo tee -a $(BOOT_CONFIG) > /dev/null'
-	$(SSH) 'sudo systemctl disable serial-getty@ttyAMA0.service'
-	$(SSH) 'sudo systemctl stop serial-getty@ttyAMA0.service || true'
-	$(SSH) 'if grep -q "console=serial0" $(CMDLINE); then sudo sed -i "s/ *console=serial0,[0-9]*//" $(CMDLINE); echo "Removed serial console from $(CMDLINE)"; fi'
-	$(SSH) 'sudo usermod -aG dialout $$USER'
+	$(SSH) 'sudo -S systemctl disable serial-getty@ttyAMA0.service'
+	$(SSH) 'sudo -S systemctl stop serial-getty@ttyAMA0.service || true'
+	$(SSH) 'if grep -q "console=serial0" $(CMDLINE); then sudo -S sed -i "s/ *console=serial0,[0-9]*//" $(CMDLINE); echo "Removed serial console from $(CMDLINE)"; fi'
+	$(SSH) 'sudo -S usermod -aG dialout $$USER'
 
 

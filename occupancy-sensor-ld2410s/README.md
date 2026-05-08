@@ -18,6 +18,16 @@ script stays as an interactive debugger; this service is the production daemon.
   long enough to be safe), or `--calibrate` to force on next idle period
 - Applies per-gate thresholds and common parameters from a JSON config file
 
+## Wiring
+
+- VCC and GND to any 3.3v/GND pins
+- UART TX in mmWave sensor/OT1 -> pin 10 (GPIO15, UART RX)
+- UART RX in mmWave sensor -> pin 8 (GPIO14, UART TX)
+- OT2 -> Any free GPIO pin (pin 7/GPIO4 is a good target). Don't forget to set the GPIO pin in the config of this service.
+
+More details: https://drive.google.com/file/d/1RYpSp6NaCerTm2P-qLDfyDEjUKo1RAYG/view
+
+
 ## Build & deploy
 
 Cross-compiled for ARMv6 (Pi Zero) using `rpiz-xcompile`:
