@@ -21,9 +21,15 @@
 struct EInkDisplay;
 typedef struct _cairo cairo_t;
 
+enum EInkRotation {
+  EINK_ROTATION_0 = 0,
+  EINK_ROTATION_180 = 180,
+};
+
 struct EInkConfig {
   bool mock_display;
   const char *save_render_to_png_file;
+  enum EInkRotation rotation;
 };
 
 // Init device and wait until it's ready to operate

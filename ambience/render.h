@@ -13,6 +13,7 @@ struct RenderCtx *render_init(render_pre_commit_cb_t cb,
                               void *render_pre_commit_cb_ud,
                               const char *fallback_img_path,
                               uint32_t transition_time_s, bool use_eink,
+                              bool eink_flip,
                               const struct img_render_cfg *img_cfg);
 void render_free(struct RenderCtx *s);
 

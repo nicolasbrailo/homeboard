@@ -43,6 +43,7 @@ int ambience_config_load(const char *path, struct ambience_config *cfg) {
   cfg->render.v_align = VERTICAL_ALIGN_CENTER;
   cfg->embed_qr = false;
   cfg->use_eink_for_metadata = false;
+  cfg->eink_flip = false;
   cfg->fallback_image[0] = '\0';
 
   struct json_object *val;
@@ -74,6 +75,8 @@ int ambience_config_load(const char *path, struct ambience_config *cfg) {
     cfg->embed_qr = json_object_get_boolean(val);
   if (json_object_object_get_ex(root, "use_eink_for_metadata", &val))
     cfg->use_eink_for_metadata = json_object_get_boolean(val);
+  if (json_object_object_get_ex(root, "eink_flip", &val))
+    cfg->eink_flip = json_object_get_boolean(val);
   if (json_object_object_get_ex(root, "fallback_image", &val)) {
     const char *s = json_object_get_string(val);
     if (s && s[0] != '\0') {
@@ -94,11 +97,13 @@ int ambience_config_load(const char *path, struct ambience_config *cfg) {
          "\tv_align=%s\n"
          "\tembed_qr=%d\n"
          "\tuse_eink_for_metadata=%d\n"
+         "\teink_flip=%d\n"
          "\tfallback_image=%s\n",
          cfg->transition_time_s, (uint32_t)cfg->render.rot,
          cfg->render.interp == INTERP_BILINEAR ? "bilinear" : "nearest",
          h_align_name(cfg->render.h_align), v_align_name(cfg->render.v_align),
-         cfg->embed_qr, cfg->use_eink_for_metadata, cfg->fallback_image);
+         cfg->embed_qr, cfg->use_eink_for_metadata, cfg->eink_flip,
+         cfg->fallback_image);
   return 0;
 }
 
@@ -129,6 +134,8 @@ int ambience_config_save(const char *path, const struct ambience_config *cfg) {
                          json_object_new_boolean(cfg->embed_qr));
   json_object_object_add(root, "use_eink_for_metadata",
                          json_object_new_boolean(cfg->use_eink_for_metadata));
+  json_object_object_add(root, "eink_flip",
+                         json_object_new_boolean(cfg->eink_flip));
   json_object_object_add(root, "fallback_image",
                          json_object_new_string(cfg->fallback_image));
 

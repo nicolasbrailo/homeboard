@@ -167,7 +167,8 @@ int main(int argc, char *argv[]) {
   g_ambience_ctx.render = render_init(
       render_pre_commit_cb, &g_ambience_ctx, g_ambience_ctx.cfg.fallback_image,
       g_ambience_ctx.cfg.transition_time_s,
-      g_ambience_ctx.cfg.use_eink_for_metadata, &g_ambience_ctx.cfg.render);
+      g_ambience_ctx.cfg.use_eink_for_metadata, g_ambience_ctx.cfg.eink_flip,
+      &g_ambience_ctx.cfg.render);
   if (!g_ambience_ctx.render) {
     fprintf(stderr, "Failed to start display render service\n");
     return 1;

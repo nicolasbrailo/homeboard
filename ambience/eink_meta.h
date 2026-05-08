@@ -1,9 +1,12 @@
 #pragma once
 
+#include <stdbool.h>
+
 struct EinkMeta;
 
-// Open the eink display. Returns NULL on failure.
-struct EinkMeta *eink_meta_init(void);
+// Open the eink display. If flip is true, rotates the display 180 degrees.
+// Returns NULL on failure.
+struct EinkMeta *eink_meta_init(bool flip);
 
 // Close the eink display and free.
 void eink_meta_free(struct EinkMeta *em);

@@ -12,11 +12,12 @@ struct EinkMeta {
   char last_text[256];
 };
 
-struct EinkMeta *eink_meta_init(void) {
+struct EinkMeta *eink_meta_init(bool flip) {
   struct EinkMeta *em = calloc(1, sizeof(*em));
   if (!em)
     return NULL;
   struct EInkConfig cfg = {0};
+  cfg.rotation = flip ? EINK_ROTATION_180 : EINK_ROTATION_0;
   em->display = eink_init(&cfg);
   if (!em->display) {
     fprintf(stderr, "eink_meta: eink_init failed\n");

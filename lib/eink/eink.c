@@ -21,6 +21,7 @@ struct EInkDisplay {
 
   size_t width;
   size_t height;
+  enum EInkRotation rotation;
   bool invert_color;
 
   cairo_surface_t *surface;
@@ -221,6 +222,20 @@ struct EInkDisplay *eink_init(struct EInkConfig *cfg) {
   display->width = EPD_2in13_V4_HEIGHT;
   display->height = EPD_2in13_V4_WIDTH;
 
+  switch (cfg->rotation) {
+  case EINK_ROTATION_0:
+  case EINK_ROTATION_180:
+    display->rotation = cfg->rotation;
+    break;
+  default:
+    fprintf(stderr,
+            "eink: invalid rotation %d, only 0 or 180 are supported; "
+            "falling back to 0\n",
+            cfg->rotation);
+    display->rotation = EINK_ROTATION_0;
+    break;
+  }
+
   // Select black-on-white or reverse
   display->invert_color = false;
   display->cairo_fg_color = 1;
@@ -333,10 +348,13 @@ static void eink_render_impl(struct EInkDisplay *display, bool is_partial) {
 
   memset(display->render_buff, 0, display->render_buff_sz);
 
+  const bool flip = (display->rotation == EINK_ROTATION_180);
   for (size_t y = 0; y < display->height; y++) {
     for (size_t x = 0; x < display->width; x++) {
-      const size_t src_byte_index = x / 8 + y * stride;
-      const size_t src_bit_index = x % 8;
+      const size_t src_x = flip ? (display->width - 1 - x) : x;
+      const size_t src_y = flip ? (display->height - 1 - y) : y;
+      const size_t src_byte_index = src_x / 8 + src_y * stride;
+      const size_t src_bit_index = src_x % 8;
 
       // Display memory is rotated; rotate coordinates
       const size_t dest_x = display->height - 1 - y;

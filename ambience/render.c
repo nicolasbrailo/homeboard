@@ -208,6 +208,7 @@ struct RenderCtx *render_init(render_pre_commit_cb_t cb,
                               void *render_pre_commit_cb_ud,
                               const char *fallback_img_path,
                               uint32_t transition_time_s, bool use_eink,
+                              bool eink_flip,
                               const struct img_render_cfg *img_cfg) {
   struct RenderCtx *s = calloc(1, sizeof(*s));
   atomic_init(&s->thread_running, true);
@@ -239,7 +240,7 @@ struct RenderCtx *render_init(render_pre_commit_cb_t cb,
     return NULL;
   }
 
-  s->eink = use_eink ? eink_meta_init() : NULL;
+  s->eink = use_eink ? eink_meta_init(eink_flip) : NULL;
   if (use_eink && !s->eink) {
     render_free(s);
     return NULL;

@@ -11,6 +11,7 @@ struct ambience_config {
   struct img_render_cfg render;
   bool embed_qr;
   bool use_eink_for_metadata;
+  bool eink_flip;
   char fallback_image[255];
 };
 

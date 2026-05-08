@@ -7,7 +7,8 @@
 #include <unistd.h>
 
 static void usage(const char *prog) {
-  fprintf(stderr, "Usage: %s [-w | -b | -d] [text...]\n", prog);
+  fprintf(stderr, "Usage: %s [-f] [-w | -b | -d] [text...]\n", prog);
+  fprintf(stderr, "  -f        Flip display 180 degrees\n");
   fprintf(stderr, "  -w        Clear display to white\n");
   fprintf(stderr, "  -b        Clear display to black\n");
   fprintf(stderr, "  -d        Demo: show build timestamp with border\n");
@@ -44,10 +45,14 @@ static void show_demo(struct EInkDisplay *display) {
 
 int main(int argc, char **argv) {
   enum { MODE_TEXT, MODE_WHITE, MODE_BLACK, MODE_DEMO } mode = MODE_TEXT;
+  bool flip = false;
   int opt;
 
-  while ((opt = getopt(argc, argv, "wbdh")) != -1) {
+  while ((opt = getopt(argc, argv, "fwbdh")) != -1) {
     switch (opt) {
+    case 'f':
+      flip = true;
+      break;
     case 'w':
       mode = MODE_WHITE;
       break;
@@ -69,6 +74,7 @@ int main(int argc, char **argv) {
   }
 
   struct EInkConfig cfg = {0};
+  cfg.rotation = flip ? EINK_ROTATION_180 : EINK_ROTATION_0;
   struct EInkDisplay *display = eink_init(&cfg);
   if (!display)
     return 1;
