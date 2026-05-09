@@ -6,8 +6,8 @@ V2 of my [picture frame + home board](https://nicolasbrailo.github.io/blog/proje
 
 Homeboard is a project to display pictures and arbitrary information through a PoE picture frame (you can see above my creative attempt at hiding the ethernet cable run with some decorations).
 
-- On startup, connects to [wwwslider](github.com/nicolasbrailo/wwwslide) to retrieve images. The device is mostly stateless, no need to pre-provision pictures or config (just the software, until I make it bootable over LAN).
-- Connects to an MQTT broker for remote-control. [wwwslider](github.com/nicolasbrailo/wwwslide) provides a remote-control interface.
+- On startup, connects to [wwwslider](https://github.com/nicolasbrailo/wwwslide) to retrieve images. The device is mostly stateless, no need to pre-provision pictures or config (just the software, until I make it bootable over LAN).
+- Connects to an MQTT broker for remote-control. [wwwslider](https://github.com/nicolasbrailo/wwwslide) provides a remote-control interface.
 - Displays pictures, but only when you are around. It has a presence sensor so that the screen will turn off when no one is there to see the pictures (bonus: you can use this as an overcomplicated presence sensor for home automation over MQTT).
 - Integrates with [ZMW, my home automation project](https://github.com/nicolasbrailo/zmw/tree/main/zmw_homeboard). ZMW can push an SVG overlay, which I am using to show the weather, announcements and a QR code for the remote control URL.
 
