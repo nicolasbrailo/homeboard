@@ -196,6 +196,7 @@ static void *render_thread_fn(void *arg) {
       eink_meta_render(s->eink, meta);
     } else {
       printf("Discarding fetched picture, slideshow became inactive.\n");
+      eink_meta_clear(s->eink);
     }
 
     free(meta);
