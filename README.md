@@ -1,24 +1,72 @@
-# Homeboard V2
+# Homeboard
 
-V2 of Picture frame + home board: https://nicolasbrailo.github.io/blog/projects_texts/24homeboard.html
+V2 of my [picture frame + home board](https://nicolasbrailo.github.io/blog/projects_texts/24homeboard.html)
 
-TODO: project picture
+![Homeboard](/readme_imgs/homeboard.jpg)
 
-TODO: project description
+Homeboard is a project to display pictures and arbitrary information through a PoE picture frame (you can see above my creative attempt at hiding the ethernet cable run with some decorations).
 
-# Build
+- On startup, connects to [wwwslider](github.com/nicolasbrailo/wwwslide) to retrieve images. The device is mostly stateless, no need to pre-provision pictures or config (just the software, until I make it bootable over LAN).
+- Connects to an MQTT broker for remote-control. [wwwslider](github.com/nicolasbrailo/wwwslide) provides a remote-control interface.
+- Displays pictures, but only when you are around. It has a presence sensor so that the screen will turn off when no one is there to see the pictures (bonus: you can use this as an overcomplicated presence sensor for home automation over MQTT).
+- Integrates with [ZMW, my home automation project](https://github.com/nicolasbrailo/zmw/tree/main/zmw_homeboard). ZMW can push an SVG overlay, which I am using to show the weather, announcements and a QR code for the remote control URL.
 
-1. You will need a picture frame. ./mount-designs have an option for a laser engraver; it consists of a main board to mount all of the circuits, and a frame panel, to mount the display to an Ikea picture frame. If using this, make sure your build is as flat as possible, as there isn't more than 20mm of space to play with (eg caps should be as horizontal as possible).
-1. TODO: assembly instructions
-1. TODO: Wiring instructions
+wwwslider's remote control looks like this
+
+![Remote control](/readme_imgs/rc.jpg)
+
+## Dependencies
+
+Homeboard's software uses a set of service that talk over dbus. If you have a different motion sensor, for example, replace the occupancy-sensor-ld2410s service with your own integration -but keep the dbus signals the same- and everything should just work. Likewise, you can change the photo-provider service and integrate with a different photo provider service.
+
+```mermaid
+graph TD;
+    subgraph Group1 [Homeboard local services]
+        occupancy-sensor-ld2410s -->|Raw occupancy sensor data| presence-service;
+        presence-service -->|Room occupancy signal| ambience;
+        display-mgr -->|DRM management| ambience;
+        photo-provider -->|Content to display| ambience;
+        ambience -->|Device state| dbus-mqtt-bridge;
+        dbus-mqtt-bridge -->|Remote control| ambience;
+    end
+    wwwslider --> photo-provider;
+    mqtt <--> dbus-mqtt-bridge;
+    mqtt <--> wwwslider_remote_control;
+    ZMW -->|SVG Overlay| mqtt;
+    mqtt -->|Occupancy sensor data| ZMW;
+```
+
+## Bill of materials
+
+- A panel. I got an N173FGE-E23.
+- An HDMI to eDP driver. I found one that [works out of the box](https://www.aliexpress.com/item/32968710965.html) with an N173FGE-E23.
+- A PoE adapter. I recommend one with 12v output to feed the eDP driver, but you can also make it work with a 5v output and a boost converter ([I found this to be less stable](https://nicolasbrailo.github.io/blog/2026/0423_HomeboardN1.html)).
+- A boost (or buck) converter, depending on your PoE adapter either 12v->5v or 5v->12v. Also get a few 1000uF capacitors for both sides of the converter.
+- [Optional] an [eInk display](https://www.waveshare.com/wiki/2.13inch_e-Paper_HAT_Manual).
+- An mmWave sensor. I got an HLK-LD2410S 24G. You can, of course, replace it (for example with a PIR) as long as you adapt the presence-service.
+- RaspberryPi Zero (no W, if you're using a PoE wireless is not needed). Ideally, install an L-shaped GPIO header. This will make fitting the assembly in the tight space of the picture frame much simpler: there is plenty of horizontal space, but very little vertical clearance.
+- A ton of cables, m2.5 screws and ducktape.
+
+## Build
+
+You will need a picture frame. ./mount-designs have an option for a laser engraver; it consists of a main board to mount all of the circuits, and a frame panel, to mount the display to an Ikea picture frame. If using this, make sure your build is as flat as possible, as there isn't more than 20mm of space to play with (eg caps should be as horizontal as possible).
+
+The wiring itself is simple, just plug whatever fits together. Here are two examples, one using the laser cut board and another using a pizza box:
+
+![Boards assembly](/readme_imgs/main_board.jpg)
+
+![Pizza boards assembly](/readme_imgs/main_board_pizza.jpg)
+
+The only wiring that's fiddly are the GPIO connetions:
+
 1. For eInk wiring, check ./eink-write/README.md; you can change wiring, but you will need to udpate the pins (which are hardcoded in c today)
 1. For mmWave sensor wiring, check ./occupancy-sensor-ld2410s/README.md
 1. Recommended: [add capacitors to any voltage converter you have](https://nicolasbrailo.github.io/blog/2026/0423_HomeboardN1.html), especially if you are working close to the power limit of the system.
 
-Rpi pinout: https://images.theengineeringprojects.com/image/webp/2021/03/raspberry-pi-zero-5.png.webp
+You will need an [Rpi pinout](https://images.theengineeringprojects.com/image/webp/2021/03/raspberry-pi-zero-5.png.webp) reference.
 
 
-# OS setup
+## OS setup
 
 1. Create Raspberry PI OS as usual.
 1. Headless setup: write echo "batman:`echo 'mypassword' | openssl passwd -6 -stdin`" > bootfs/userconf.txt (or maybe rootfs? Try both just in case)
@@ -54,7 +102,7 @@ sudo touch /etc/cloud/cloud-init.disabled
 
 The target OS should now be ready to deploy xcompiled binaries:
 
-# Project build
+## Project build
 
 In the build machine:
 
@@ -75,10 +123,11 @@ At this point, before installing systemd units, it's a good idea to test if serv
 If everything goes well, the target `make install-systemd` can install each service. Reboot to make sure nothing breaks.
 
 
-# TODO
+## TODOs and known bugs
 
-* Make the eink pins runtime config?
-* eink, verify why partial update isn't working
-* if eInk fails on startup then we never recover -> Should retry a few times?
-* Need to handle ENOTCONN for photo client (any other risky call sites for ENOTCONN?)
+- Make the eink pins runtime config instead of hardcoded in C
+- eink: verify why partial update isn't working
+- if eInk fails on startup then we never recover -> we should retry a few times, or crash and let systemd handle
+- eInk display layout is not great, often misses last lette
+- Need to handle ENOTCONN for photo client, the bus may disconnect when retrieving a picture (check: any other risky call sites for ENOTCONN?)
 
