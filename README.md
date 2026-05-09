@@ -4,7 +4,7 @@ V2 of my [picture frame + home board](https://nicolasbrailo.github.io/blog/proje
 
 ![Homeboard](/readme_imgs/homeboard.jpg)
 
-Homeboard is a project to display pictures and arbitrary information through a PoE picture frame (you can see above my creative attempt at hiding the ethernet cable run with some decorations).
+Homeboard is a project to display pictures and an arbitrary SVG overlay with information through a PoE picture frame (you can see above my creative attempt at hiding the ethernet cable run with some decorations).
 
 - On startup, connects to [wwwslider](https://github.com/nicolasbrailo/wwwslide) to retrieve images. The device is mostly stateless, no need to pre-provision pictures or config (just the software, until I make it bootable over LAN).
 - Connects to an MQTT broker for remote-control. [wwwslider](https://github.com/nicolasbrailo/wwwslide) provides a remote-control interface.
@@ -59,8 +59,8 @@ The wiring itself is simple, just plug whatever fits together. Here are two exam
 
 The only wiring that's fiddly are the GPIO connetions:
 
-1. For eInk wiring, check ./eink-write/README.md; you can change wiring, but you will need to udpate the pins (which are hardcoded in c today)
-1. For mmWave sensor wiring, check ./occupancy-sensor-ld2410s/README.md
+1. For eInk wiring, check [the eInk's utility README](./eink-write/README.md); you can change wiring, but you will need to udpate the pins (which are hardcoded in c today)
+1. For mmWave sensor wiring, check [the occupancy sensor's README](./occupancy-sensor-ld2410s/README.md)
 1. Recommended: [add capacitors to any voltage converter you have](https://nicolasbrailo.github.io/blog/2026/0423_HomeboardN1.html), especially if you are working close to the power limit of the system.
 
 You will need an [Rpi pinout](https://images.theengineeringprojects.com/image/webp/2021/03/raspberry-pi-zero-5.png.webp) reference.
