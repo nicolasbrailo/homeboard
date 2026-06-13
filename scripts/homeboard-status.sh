@@ -8,6 +8,7 @@ for svc in \
     homeboard-dbus-mqtt-bridge \
     homeboard-display-mgr \
     homeboard-occupancy-sensor \
+    homeboard-presence-service \
     homeboard-photo-provider
 do
     state=$(systemctl is-active "$svc")
