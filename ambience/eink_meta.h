@@ -15,5 +15,8 @@ void eink_meta_free(struct EinkMeta *em);
 // No-op if em is NULL.
 void eink_meta_render(struct EinkMeta *em, const char *meta_json);
 
+// Signals the ambience service became inactive by clearing the eink and displaying host info
+void eink_meta_set_inactive(struct EinkMeta *em);
+
 // Clear the display to white
 void eink_meta_clear(struct EinkMeta *em);

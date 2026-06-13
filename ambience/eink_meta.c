@@ -1,6 +1,7 @@
 #include "eink_meta.h"
 
 #include "eink/eink.h"
+#include "misc/net.h"
 
 #include <json-c/json.h>
 #include <stdio.h>
@@ -36,7 +37,17 @@ void eink_meta_free(struct EinkMeta *em) {
   free(em);
 }
 
-void eink_meta_clear(struct EinkMeta *em) { eink_clear(em->display); }
+void eink_meta_set_inactive(struct EinkMeta *em) {
+  char ip[64];
+  collect_ip(ip, sizeof(ip));
+  char text[128];
+  snprintf(text, sizeof(text), "Sleeping...\nHost: %s", ip);
+  eink_quick_announce(em->display, text);
+}
+
+void eink_meta_clear(struct EinkMeta *em) {
+  eink_clear(em->display);
+}
 
 void eink_meta_render(struct EinkMeta *em, const char *meta_json) {
   if (!em || !meta_json)

@@ -1,7 +1,8 @@
 BIN_NAME = homeboard-dbus-mqtt-bridge
 SERVICE_DEPS = homeboard-ambience
 SRCS = main.c config.c mqtt.c mqtt_claim.c dbus_client.c host_info.c \
-       ../lib/dbus_helpers/dbus_helpers.c
+       ../lib/dbus_helpers/dbus_helpers.c \
+       ../lib/misc/net.c
 CFLAGS += -I../lib/
 LDFLAGS += -Wl,-Bstatic -ljson-c \
            -Wl,-Bdynamic -lmosquitto -lsystemd

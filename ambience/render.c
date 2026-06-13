@@ -62,26 +62,43 @@ static bool render_fd(struct RenderCtx *s, int fd) {
   return true;
 }
 
+// Call WITHOUT holding drm_mutex.
 static bool render_fallback(struct RenderCtx *s) {
-  pthread_mutex_lock(&s->img_cfg_mutex);
-  const struct img_render_cfg cfg = s->img_cfg;
-  const struct fb_info fbi = s->fbi;
-  pthread_mutex_unlock(&s->img_cfg_mutex);
-
   if (!s->fallback_img_path)
     return false;
+
+  pthread_mutex_lock(&s->img_cfg_mutex);
+  const struct img_render_cfg cfg = s->img_cfg;
+  pthread_mutex_unlock(&s->img_cfg_mutex);
+
+  pthread_mutex_lock(&s->drm_mutex);
+  const struct fb_info fbi = s->fbi;
+  pthread_mutex_unlock(&s->drm_mutex);
+
+  // decode runs without holding drm_mutex.
   struct jpeg_image *img =
       jpeg_load(s->fallback_img_path, fbi.width, fbi.height);
   if (!img) {
     fprintf(stderr, "fallback image decode failed: %s\n", s->fallback_img_path);
     return false;
   }
-  img_render(s->scratch_fb, fbi.width, fbi.height, fbi.stride, img->pixels,
-             img->width, img->height, &cfg);
+
+  // Publish: take drm_mutex only to write the shared buffers, serializing
+  // against the render thread.
+  pthread_mutex_lock(&s->drm_mutex);
+  if (s->fb && s->scratch_fb) {
+    img_render(s->scratch_fb, fbi.width, fbi.height, fbi.stride, img->pixels,
+               img->width, img->height, &cfg);
+    memcpy(s->fb, s->scratch_fb,
+           atomic_load_explicit(&s->scratch_fb_sz, memory_order_relaxed));
+  }
+  pthread_mutex_unlock(&s->drm_mutex);
   jpeg_free(img);
-  memcpy(s->fb, s->scratch_fb,
-         atomic_load_explicit(&s->scratch_fb_sz, memory_order_relaxed));
   printf("Rendered fallback image: %s\n", s->fallback_img_path);
+
+  if (s->eink) {
+    eink_meta_set_inactive(s->eink);
+  }
   return true;
 }
 
@@ -196,7 +213,7 @@ static void *render_thread_fn(void *arg) {
       eink_meta_render(s->eink, meta);
     } else {
       printf("Discarding fetched picture, slideshow became inactive.\n");
-      eink_meta_clear(s->eink);
+      eink_meta_set_inactive(s->eink);
     }
 
     free(meta);
@@ -266,9 +283,11 @@ void render_set_fb(struct RenderCtx *s, uint32_t *fb,
                         memory_order_relaxed);
   free(s->scratch_fb);
   s->scratch_fb = scratch;
+  pthread_mutex_unlock(&s->drm_mutex);
+
   if (!atomic_load_explicit(&s->slideshow_active, memory_order_relaxed))
     render_fallback(s);
-  pthread_mutex_unlock(&s->drm_mutex);
+
   sem_post(&s->wake_sem);
 }
 
@@ -283,21 +302,23 @@ void render_free(struct RenderCtx *s) {
   }
 
   photo_client_free(s->photo_client);
+
+  // Make sure we don't race with set_fb even if it was called after the
+  // destructor started. render_fallback takes drm_mutex itself; only grab it
+  // here for the failure path that clears fb to black.
+  if (!render_fallback(s)) {
+    pthread_mutex_lock(&s->drm_mutex);
+    if (s->fb)
+      memset(s->fb, 0,
+             atomic_load_explicit(&s->scratch_fb_sz, memory_order_relaxed));
+    pthread_mutex_unlock(&s->drm_mutex);
+  }
+
   if (s->eink) {
     eink_meta_clear(s->eink);
     eink_meta_free(s->eink);
   }
   sem_destroy(&s->wake_sem);
-
-  // Make sure we don't race with set_fb even if it was called after the
-  // destructor started
-  pthread_mutex_lock(&s->drm_mutex);
-  if (!render_fallback(s)) {
-    // If fallback image failed, clear fb to black
-    memset(s->fb, 0,
-           atomic_load_explicit(&s->scratch_fb_sz, memory_order_relaxed));
-  }
-  pthread_mutex_unlock(&s->drm_mutex);
 
   free(s->fallback_img_path);
   free(s->scratch_fb);
@@ -328,10 +349,7 @@ void render_slideshow_set_active(struct RenderCtx *s, bool active) {
     return;
   printf("Slideshow %s\n", active ? "active" : "paused");
   if (!active) {
-    pthread_mutex_lock(&s->drm_mutex);
-    if (s->fb)
-      render_fallback(s);
-    pthread_mutex_unlock(&s->drm_mutex);
+    render_fallback(s);
   } else {
     pthread_mutex_lock(&s->drm_mutex);
     const uint32_t w = s->fbi.width;

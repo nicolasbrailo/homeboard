@@ -8,7 +8,8 @@ SRCS = main.c config.c dbus_listeners.c render.c photo_client.c eink_meta.c over
        ../lib/jpeg_render/img_render.c \
        ../lib/rpigpio/rpigpio.c \
        ../lib/eink/eink.c \
-       ../lib/eink/cairo_helpers.c
+       ../lib/eink/cairo_helpers.c \
+       ../lib/misc/net.c
 CFLAGS += -I../lib/
 LDFLAGS += -lcairo \
            -Wl,-Bstatic -ljson-c  -ljpeg -lpthread \
