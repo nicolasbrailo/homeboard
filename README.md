@@ -79,17 +79,20 @@ You will need an [Raspberry Pi pinout](https://images.theengineeringprojects.com
     - Add `enable_uart=1` and `dtoverlay=disable-bt` to /boot/firmware/config.txt
     - Disable services that try to use UART: `sudo systemctl disable --now serial-getty@ttyAMA0.service serial-getty@serial0.service` and `sudo systemctl disable --now hciuart`
     - Remove any `console=serial*` from cmdline
+    - `sudo raspi-config nonint do_spi 0`
     - Alternatively, run all of these from `make -C occupancy-sensor-ld2410s config-target`
 1. Optional: add `export PATH=$PATH:/home/$USER/homeboard/bin` to bashrc
 1. Install project deps not statically linked in: `sudo apt install libmosquitto1`
-1. Disable GUI: ```
+1. Disable GUI:
+```
 sudo systemctl set-default multi-user.target
 sudo systemctl disable lightdm
 sudo rm /etc/systemd/system/getty@tty1.service.d/autologin.conf
 sudo systemctl daemon-reload
 sudo reboot
 ```
-1. Make bootup faster, disable services we won't use: ```
+1. Make bootup faster, disable services we won't use:
+```
 sudo systemctl disable --now bluetooth.service wpa_supplicant.service
 sudo systemctl disable --now lightdm.service
 sudo systemctl disable --now plymouth-start.service plymouth-quit-wait.service
@@ -110,6 +113,7 @@ In the build machine:
 1. Ensure common.mk has xcompile target (if not building locally) and setup the target IP in DEPLOY_TGT_HOST. Also update IP in root Makefile.
 1. Build test project: `cd xcompile-test && make && file build/xcompile-test`
 1. `make deploy` will deploy the entire project to the target, and it will install configs and dbus policies, but no systemd targets.
+1. You may need to let display-mgr run as non root: `sudo setcap cap_sys_admin+ep build/homeboard-display-mgr`
 
 At this point, before installing systemd units, it's a good idea to test if services run as expected, and if all GPIO connections are set up properly. For this, you can launch each of the services in a tmux pane:
 

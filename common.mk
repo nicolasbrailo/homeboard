@@ -129,5 +129,5 @@ install-systemd:
 		echo "WantedBy=multi-user.target"; \
 	} > build/$(BIN_NAME).service
 	scp build/$(BIN_NAME).service $(DEPLOY_TGT_HOST):/tmp/$(BIN_NAME).service
-	$(SSH) 'sudo install -m 644 -o root -g root /tmp/$(BIN_NAME).service /etc/systemd/system/$(BIN_NAME).service && rm /tmp/$(BIN_NAME).service && sudo systemctl daemon-reload && sudo systemctl enable $(BIN_NAME).service && sudo systemctl restart $(BIN_NAME).service'
+	$(SSH) 'sudo -S install -m 644 -o root -g root /tmp/$(BIN_NAME).service /etc/systemd/system/$(BIN_NAME).service && rm /tmp/$(BIN_NAME).service && sudo -S systemctl daemon-reload && sudo -S systemctl enable $(BIN_NAME).service && sudo -S systemctl restart $(BIN_NAME).service'
 

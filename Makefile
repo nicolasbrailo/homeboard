@@ -27,6 +27,7 @@ deploy-all:
 		$(MAKE) -C $$dir deploy-config; \
 		$(MAKE) -C $$dir deploy-dbus-policy; \
 	done
+	$(MAKE) deploy-scripts
 	$(MAKE) -C stockimgs deploy-imgs
 
 deploy-bins:
@@ -49,13 +50,4 @@ install-local-deps:
 format:
 	find lib -name '*.c' -o -name '*.h' | xargs clang-format -i
 	@for dir in $(SUBDIRS); do $(MAKE) -C $$dir format; done
-
-patch-target-config:
-	@echo "Will patch a bunch of settings and permissions that are needed for the project to run. Check each specific project for details on what they do"
-	ssh "$(DEPLOY_TGT_HOST)" sudo raspi-config nonint do_spi 0
-	ssh "$(DEPLOY_TGT_HOST)" sudo dtparam spi=on
-	ssh "$(DEPLOY_TGT_HOST)" sudo usermod -aG gpio,spi '$$USER'
-	ssh "$(DEPLOY_TGT_HOST)" sudo usermod -aG video '$$USER'
-	ssh "$(DEPLOY_TGT_HOST)" sudo usermod -aG systemd-journal '$$USER'
-	ssh "$(DEPLOY_TGT_HOST)" sudo setcap cap_sys_admin+ep display-mgr
 
