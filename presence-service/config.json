@@ -6,5 +6,15 @@
   "hysteresis_occupied": 5,
 
   "COMMENT_hysteresis_vacant": "consecutive vacant reports required before a presence=false transition",
-  "hysteresis_vacant": 9
+  "hysteresis_vacant": 9,
+
+  "COMMENT_silent": "optional stricter hysteresis during a nighttime/silent window, to suppress spurious wakeups. Window is local-time HH:MM, [silent_start, silent_end); wraps midnight when start > end. Omit silent_start/silent_end to disable.",
+  "silent_start": "23:00",
+  "silent_end": "07:00",
+
+  "COMMENT_silent_hysteresis_occupied": "consecutive occupied reports required for presence=true during the silent window",
+  "silent_hysteresis_occupied": 30,
+
+  "COMMENT_silent_hysteresis_vacant": "consecutive vacant reports required for presence=false during the silent window",
+  "silent_hysteresis_vacant": 5
 }

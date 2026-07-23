@@ -71,9 +71,11 @@ int main(int argc, char *argv[]) {
     return 1;
 
   struct ctx c = {
-      .presence = presence_init(cfg.sensor_stabilization_delay_secs,
-                                cfg.hysteresis_occupied, cfg.hysteresis_vacant,
-                                on_presence_change, &c),
+      .presence = presence_init(
+          cfg.sensor_stabilization_delay_secs, cfg.hysteresis_occupied,
+          cfg.hysteresis_vacant, cfg.silent_hysteresis_occupied,
+          cfg.silent_hysteresis_vacant, cfg.silent_start_min,
+          cfg.silent_end_min, on_presence_change, &c),
       .dbus = presence_dbus_init(&g_dbus_cbs, &c),
       .display = display_client_init(),
   };

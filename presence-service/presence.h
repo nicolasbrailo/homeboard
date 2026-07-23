@@ -16,6 +16,12 @@
 // reports until the room genuinely empties (i.e. hysteresis commits to
 // false).
 //
+// During an optional "silent" (e.g. nighttime) window, stricter hysteresis
+// (silent_hyst_occupied / silent_hyst_vacant) is applied instead, to suppress
+// spurious wakeups. The window is [silent_start_min, silent_end_min) minutes
+// since local midnight and wraps midnight when start > end; pass
+// silent_start_min < 0 to disable it.
+//
 // All functions must be called from a single thread.
 
 struct Presence;
@@ -24,6 +30,9 @@ typedef void (*presence_change_cb)(void *ud, bool present);
 
 struct Presence *presence_init(unsigned sensor_stabilization_delay_secs,
                                unsigned hyst_occupied, unsigned hyst_vacant,
+                               unsigned silent_hyst_occupied,
+                               unsigned silent_hyst_vacant,
+                               int silent_start_min, int silent_end_min,
                                presence_change_cb cb, void *ud);
 void presence_free(struct Presence *p);
 
