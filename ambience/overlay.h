@@ -1,6 +1,7 @@
 #pragma once
 
 #include "drm_mgr/drm_mgr.h"
+#include "jpeg_render/img_render.h" // enum rotation
 
 #include <stddef.h>
 #include <stdint.h>
@@ -28,5 +29,16 @@ void overlay_set_from_svg_data(struct Overlay *o, const char *data, size_t len,
 void overlay_set_from_file(struct Overlay *o, const char *filename,
                            uint32_t timeout_seconds);
 
-// Blits the cached SVG (if any) onto fb.
-void overlay_render(struct Overlay *o, uint32_t *fb, const struct fb_info *fbi);
+// Sets a word-wrapped text announcement, rendered (via cairo) over a dimmed
+// scrim on the next overlay_render() call. Unlike the SVG paths, this can show
+// real text. Pass NULL/empty to clear. The announce text is an independent
+// layer drawn ON TOP of any active SVG overlay. When expires, the overlay is
+// shown again. `timeout_seconds` of 0 means no timeout.
+// Safe to call from a different thread than overlay_render().
+void overlay_set_text(struct Overlay *o, const char *text,
+                      uint32_t timeout_seconds);
+
+// Blits the active overlay (if any) onto fb, rotated to match `rot` so it lines
+// up with the photo (which img_render draws with the same rotation).
+void overlay_render(struct Overlay *o, uint32_t *fb, const struct fb_info *fbi,
+                    enum rotation rot);

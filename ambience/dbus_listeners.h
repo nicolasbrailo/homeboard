@@ -21,6 +21,10 @@ struct dbus_listeners_cbs {
   int (*on_overlay_from_file)(void *ud, uint32_t timeout_seconds,
                               const char *path);
 
+  // Overlay a word-wrapped text message on the current photo. Unlike the SVG
+  // overlays this renders real text (cairo). Empty string clears it.
+  int (*on_announce)(void *ud, uint32_t timeout_seconds, const char *text);
+
   // Presence status change (present=true => someone is in the room, false =>
   // room is vacant)
   void (*on_presence_changed)(void *ud, bool present);

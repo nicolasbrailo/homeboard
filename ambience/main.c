@@ -74,6 +74,25 @@ int on_overlay_requested(void *ud, uint32_t timeout_seconds, const char *svg) {
   return 0;
 }
 
+int on_announce(void *ud, uint32_t timeout_seconds, const char *text) {
+  struct AmbienceCtx *ctx = ud;
+  printf("Announce requested ");
+  if (timeout_seconds > 0) {
+    printf("[timeout %d seconds]", timeout_seconds);
+  } else {
+    printf("[no timeout]");
+  }
+  printf(": \"%s\"\n", text ? text : "");
+
+  overlay_set_text(ctx->overlay, text, timeout_seconds);
+  // The overlay is only composited during a render cycle, which otherwise only
+  // happens on a slideshow tick (up to transition_time_s away).
+  // If the photo-provider is unreachable (e.g. the network fault being announced)
+  // the fetch fails and the overlay composites over the last shown photo instead.
+  render_slideshow_next(ctx->render);
+  return 0;
+}
+
 int on_overlay_from_file(void *ud, uint32_t timeout_seconds, const char *path) {
   struct AmbienceCtx *ctx = ud;
   printf("New SVG overlay requested from file '%s' ", path ? path : "");
@@ -134,9 +153,10 @@ void on_drm_mgr_updown(void *ud, bool up) {
   render_set_fb(ctx->render, ctx->fb, &ctx->fbi);
 }
 
-void render_pre_commit_cb(void *ud, uint32_t *fb, const struct fb_info *fbi) {
+void render_pre_commit_cb(void *ud, uint32_t *fb, const struct fb_info *fbi,
+                          enum rotation rot) {
   struct AmbienceCtx *ctx = ud;
-  overlay_render(ctx->overlay, fb, fbi);
+  overlay_render(ctx->overlay, fb, fbi, rot);
 }
 
 static const struct dbus_listeners_cbs cbs = {
@@ -146,6 +166,7 @@ static const struct dbus_listeners_cbs cbs = {
     .on_set_render_config = on_set_render_config,
     .on_overlay_requested = on_overlay_requested,
     .on_overlay_from_file = on_overlay_from_file,
+    .on_announce = on_announce,
     .on_presence_changed = on_presence_changed,
     .on_presence_service_updown = on_presence_service_updown,
     .on_photo_service_updown = on_photo_service_updown,

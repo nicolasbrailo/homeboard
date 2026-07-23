@@ -201,7 +201,7 @@ static void *render_thread_fn(void *arg) {
         atomic_load_explicit(&s->slideshow_active, memory_order_relaxed)) {
       render_fd(s, fd);
       s->render_pre_commit_cb(s->render_pre_commit_cb_ud, s->scratch_fb,
-                              &s->fbi);
+                              &s->fbi, render_cfg.rot);
       memcpy(s->fb, s->scratch_fb,
              atomic_load_explicit(&s->scratch_fb_sz, memory_order_relaxed));
       rendered = true;

@@ -7,8 +7,11 @@
 #include <stdint.h>
 
 struct RenderCtx;
+// `rot` is the rotation the frame was rendered with, so a pre-commit hook (e.g.
+// an overlay) can match the photo's orientation.
 typedef void (*render_pre_commit_cb_t)(void *ud, uint32_t *fb,
-                                       const struct fb_info *fbi);
+                                       const struct fb_info *fbi,
+                                       enum rotation rot);
 struct RenderCtx *render_init(render_pre_commit_cb_t cb,
                               void *render_pre_commit_cb_ud,
                               const char *fallback_img_path,

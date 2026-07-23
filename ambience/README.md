@@ -101,7 +101,7 @@ Methods:
 | `Prev` | `()` → `()` | Step backward to the previous picture. |
 | `SetTransitionTimeSecs` | `(u)` → `()` | Update the wait between pictures. Returns `InvalidArgs` if outside the supported range. |
 | `SetRenderConfig` | `(usss)` → `()` | Update rotation / interpolation / horizontal-align / vertical-align at runtime. Args: `u` rotation (`0`/`90`/`180`/`270`), `s` interpolation (`nearest`/`bilinear`), `s` horizontal_align (`left`/`center`/`right`), `s` vertical_align (`top`/`center`/`bottom`). Re-renders the current picture in place. When rotation flips between portrait/landscape, the new target size is pushed to `photo-provider` so future photos arrive with the correct aspect ratio. Returns `InvalidArgs` if any field is unrecognized. |
-| `Announce` | `(us)` → `()` | Overlay a string on top of the current picture for `u` seconds. Returns `InvalidArgs` if the timeout is invalid or an announcement is already active. |
+| `Announce` | `(us)` → `()` | Overlay a word-wrapped **text** message (rendered with cairo/freetype) on top of the current picture for `u` seconds, over a dimmed scrim with a red header band. `u=0` means no auto-clear. Pass an empty string to clear. Setting an announcement replaces any active SVG overlay and vice-versa. |
 | `SetSvgOverlay` | `(us)` → `()` | Overlay an SVG (parsed in-memory by nanosvg) on top of the current picture for `u` seconds. `u=0` means no auto-clear. Pass an empty string to clear. Parser is limited (see nanosvg for limitations; most prominent, no text). |
 | `SetSvgOverlayFromFile` | `(us)` → `()` | Local-test variant of `SetSvgOverlay`: loads the SVG from a file path on the device instead of receiving bytes inline. |
 
