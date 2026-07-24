@@ -1,5 +1,5 @@
 SUBDIRS := $(filter-out rpiz-xcompile stockimgs lib bin, $(patsubst %/,%,$(wildcard */)))
-SERVICES_DIRS := ambience dbus-mqtt-bridge display-mgr occupancy-sensor-ld2410s photo-provider presence-service
+SERVICES_DIRS := ambience dbus-mqtt-bridge display-mgr doctor occupancy-sensor-ld2410s photo-provider presence-service
 
 # Keep these in sync with common.mk
 DEPLOY_TGT_HOST=batman@10.0.0.93

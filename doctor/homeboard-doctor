@@ -1,0 +1,242 @@
+#!/bin/bash
+
+# TODO: this grew too much for a bash script, migrate to bin utils and python?
+#
+# homeboard-doctor: host + network health monitor / self-healer.
+#
+# - Polls network health (default gateway, photo-provider, MQTT broker) plus a
+#   few host metrics (temp, load, mem, throttling, eth0 counters).
+# - On a stuck network adapter (the r8152 RX-wedge: carrier up but no traffic
+#   in / gateway unreachable) it bounces the USB device to recover it, and
+#   counts recoveries.
+# - Shows an on-screen error via the ambience Announce D-Bus method while
+#   unhealthy, and clears it on recovery.
+# - Publishes the full health snapshot to <topic_prefix>doctor on MQTT.
+#
+# Runs as root (needs to write the USB (un)bind sysfs nodes). Config path is
+# passed as $1 (see config.json).
+set -u
+
+CFG="${1:-/home/batman/homeboard/etc/homeboard-doctor.json}"
+
+# --- D-Bus / ambience -------------------------------------------------------
+AMB_DEST="io.homeboard.Ambience"
+AMB_PATH="/io/homeboard/Ambience"
+AMB_IFACE="io.homeboard.Ambience1"
+
+log() { echo "$(date -Is) $*"; }
+
+jqf() { # jqf <file> <filter> <default>
+  local v
+  v="$(jq -r "$2 // empty" "$1" 2>/dev/null)"
+  [ -n "$v" ] && echo "$v" || echo "$3"
+}
+
+# --- Load config ------------------------------------------------------------
+if [ ! -r "$CFG" ]; then
+  log "FATAL: cannot read config $CFG"
+  exit 1
+fi
+POLL=$(jqf "$CFG" '.poll_interval_s' 30)
+IFACE=$(jqf "$CFG" '.net_iface' eth0)
+USBDEV=$(jqf "$CFG" '.usb_device' 1-1)
+GW_THRESH=$(jqf "$CFG" '.gateway_fail_threshold' 3)
+RECOVER_COOLDOWN=$(jqf "$CFG" '.recover_cooldown_s' 300)
+# Announce with a finite timeout so a stale message self-clears if the doctor
+# dies; refresh it well within that window while the error persists so it never
+# actually expires on screen.
+ANNOUNCE_TIMEOUT=$(jqf "$CFG" '.announce_timeout_s' 300)
+ANNOUNCE_REFRESH=$(jqf "$CFG" '.announce_refresh_s' 120)
+if [ "$ANNOUNCE_REFRESH" -ge "$ANNOUNCE_TIMEOUT" ]; then
+  SAFE=$((ANNOUNCE_TIMEOUT / 2))
+  [ "$SAFE" -lt 1 ] && SAFE=1
+  log "WARN: announce_refresh_s ($ANNOUNCE_REFRESH) >= announce_timeout_s ($ANNOUNCE_TIMEOUT); clamping refresh to ${SAFE}s"
+  ANNOUNCE_REFRESH=$SAFE
+fi
+PHOTO_CFG=$(jqf "$CFG" '.photo_provider_config' /home/batman/homeboard/etc/homeboard-photo-provider.json)
+MQTT_CFG=$(jqf "$CFG" '.mqtt_config' /home/batman/homeboard/etc/homeboard-dbus-mqtt-bridge.json)
+STATE_FILE=$(jqf "$CFG" '.state_file' /var/lib/homeboard-doctor/state.json)
+
+PHOTO_URL=$(jqf "$PHOTO_CFG" '.server_url' "")
+PHOTO_TIMEOUT=$(jqf "$PHOTO_CFG" '.connect_timeout_s' 3)
+MQTT_HOST=$(jqf "$MQTT_CFG" '.mqtt_host' "")
+MQTT_PORT=$(jqf "$MQTT_CFG" '.mqtt_port' 1883)
+MQTT_USER=$(jqf "$MQTT_CFG" '.mqtt_user' "")
+MQTT_PASS=$(jqf "$MQTT_CFG" '.mqtt_pass' "")
+TOPIC_PREFIX=$(jqf "$MQTT_CFG" '.topic_prefix' "homeboard/")
+DOCTOR_TOPIC="${TOPIC_PREFIX}doctor"
+
+# --- Persisted state (survives restarts) ------------------------------------
+NET_RECOVERIES=0
+LAST_RECOVERY_ISO=""
+if [ -r "$STATE_FILE" ]; then
+  NET_RECOVERIES=$(jqf "$STATE_FILE" '.net_recoveries' 0)
+  LAST_RECOVERY_ISO=$(jqf "$STATE_FILE" '.last_recovery_iso' "")
+fi
+# Atomically write a JSON snapshot to the state file. It both persists the
+# recovery counter across restarts and doubles as a live on-disk status
+# snapshot. Written via temp file + rename so a concurrent reader never sees a
+# partial write. Creates the parent dir if needed.
+write_state() { # write_state <json>
+  mkdir -p "$(dirname "$STATE_FILE")" 2>/dev/null
+  local tmp="$STATE_FILE.tmp.$$"
+  if printf '%s\n' "$1" > "$tmp" 2>/dev/null; then
+    mv -f "$tmp" "$STATE_FILE" 2>/dev/null ||
+      { rm -f "$tmp" 2>/dev/null; log "WARN: could not update state file $STATE_FILE"; }
+  else
+    rm -f "$tmp" 2>/dev/null
+    log "WARN: could not write state file $STATE_FILE"
+  fi
+}
+
+log "homeboard-doctor starting: iface=$IFACE usb=$USBDEV gw_thresh=$GW_THRESH poll=${POLL}s"
+log "photo_url=$PHOTO_URL mqtt=$MQTT_HOST:$MQTT_PORT topic=$DOCTOR_TOPIC recoveries=$NET_RECOVERIES"
+
+# Write an initial snapshot so the state file exists immediately (carrying the
+# persisted counters); the main loop overwrites it with a full snapshot each
+# cycle.
+write_state "$(printf '{"ts":"%s","host":"%s","state":"starting","net_recoveries":%s,"last_recovery_iso":"%s"}' \
+  "$(date -Is)" "$(hostname)" "$NET_RECOVERIES" "$LAST_RECOVERY_ISO")"
+
+# --- Helpers ----------------------------------------------------------------
+sysf() { cat "$1" 2>/dev/null || echo "?"; }
+
+# Emit a JSON-safe number: a bare value, or `null` if missing/unknown.
+num() { case "$1" in ''|'?') echo null ;; *) echo "$1" ;; esac; }
+
+announce() { # announce <timeout_secs> <message>
+  timeout 5 busctl --system call "$AMB_DEST" "$AMB_PATH" "$AMB_IFACE" \
+    Announce us "$1" "$2" >/dev/null 2>&1
+}
+
+CUR_MSG=""          # message currently on screen ("" = none)
+LAST_ANNOUNCE_TS=0  # when we last (re)sent it, to refresh before it times out
+show_error() {      # show_error <message>
+  local now; now=$(date +%s)
+  if [ "$1" != "$CUR_MSG" ]; then
+    log "SCREEN: $1"
+    announce "$ANNOUNCE_TIMEOUT" "$1"
+    CUR_MSG="$1"; LAST_ANNOUNCE_TS=$now
+  elif [ $((now - LAST_ANNOUNCE_TS)) -ge "$ANNOUNCE_REFRESH" ]; then
+    # Re-arm the timeout so the message never actually expires while the error
+    # persists. The finite timeout is only a safety net: if the doctor dies, the
+    # stale message self-clears within ANNOUNCE_TIMEOUT instead of sticking.
+    announce "$ANNOUNCE_TIMEOUT" "$1"
+    LAST_ANNOUNCE_TS=$now
+  fi
+}
+clear_error() {
+  if [ -n "$CUR_MSG" ]; then
+    log "SCREEN: cleared"
+    announce 1 ""
+    CUR_MSG=""
+  fi
+}
+
+tcp_check() { # tcp_check <host> <port> ; returns 0 if connectable
+  timeout 3 bash -c "exec 3<>/dev/tcp/$1/$2" 2>/dev/null
+}
+
+publish_mqtt() { # publish_mqtt <json>
+  [ -n "$MQTT_HOST" ] || return 0
+  local args=(-h "$MQTT_HOST" -p "$MQTT_PORT" -t "$DOCTOR_TOPIC" -m "$1" -q 0)
+  [ -n "$MQTT_USER" ] && args+=(-u "$MQTT_USER")
+  [ -n "$MQTT_PASS" ] && args+=(-P "$MQTT_PASS")
+  timeout 5 mosquitto_pub "${args[@]}" >/dev/null 2>&1
+}
+
+recover_net() {
+  local now; now=$(date +%s)
+  if [ $((now - LAST_RECOVER_ATTEMPT)) -lt "$RECOVER_COOLDOWN" ]; then
+    return  # still cooling down from the last attempt
+  fi
+  LAST_RECOVER_ATTEMPT=$now
+  log "RECOVER: bouncing USB device $USBDEV (unbind/bind)"
+  if ! echo "$USBDEV" > /sys/bus/usb/drivers/usb/unbind 2>/dev/null; then
+    log "RECOVER: unbind failed (not root? wrong usb_device?)"
+    return
+  fi
+  sleep 3
+  echo "$USBDEV" > /sys/bus/usb/drivers/usb/bind 2>/dev/null
+  NET_RECOVERIES=$((NET_RECOVERIES + 1))
+  LAST_RECOVERY_ISO="$(date -Is)"
+  # The updated counter is persisted by the end-of-cycle write_state below.
+  log "RECOVER: rebind done, total recoveries=$NET_RECOVERIES; waiting for link"
+}
+
+# --- Main loop --------------------------------------------------------------
+trap 'clear_error; log "homeboard-doctor stopping"; exit 0' INT TERM
+
+GW_FAILS=0
+PREV_RX=""
+LAST_RECOVER_ATTEMPT=0
+
+while :; do
+  S="/sys/class/net/$IFACE"
+  OPER=$(sysf "$S/operstate")
+  CARRIER=$(sysf "$S/carrier")
+  SPEED=$(sysf "$S/speed")
+  RX=$(sysf "$S/statistics/rx_packets")
+  TX=$(sysf "$S/statistics/tx_packets")
+  RXE=$(sysf "$S/statistics/rx_errors")
+  TXE=$(sysf "$S/statistics/tx_errors")
+
+  read -r UP _ < /proc/uptime
+  LOAD1=$(cut -d' ' -f1 /proc/loadavg)
+  MEMAV=$(awk '/^MemAvailable:/{print $2}' /proc/meminfo)
+  TEMP=$(vcgencmd measure_temp 2>/dev/null | sed "s/temp=//;s/'C//")
+  THR=$(vcgencmd get_throttled 2>/dev/null | cut -d= -f2)
+
+  # Health probes
+  GW=$(ip route | awk '/^default/{print $3; exit}')
+  if [ -n "$GW" ] && ping -c1 -W2 -q "$GW" >/dev/null 2>&1; then GW_UP=true; else GW_UP=false; fi
+  if [ -n "$PHOTO_URL" ] && curl -s -o /dev/null -m "$PHOTO_TIMEOUT" "$PHOTO_URL"; then PHOTO_UP=true; else PHOTO_UP=false; fi
+  if tcp_check "$MQTT_HOST" "$MQTT_PORT"; then MQTT_UP=true; else MQTT_UP=false; fi
+
+  # RX-wedge signature: carrier present but gateway unreachable and rx frozen.
+  WEDGE=false
+  if [ "$GW_UP" = false ] && [ "$CARRIER" = "1" ] && [ -n "$PREV_RX" ] && [ "$RX" = "$PREV_RX" ]; then
+    WEDGE=true
+  fi
+  PREV_RX="$RX"
+
+  # State machine
+  if [ "$GW_UP" = false ]; then
+    GW_FAILS=$((GW_FAILS + 1))
+  else
+    GW_FAILS=0
+  fi
+
+  STATE=ok
+  if [ "$GW_FAILS" -ge "$GW_THRESH" ]; then
+    STATE=net_down
+    if [ "$WEDGE" = true ]; then
+      show_error "NETWORK STUCK — adapter RX wedged. Recovering ($NET_RECOVERIES)…"
+    else
+      show_error "NETWORK DOWN — gateway $GW unreachable. Recovering ($NET_RECOVERIES)…"
+    fi
+    recover_net
+  elif [ "$GW_UP" = true ] && { [ "$PHOTO_UP" = false ] || [ "$MQTT_UP" = false ]; }; then
+    STATE=degraded
+    down=""
+    [ "$PHOTO_UP" = false ] && down="photo server"
+    [ "$MQTT_UP" = false ] && down="${down:+$down + }MQTT broker"
+    show_error "Service unreachable: $down"
+  else
+    STATE=ok
+    clear_error
+  fi
+
+  # Build the full snapshot, persist it to disk (also the restart-persisted
+  # counter), then publish to MQTT (best-effort; only lands when the broker is
+  # reachable).
+  JSON=$(printf '{"ts":"%s","host":"%s","state":"%s","uptime_s":%.0f,"temp_c":%s,"load1":%s,"mem_avail_kb":%s,"throttled":"%s","iface":"%s","operstate":"%s","carrier":%s,"speed":%s,"rx_packets":%s,"tx_packets":%s,"rx_errors":%s,"tx_errors":%s,"gateway_ok":%s,"photo_ok":%s,"mqtt_ok":%s,"rx_wedged":%s,"gw_fails":%s,"net_recoveries":%s,"last_recovery_iso":"%s"}' \
+    "$(date -Is)" "$(hostname)" "$STATE" "$UP" "$(num "$TEMP")" "$(num "$LOAD1")" \
+    "$(num "$MEMAV")" "${THR:-?}" "$IFACE" "$OPER" "$(num "$CARRIER")" "$(num "$SPEED")" \
+    "$(num "$RX")" "$(num "$TX")" "$(num "$RXE")" "$(num "$TXE")" \
+    "$GW_UP" "$PHOTO_UP" "$MQTT_UP" "$WEDGE" "$GW_FAILS" "$NET_RECOVERIES" "$LAST_RECOVERY_ISO")
+  write_state "$JSON"
+  publish_mqtt "$JSON"
+
+  sleep "$POLL"
+done

@@ -1,0 +1,12 @@
+{
+  "poll_interval_s": 30,
+  "net_iface": "eth0",
+  "usb_device": "1-1",
+  "gateway_fail_threshold": 3,
+  "recover_cooldown_s": 300,
+  "announce_timeout_s": 300,
+  "announce_refresh_s": 120,
+  "photo_provider_config": "/home/batman/homeboard/etc/homeboard-photo-provider.json",
+  "mqtt_config": "/home/batman/homeboard/etc/homeboard-dbus-mqtt-bridge.json",
+  "state_file": "/home/batman/homeboard/run/doctor-state.json"
+}

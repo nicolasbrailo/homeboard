@@ -123,6 +123,7 @@ At this point, before installing systemd units, it's a good idea to test if serv
 - homeboard-presence-service; a layer on top of the occupancy sensor to determine when a person is close or not
 - homeboard-dbus-mqtt-bridge; external MQTT interface to Homeboard
 - homeboard-ambience; main slideshow, overlays, eInk management
+- homeboard-doctor; host/network health monitor + self-heal (bounces the USB NIC on a stuck adapter), publishes to MQTT and shows on-screen errors
 
 If everything goes well, the target `make install-systemd` can install each service. Reboot to make sure nothing breaks.
 
