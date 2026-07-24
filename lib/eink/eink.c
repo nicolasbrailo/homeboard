@@ -180,6 +180,7 @@ static void dev_render(struct EInkDisplay *display, uint8_t *Image,
     // This seems to control how each pixel is updated in the display
     dev_tx(display, TX_CMD, 0x3C); // BorderWavefrom
     dev_tx(display, TX_DATA, 0x05);
+    dev_quick_reset(display);
   }
 
   // Write Black and White image to RAM
@@ -343,6 +344,7 @@ void eink_delete(struct EInkDisplay *display) {
 cairo_t *eink_get_cairo(struct EInkDisplay *display) { return display->cr; }
 
 static void eink_render_impl(struct EInkDisplay *display, bool is_partial) {
+  cairo_surface_flush(display->surface);
   const size_t stride = cairo_image_surface_get_stride(display->surface);
   uint8_t *img_data = cairo_image_surface_get_data(display->surface);
 
@@ -438,6 +440,9 @@ void eink_clear(struct EInkDisplay *display) {
   cairo_set_source_rgba(display->cr, 0, 0, 0, user_set_color);
 
   if (!display->cfg.mock_display) {
+    // Re-arm the RAM window + address counter so the fill starts at origin
+    // regardless of where a previous op left the counter.
+    dev_quick_reset(display);
     dev_tx(display, TX_CMD, 0x24);
     for (size_t c = 0; c < 2; ++c) {
       for (size_t i = 0; i < display->width; ++i) {
