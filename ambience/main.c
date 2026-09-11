@@ -88,7 +88,7 @@ int on_announce(void *ud, uint32_t timeout_seconds, const char *text) {
   // The overlay is only composited during a render cycle, which otherwise only
   // happens on a slideshow tick (up to transition_time_s away).
   // If the photo-provider is unreachable (e.g. the network fault being announced)
-  // the fetch fails and the overlay composites over the last shown photo instead.
+  // the fetch fails and the overlay composites over the fallback image instead.
   render_slideshow_next(ctx->render);
   return 0;
 }
@@ -174,6 +174,10 @@ static const struct dbus_listeners_cbs cbs = {
 };
 
 int main(int argc, char *argv[]) {
+  // stdout is a pipe under systemd; without this, printf logs only reach the
+  // journal in 4KB chunks.
+  setvbuf(stdout, NULL, _IOLBF, 0);
+
   if (argc <= 1) {
     fprintf(stderr, "Usage: %s config.json\n", argv[0]);
     return 1;

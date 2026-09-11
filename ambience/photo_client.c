@@ -1,6 +1,7 @@
 #include "photo_client.h"
 
 #include <errno.h>
+#include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
 #include <systemd/sd-bus.h>
@@ -11,24 +12,97 @@
 #define DBUS_PHOTO_SERVICE "io.homeboard.PhotoProvider"
 #define DBUS_PHOTO_PATH "/io/homeboard/PhotoProvider"
 #define DBUS_PHOTO_INTERFACE "io.homeboard.PhotoProvider1"
+#define DBUS_PHOTO_ERROR_PREFIX "io.homeboard.PhotoProvider.Error."
 
 #define DBUS_AMBIENCE_SERVICE "io.homeboard.Ambience"
 #define DBUS_AMBIENCE_PATH "/io/homeboard/Ambience"
 #define DBUS_AMBIENCE_INTERFACE "io.homeboard.Ambience1"
 
+// Explicit, instead of sd-bus' implicit 25s default. photo-provider bounds its
+// own GetPhoto wait well below this, so hitting it means the provider or the
+// bus is wedged, not that the network is slow.
+#define PHOTO_CALL_TIMEOUT_USEC (10ULL * 1000 * 1000)
+
 struct PhotoClient {
+  // NULL while disconnected; the next call reopens it.
   sd_bus *bus;
   uint32_t requested_w;
   uint32_t requested_h;
 };
 
+static sd_bus *get_bus(struct PhotoClient *pc) {
+  if (pc->bus)
+    return pc->bus;
+  sd_bus *bus = NULL;
+  int r = sd_bus_open_system(&bus);
+  if (r < 0) {
+    fprintf(stderr, "photo_client: sd_bus_open_system: %s\n", strerror(-r));
+    return NULL;
+  }
+  pc->bus = bus;
+  return bus;
+}
+
+// Called after a failed call. An error reply sent by photo-provider itself
+// means the connection is fine. Anything else (timeout, disconnect, a read
+// buffer sd-bus can't parse) means the connection can't be trusted: a late
+// reply to a timed-out call, or unparseable bytes, would stay queued and
+// poison every later call. Drop it; the next call opens a fresh one.
+static void drop_bus_unless_provider_error(struct PhotoClient *pc,
+                                           const sd_bus_error *err) {
+  if (err->name && strncmp(err->name, DBUS_PHOTO_ERROR_PREFIX,
+                           strlen(DBUS_PHOTO_ERROR_PREFIX)) == 0)
+    return;
+  fprintf(stderr, "photo_client: dropping bus connection, will reconnect on "
+                  "next call\n");
+  sd_bus_close_unref(pc->bus);
+  pc->bus = NULL;
+}
+
+// Calls `method` on photo-provider, with arguments described by `types`.
+// Returns >= 0 on success; if reply is non-NULL, it holds the reply (caller
+// unrefs).
+static int call_method(struct PhotoClient *pc, const char *method,
+                       sd_bus_message **reply, const char *types, ...) {
+  sd_bus *bus = get_bus(pc);
+  if (!bus) {
+    fprintf(stderr, "%s failed: no bus connection\n", method);
+    return -ENOTCONN;
+  }
+
+  sd_bus_message *call = NULL;
+  int r = sd_bus_message_new_method_call(bus, &call, DBUS_PHOTO_SERVICE,
+                                         DBUS_PHOTO_PATH, DBUS_PHOTO_INTERFACE,
+                                         method);
+  if (r >= 0) {
+    va_list ap;
+    va_start(ap, types);
+    r = sd_bus_message_appendv(call, types, ap);
+    va_end(ap);
+  }
+  if (r < 0) {
+    fprintf(stderr, "%s: can't build call: %s\n", method, strerror(-r));
+    sd_bus_message_unref(call);
+    return r;
+  }
+
+  sd_bus_error err = SD_BUS_ERROR_NULL;
+  r = sd_bus_call(bus, call, PHOTO_CALL_TIMEOUT_USEC, &err, reply);
+  sd_bus_message_unref(call);
+  if (r < 0) {
+    fprintf(stderr, "%s failed: %s\n", method,
+            err.message ? err.message : strerror(-r));
+    drop_bus_unless_provider_error(pc, &err);
+  }
+  sd_bus_error_free(&err);
+  return r;
+}
+
 struct PhotoClient *photo_client_init() {
   struct PhotoClient *pc = calloc(1, sizeof(*pc));
   if (!pc)
     return NULL;
-  int r = sd_bus_open_system(&pc->bus);
-  if (r < 0) {
-    fprintf(stderr, "photo_client: sd_bus_open_system: %s\n", strerror(-r));
+  if (!get_bus(pc)) {
     free(pc);
     return NULL;
   }
@@ -47,27 +121,13 @@ int photo_client_fetch_one(struct PhotoClient *pc, const char *method,
                            int *fd_out, char **meta_out,
                            const struct img_render_cfg *render_cfg) {
   printf("Fetching new photo with %s.%s\n", DBUS_PHOTO_SERVICE, method);
-  sd_bus_error err = SD_BUS_ERROR_NULL;
   sd_bus_message *reply = NULL;
-  int r = sd_bus_call_method(pc->bus, DBUS_PHOTO_SERVICE, DBUS_PHOTO_PATH,
-                             DBUS_PHOTO_INTERFACE, method, &err, &reply, "");
-  if (r == -ENOTCONN) {
-    sd_bus_error_free(&err);
-    err = SD_BUS_ERROR_NULL;
-    fprintf(stderr, "%s: worker bus disconnected\n", method);
-    // TODO Crash here? Bubble upstream and restart?
-    abort();
-  }
-  if (r < 0) {
-    fprintf(stderr, "%s failed: %s\n", method,
-            err.message ? err.message : strerror(-r));
-    sd_bus_error_free(&err);
+  if (call_method(pc, method, &reply, "") < 0)
     return -1;
-  }
 
   int fd = -1;
   const char *meta = NULL;
-  r = sd_bus_message_read(reply, "hs", &fd, &meta);
+  int r = sd_bus_message_read(reply, "hs", &fd, &meta);
   if (r < 0) {
     fprintf(stderr, "bad %s reply: %s\n", method, strerror(-r));
     sd_bus_message_unref(reply);
@@ -113,8 +173,7 @@ int photo_client_fetch_one(struct PhotoClient *pc, const char *method,
                          pc->requested_w, pc->requested_h);
   if (r < 0)
     fprintf(stderr, "Emit DisplayingPhoto: %s\n", strerror(-r));
-  return r;
-
+  // The photo was delivered even if the signal wasn't; callers own *fd_out.
   return 0;
 }
 
@@ -126,28 +185,10 @@ int push_initial_config(struct PhotoClient *pc, uint32_t w, uint32_t h,
   pc->requested_w = w;
   pc->requested_h = h;
 
-  sd_bus_error err = SD_BUS_ERROR_NULL;
-  int r = sd_bus_call_method(pc->bus, DBUS_PHOTO_SERVICE, DBUS_PHOTO_PATH,
-                             DBUS_PHOTO_INTERFACE, "SetTargetSize", &err, NULL,
-                             "uu", w, h);
-  if (r < 0) {
-    fprintf(stderr, "SetTargetSize failed: %s\n",
-            err.message ? err.message : strerror(-r));
-    sd_bus_error_free(&err);
+  if (call_method(pc, "SetTargetSize", NULL, "uu", w, h) < 0)
     return -1;
-  }
-  sd_bus_error_free(&err);
-
-  r = sd_bus_call_method(pc->bus, DBUS_PHOTO_SERVICE, DBUS_PHOTO_PATH,
-                         DBUS_PHOTO_INTERFACE, "SetEmbedQr", &err, NULL, "b",
-                         (int)(embed_qr ? 1 : 0));
-  if (r < 0) {
-    fprintf(stderr, "SetEmbedQr failed: %s\n",
-            err.message ? err.message : strerror(-r));
-    sd_bus_error_free(&err);
+  if (call_method(pc, "SetEmbedQr", NULL, "b", (int)(embed_qr ? 1 : 0)) < 0)
     return -1;
-  }
-  sd_bus_error_free(&err);
   printf("photo-provider configured: %ux%u embed_qr=%d\n", w, h, embed_qr);
   return 0;
 }

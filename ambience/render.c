@@ -35,6 +35,9 @@ struct RenderCtx {
   atomic_uint transition_time_s;
   atomic_int skip_count;
   atomic_bool slideshow_active;
+  // Set when photo-provider needs our config pushed. The push happens on the
+  // render thread, which is the only thread allowed to touch photo_client.
+  atomic_bool photo_cfg_dirty;
   sem_t wake_sem;
   char *fallback_img_path;
 
@@ -46,20 +49,19 @@ struct RenderCtx {
   struct EinkMeta *eink;
 };
 
-// Call holding drm lock
-static bool render_fd(struct RenderCtx *s, int fd) {
-  const struct img_render_cfg cfg = s->img_cfg;
-  const struct fb_info fbi = s->fbi;
+// Decodes a JPEG, sized for the current fb, from fd if fd >= 0 (taking
+// ownership of it: fd is closed on return), otherwise from path. Call WITHOUT
+// holding drm_mutex: decoding is the slow part and touches no shared buffers.
+static struct jpeg_image *decode_for_fb(struct RenderCtx *s, int fd,
+                                        const char *path) {
+  pthread_mutex_lock(&s->drm_mutex);
+  const uint32_t w = s->fbi.width;
+  const uint32_t h = s->fbi.height;
+  pthread_mutex_unlock(&s->drm_mutex);
 
-  struct jpeg_image *img = jpeg_load_fd(fd, fbi.width, fbi.height);
-  if (!img) {
-    fprintf(stderr, "jpeg decode failed\n");
-    return false;
-  }
-  img_render(s->scratch_fb, fbi.width, fbi.height, fbi.stride, img->pixels,
-             img->width, img->height, &cfg);
-  jpeg_free(img);
-  return true;
+  if (fd >= 0)
+    return jpeg_load_fd(fd, w, h);
+  return path ? jpeg_load(path, w, h) : NULL;
 }
 
 // Call WITHOUT holding drm_mutex.
@@ -71,24 +73,19 @@ static bool render_fallback(struct RenderCtx *s) {
   const struct img_render_cfg cfg = s->img_cfg;
   pthread_mutex_unlock(&s->img_cfg_mutex);
 
-  pthread_mutex_lock(&s->drm_mutex);
-  const struct fb_info fbi = s->fbi;
-  pthread_mutex_unlock(&s->drm_mutex);
-
-  // decode runs without holding drm_mutex.
-  struct jpeg_image *img =
-      jpeg_load(s->fallback_img_path, fbi.width, fbi.height);
+  struct jpeg_image *img = decode_for_fb(s, -1, s->fallback_img_path);
   if (!img) {
     fprintf(stderr, "fallback image decode failed: %s\n", s->fallback_img_path);
     return false;
   }
 
   // Publish: take drm_mutex only to write the shared buffers, serializing
-  // against the render thread.
+  // against the render thread. Use the fbi current under the lock, not the
+  // one the decode was sized for: the fb may have been swapped meanwhile.
   pthread_mutex_lock(&s->drm_mutex);
   if (s->fb && s->scratch_fb) {
-    img_render(s->scratch_fb, fbi.width, fbi.height, fbi.stride, img->pixels,
-               img->width, img->height, &cfg);
+    img_render(s->scratch_fb, s->fbi.width, s->fbi.height, s->fbi.stride,
+               img->pixels, img->width, img->height, &cfg);
     memcpy(s->fb, s->scratch_fb,
            atomic_load_explicit(&s->scratch_fb_sz, memory_order_relaxed));
   }
@@ -182,38 +179,64 @@ static void *render_thread_fn(void *arg) {
     int skip = atomic_exchange(&s->skip_count, 0);
     const char *method = (skip < 0) ? "GetPrevPhoto" : "GetPhoto";
 
-    int fd;
-    char *meta = NULL;
+    if (atomic_exchange(&s->photo_cfg_dirty, false)) {
+      pthread_mutex_lock(&s->drm_mutex);
+      const uint32_t w = s->fbi.width;
+      const uint32_t h = s->fbi.height;
+      pthread_mutex_unlock(&s->drm_mutex);
+      if (push_initial_config(s->photo_client, w, h, false) != 0) {
+        fprintf(stderr, "Failed to setup photo-provider config, will retry "
+                        "before next photo\n");
+        atomic_store(&s->photo_cfg_dirty, true);
+      }
+    }
 
     // Retrieve img_cfg in case photo client wants to optimize the request for a
     // specific config type
-    pthread_mutex_lock(&s->drm_mutex);
+    pthread_mutex_lock(&s->img_cfg_mutex);
     const struct img_render_cfg render_cfg = s->img_cfg;
-    pthread_mutex_unlock(&s->drm_mutex);
+    pthread_mutex_unlock(&s->img_cfg_mutex);
 
-    photo_client_fetch_one(s->photo_client, method, &fd, &meta, &render_cfg);
+    // Any failure to get a displayable photo shows the fallback image instead.
+    int fd = -1;
+    char *meta = NULL;
+    struct jpeg_image *img = NULL;
+    if (photo_client_fetch_one(s->photo_client, method, &fd, &meta,
+                               &render_cfg) == 0) {
+      img = decode_for_fb(s, fd, NULL);
+      if (!img)
+        fprintf(stderr, "jpeg decode failed\n");
+    }
+    const bool is_photo = img != NULL;
+    if (!is_photo) {
+      fprintf(stderr, "No photo to display, rendering fallback image\n");
+      img = decode_for_fb(s, -1, s->fallback_img_path);
+    }
 
     // Re-check active under the mutex: if pause raced with our fetch, the pause
     // path has already painted the fallback and we must not stomp on it.
-    bool rendered = false;
     pthread_mutex_lock(&s->drm_mutex);
-    if (s->scratch_fb &&
-        atomic_load_explicit(&s->slideshow_active, memory_order_relaxed)) {
-      render_fd(s, fd);
+    const bool can_render =
+        s->fb && s->scratch_fb &&
+        atomic_load_explicit(&s->slideshow_active, memory_order_relaxed);
+    if (can_render && img) {
+      img_render(s->scratch_fb, s->fbi.width, s->fbi.height, s->fbi.stride,
+                 img->pixels, img->width, img->height, &render_cfg);
       s->render_pre_commit_cb(s->render_pre_commit_cb_ud, s->scratch_fb,
                               &s->fbi, render_cfg.rot);
       memcpy(s->fb, s->scratch_fb,
              atomic_load_explicit(&s->scratch_fb_sz, memory_order_relaxed));
-      rendered = true;
     }
     pthread_mutex_unlock(&s->drm_mutex);
-    close(fd);
+    jpeg_free(img);
 
-    if (rendered && s->eink) {
-      eink_meta_render(s->eink, meta);
-    } else {
+    if (!can_render) {
       printf("Discarding fetched picture, slideshow became inactive.\n");
       eink_meta_set_inactive(s->eink);
+    } else if (is_photo) {
+      eink_meta_render(s->eink, meta);
+    } else {
+      eink_meta_set_no_photo(s->eink);
     }
 
     free(meta);
@@ -241,6 +264,7 @@ struct RenderCtx *render_init(render_pre_commit_cb_t cb,
   s->img_cfg = *img_cfg;
   atomic_init(&s->skip_count, 0);
   atomic_init(&s->slideshow_active, false);
+  atomic_init(&s->photo_cfg_dirty, false);
   s->fallback_img_path = fallback_img_path ? strdup(fallback_img_path) : NULL;
   s->render_pre_commit_cb = cb;
   s->render_pre_commit_cb_ud = render_pre_commit_cb_ud;
@@ -351,17 +375,13 @@ void render_slideshow_set_active(struct RenderCtx *s, bool active) {
   if (!active) {
     render_fallback(s);
   } else {
-    pthread_mutex_lock(&s->drm_mutex);
-    const uint32_t w = s->fbi.width;
-    const uint32_t h = s->fbi.height;
-    pthread_mutex_unlock(&s->drm_mutex);
-    if (push_initial_config(s->photo_client, w, h, false) != 0) {
-      fprintf(stderr,
-              "Failed to setup photo-provider config, will use defaults\n");
-    }
+    // Called from the dbus thread; the render thread pushes the config before
+    // its next fetch.
+    atomic_store(&s->photo_cfg_dirty, true);
   }
   // Wake the render thread so it picks up the new state immediately:
-  // on pause it stops fetching; on resume it fetches a fresh photo.
+  // on pause it stops fetching; on resume it pushes config and fetches a
+  // fresh photo.
   sem_post(&s->wake_sem);
 }
 
