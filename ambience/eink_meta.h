@@ -16,7 +16,12 @@ void eink_meta_free(struct EinkMeta *em);
 void eink_meta_render(struct EinkMeta *em, const char *meta_json);
 
 // Signals the ambience service became inactive by clearing the eink and displaying host info
+// No-op if em is NULL.
 void eink_meta_set_inactive(struct EinkMeta *em);
+
+// Signals the fallback image is showing because no photo could be displayed.
+// No-op if em is NULL.
+void eink_meta_set_no_photo(struct EinkMeta *em);
 
 // Clear the display to white
 void eink_meta_clear(struct EinkMeta *em);

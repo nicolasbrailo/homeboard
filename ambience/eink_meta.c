@@ -37,12 +37,28 @@ void eink_meta_free(struct EinkMeta *em) {
   free(em);
 }
 
-void eink_meta_set_inactive(struct EinkMeta *em) {
+// Replaces the photo metadata with a status line plus host info. Goes through
+// last_text like the metadata does, so a repeated status doesn't refresh the
+// eink again, and the next photo always redraws its metadata.
+static void show_status(struct EinkMeta *em, const char *status) {
+  if (!em)
+    return;
   char ip[64];
   collect_ip(ip, sizeof(ip));
   char text[128];
-  snprintf(text, sizeof(text), "Sleeping...\nHost: %s", ip);
+  snprintf(text, sizeof(text), "%s\nHost: %s", status, ip);
+  if (strcmp(text, em->last_text) == 0)
+    return;
+  snprintf(em->last_text, sizeof(em->last_text), "%s", text);
   eink_quick_announce(em->display, text);
+}
+
+void eink_meta_set_inactive(struct EinkMeta *em) {
+  show_status(em, "Sleeping...");
+}
+
+void eink_meta_set_no_photo(struct EinkMeta *em) {
+  show_status(em, "No photos available");
 }
 
 void eink_meta_clear(struct EinkMeta *em) {
