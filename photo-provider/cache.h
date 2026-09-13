@@ -15,18 +15,20 @@ struct pp_cache_params {
   const char *dump_dir;
 };
 
-// Starts a worker thread that refills the ring from ws. Main is expected
-// to wire pp_cache_invalidate as ws's invalidate callback so the ring is
-// flushed when a config change rotates the client_id server-side.
+// Starts a worker thread that refills the ring from ws. The worker is the
+// only thread that calls into ws's network path.
 struct pp_cache *pp_cache_init(const struct pp_cache_params *p);
 void pp_cache_free(struct pp_cache *c);
 
-// Signature matches pp_ws_invalidate_fn; pass as ws's on_invalidate.
-void pp_cache_invalidate(void *cache);
+// Drops every held photo and discards any fetch in flight. Call after a ws
+// setter reports a config change, so no photo fetched with the old config is
+// served.
+void pp_cache_invalidate(struct pp_cache *c);
 
 // Advances the cursor to the next photo and returns a copy. On success,
 // *fd_out is an owned memfd (caller closes) and *meta_out is a malloc'd
-// JSON string (caller frees). Blocks up to timeout_ms. Returns 0 on
+// JSON string (caller frees). Blocks up to timeout_ms (measured on
+// CLOCK_MONOTONIC, so wall-clock jumps don't stretch it). Returns 0 on
 // success, -1 on timeout/error.
 int pp_cache_pop(struct pp_cache *c, int *fd_out, char **meta_out,
                  int timeout_ms);

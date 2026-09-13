@@ -69,8 +69,7 @@ static void flush_locked(struct pp_cache *c) {
   c->cursor = -1;
 }
 
-void pp_cache_invalidate(void *ud) {
-  struct pp_cache *c = ud;
+void pp_cache_invalidate(struct pp_cache *c) {
   pthread_mutex_lock(&c->mu);
   flush_locked(c);
   c->generation++;
@@ -200,7 +199,13 @@ struct pp_cache *pp_cache_init(const struct pp_cache_params *p) {
   c->tail = 0;
 
   pthread_mutex_init(&c->mu, NULL);
-  pthread_cond_init(&c->cv, NULL);
+  // pp_cache_pop's deadline is on CLOCK_MONOTONIC: a Pi has no RTC, so the
+  // wall clock can jump when NTP syncs, which would stretch a realtime wait.
+  pthread_condattr_t cv_attr;
+  pthread_condattr_init(&cv_attr);
+  pthread_condattr_setclock(&cv_attr, CLOCK_MONOTONIC);
+  pthread_cond_init(&c->cv, &cv_attr);
+  pthread_condattr_destroy(&cv_attr);
 
   if (pthread_create(&c->worker, NULL, worker_main, c) != 0) {
     pp_cache_free(c);
@@ -228,7 +233,7 @@ void pp_cache_free(struct pp_cache *c) {
 int pp_cache_pop(struct pp_cache *c, int *fd_out, char **meta_out,
                  int timeout_ms) {
   struct timespec deadline;
-  clock_gettime(CLOCK_REALTIME, &deadline);
+  clock_gettime(CLOCK_MONOTONIC, &deadline);
   deadline.tv_sec += timeout_ms / 1000;
   deadline.tv_nsec += (timeout_ms % 1000) * 1000000L;
   if (deadline.tv_nsec >= 1000000000L) {

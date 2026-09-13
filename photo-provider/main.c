@@ -45,17 +45,12 @@ int main(int argc, char *argv[]) {
       .dump_to_disk = cfg.dump_to_disk,
       .dump_dir = cfg.dump_dir,
   };
+  // The cache worker registers with the server on its first fetch, and keeps
+  // retrying if the server is unreachable; until then GetPhoto answers
+  // Unavailable.
   struct pp_cache *cache = pp_cache_init(&params);
   if (!cache) {
     fprintf(stderr, "pp_cache_init failed\n");
-    pp_www_session_free(ws);
-    curl_global_cleanup();
-    return 1;
-  }
-
-  if (pp_www_session_start(ws, pp_cache_invalidate, cache) < 0) {
-    fprintf(stderr, "pp_www_session_start failed\n");
-    pp_cache_free(cache);
     pp_www_session_free(ws);
     curl_global_cleanup();
     return 1;
