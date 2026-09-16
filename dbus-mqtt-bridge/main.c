@@ -249,6 +249,10 @@ static void on_cmd(const char *suffix, const char *payload, size_t len,
 }
 
 int main(int argc, char *argv[]) {
+  // stdout is a pipe under systemd; without this, printf logs only reach the
+  // journal in 4KB chunks.
+  setvbuf(stdout, NULL, _IOLBF, 0);
+
   if (argc < 2) {
     fprintf(stderr, "Usage: %s <config.json>\n", argv[0]);
     return 1;

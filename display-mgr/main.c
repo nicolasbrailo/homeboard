@@ -15,6 +15,10 @@ static void sig_handler(int sig) {
 }
 
 int main(int argc, char *argv[]) {
+  // stdout is a pipe under systemd; without this, printf logs only reach the
+  // journal in 4KB chunks.
+  setvbuf(stdout, NULL, _IOLBF, 0);
+
   (void)argc;
   (void)argv;
 
