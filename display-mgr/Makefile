@@ -1,11 +1,14 @@
 BIN_NAME = homeboard-display-mgr
 SRCS = main.c drm.c dbus.c
-CFLAGS+=-I/usr/include/libdrm
 LDFLAGS += -Wl,-Bstatic -ldrm -Wl,-Bdynamic -lsystemd -lpthread
 DBUS_POLICY = io.homeboard.Display.conf
 all: $(BIN_NAME)
 
 include ../common.mk
+
+ifeq ($(LOCAL_BUILD),1)
+CFLAGS+=-I/usr/include/libdrm
+endif
 
 SSH = ssh $(DEPLOY_TGT_HOST)
 
