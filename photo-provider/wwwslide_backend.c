@@ -1,5 +1,5 @@
 #define _GNU_SOURCE
-#include "www_session.h"
+#include "wwwslide_backend.h"
 
 #include <curl/curl.h>
 #include <stdatomic.h>
@@ -15,7 +15,7 @@
 #define MAX_CLIENT_ID 128
 #define CLIENT_STALE_S (5 * 60)
 
-struct pp_www_session {
+struct pp_wwwslide_backend {
   char url_base[256];
   long connect_timeout_s;
   long request_timeout_s;
@@ -85,7 +85,7 @@ static size_t write_to_fd(void *ptr, size_t size, size_t nmemb, void *ud) {
   return n;
 }
 
-static int do_get_mem(struct pp_www_session *s, const char *url,
+static int do_get_mem(struct pp_wwwslide_backend *s, const char *url,
                       struct mem_buf *out) {
   CURL *curl = s->curl;
   curl_easy_reset(curl);
@@ -110,7 +110,8 @@ static int do_get_mem(struct pp_www_session *s, const char *url,
 }
 
 // Performs /client_register and returns the id in `out`.
-static int http_register(struct pp_www_session *s, char *out, size_t out_sz) {
+static int http_register(struct pp_wwwslide_backend *s, char *out,
+                         size_t out_sz) {
   char url[512];
   snprintf(url, sizeof(url), "%s/client_register", s->url_base);
   struct mem_buf b = {0};
@@ -137,7 +138,7 @@ static int http_register(struct pp_www_session *s, char *out, size_t out_sz) {
   return 0;
 }
 
-static int http_push_embed_qr(struct pp_www_session *s, const char *id,
+static int http_push_embed_qr(struct pp_wwwslide_backend *s, const char *id,
                               bool v) {
   char url[512];
   snprintf(url, sizeof(url), "%s/client_cfg/%s/embed_info_qr_code/%s",
@@ -148,7 +149,7 @@ static int http_push_embed_qr(struct pp_www_session *s, const char *id,
   return r;
 }
 
-static int http_push_target_size(struct pp_www_session *s, const char *id,
+static int http_push_target_size(struct pp_wwwslide_backend *s, const char *id,
                                  uint32_t w, uint32_t h) {
   char url[512];
   snprintf(url, sizeof(url), "%s/client_cfg/%s/target_size/%ux%u", s->url_base,
@@ -163,7 +164,7 @@ static int http_push_target_size(struct pp_www_session *s, const char *id,
 // The caller must clear needs_register *before* calling this, so that a setter
 // racing with us (after we read the config below) sets it again and triggers
 // another registration with its new values.
-static int reregister(struct pp_www_session *s) {
+static int reregister(struct pp_wwwslide_backend *s) {
   char new_id[MAX_CLIENT_ID];
   if (http_register(s, new_id, sizeof(new_id)) < 0) {
     fprintf(stderr, "re-register failed\n");
@@ -188,29 +189,29 @@ static int reregister(struct pp_www_session *s) {
   return 0;
 }
 
-struct pp_www_session *pp_www_session_init(const char *server_url,
-                                           uint32_t target_w, uint32_t target_h,
-                                           bool embed_qr,
-                                           uint32_t connect_timeout_s,
-                                           uint32_t request_timeout_s) {
+struct pp_wwwslide_backend *pp_wwwslide_backend_init(
+    const char *server_url, uint32_t target_w, uint32_t target_h, bool embed_qr,
+    uint32_t connect_timeout_s, uint32_t request_timeout_s) {
   if (!server_url || server_url[0] == '\0') {
-    fprintf(stderr, "pp_www_session_init: empty server_url\n");
+    fprintf(stderr, "pp_wwwslide_backend_init: empty server_url\n");
     return NULL;
   }
   if (target_w < IMG_MIN_SZ || target_h < IMG_MIN_SZ) {
-    fprintf(stderr, "pp_www_session_init: Requested target size too small\n");
+    fprintf(stderr,
+            "pp_wwwslide_backend_init: Requested target size too small\n");
     return NULL;
   }
   if (target_w > IMG_MAX_SZ || target_h > IMG_MAX_SZ) {
-    fprintf(stderr, "pp_www_session_init: Requested target size too big\n");
+    fprintf(stderr,
+            "pp_wwwslide_backend_init: Requested target size too big\n");
     return NULL;
   }
   if (connect_timeout_s == 0 || request_timeout_s == 0) {
-    fprintf(stderr, "pp_www_session_init: timeouts must be non-zero\n");
+    fprintf(stderr, "pp_wwwslide_backend_init: timeouts must be non-zero\n");
     return NULL;
   }
 
-  struct pp_www_session *s = calloc(1, sizeof(*s));
+  struct pp_wwwslide_backend *s = calloc(1, sizeof(*s));
   if (!s)
     return NULL;
 
@@ -230,14 +231,14 @@ struct pp_www_session *pp_www_session_init(const char *server_url,
 
   s->curl = curl_easy_init();
   if (!s->curl) {
-    fprintf(stderr, "pp_www_session_init: failed to setup curl\n");
-    pp_www_session_free(s);
+    fprintf(stderr, "pp_wwwslide_backend_init: failed to setup curl\n");
+    pp_wwwslide_backend_free(s);
     return NULL;
   }
   return s;
 }
 
-void pp_www_session_free(struct pp_www_session *s) {
+void pp_wwwslide_backend_free(struct pp_wwwslide_backend *s) {
   if (!s)
     return;
   if (s->curl)
@@ -247,17 +248,17 @@ void pp_www_session_free(struct pp_www_session *s) {
 
 // Setters only record the new value and flag a registration; the fetch thread
 // does the HTTP. This keeps the dbus thread from blocking on the network.
-int pp_www_session_set_target_size(struct pp_www_session *s, uint32_t w,
-                                   uint32_t h) {
+int pp_wwwslide_backend_set_target_size(struct pp_wwwslide_backend *s,
+                                        uint32_t w, uint32_t h) {
   if (w < IMG_MIN_SZ || h < IMG_MIN_SZ) {
-    fprintf(
-        stderr,
-        "pp_www_session_set_target_size: Requested target size too small\n");
+    fprintf(stderr, "pp_wwwslide_backend_set_target_size: Requested target "
+                    "size too small\n");
     return -1;
   }
   if (w > IMG_MAX_SZ || h > IMG_MAX_SZ) {
-    fprintf(stderr,
-            "pp_www_session_set_target_size: Requested target size too big\n");
+    fprintf(
+        stderr,
+        "pp_wwwslide_backend_set_target_size: Requested target size too big\n");
     return -1;
   }
   uint32_t ow = atomic_exchange(&s->target_w, w);
@@ -268,7 +269,7 @@ int pp_www_session_set_target_size(struct pp_www_session *s, uint32_t w,
   return 1;
 }
 
-int pp_www_session_set_embed_qr(struct pp_www_session *s, bool v) {
+int pp_wwwslide_backend_set_embed_qr(struct pp_wwwslide_backend *s, bool v) {
   bool ov = atomic_exchange(&s->embed_qr, v);
   if (ov == v)
     return 0;
@@ -276,7 +277,7 @@ int pp_www_session_set_embed_qr(struct pp_www_session *s, bool v) {
   return 1;
 }
 
-static int fetch_img_into_fd(struct pp_www_session *s, const char *id) {
+static int fetch_img_into_fd(struct pp_wwwslide_backend *s, const char *id) {
   int fd = memfd_create("photo", MFD_CLOEXEC);
   if (fd < 0) {
     perror("memfd_create");
@@ -313,7 +314,7 @@ static int fetch_img_into_fd(struct pp_www_session *s, const char *id) {
   return fd;
 }
 
-static char *fetch_meta_str(struct pp_www_session *s, const char *id) {
+static char *fetch_meta_str(struct pp_wwwslide_backend *s, const char *id) {
   char url[512];
   snprintf(url, sizeof(url), "%s/get_current_img_meta/%s", s->url_base, id);
   struct mem_buf b = {0};
@@ -326,8 +327,8 @@ static char *fetch_meta_str(struct pp_www_session *s, const char *id) {
   return b.data;
 }
 
-int pp_www_session_fetch_next(struct pp_www_session *s, int *fd_out,
-                              char **meta_out) {
+int pp_wwwslide_backend_fetch_next(struct pp_wwwslide_backend *s, int *fd_out,
+                                   char **meta_out) {
   // Server evicts idle clients, so refresh the registration if we've been
   // quiet too long.
   if (now_monotonic_s() - s->last_activity_s > CLIENT_STALE_S)

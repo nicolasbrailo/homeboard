@@ -20,7 +20,7 @@
 static sd_bus *g_bus;
 static sd_bus_slot *g_vtable_slot;
 static struct pp_cache *g_cache;
-static struct pp_www_session *g_ws;
+static struct pp_backend *g_backend;
 
 // The memfd is handed to the client via SCM_RIGHTS, which shares the open
 // file description (and thus the file offset) between sender and receiver.
@@ -74,11 +74,11 @@ static int method_set_target_size(sd_bus_message *m, void *ud,
   int r = sd_bus_message_read(m, "uu", &w, &h);
   if (r < 0)
     return sd_bus_error_set_errno(err, -r);
-  r = pp_www_session_set_target_size(g_ws, w, h);
+  r = pp_backend_set_target_size(g_backend, w, h);
   if (r < 0)
     return sd_bus_error_setf(err, "io.homeboard.PhotoProvider.Error.InvalidArgs",
                              "target size %ux%u out of range", w, h);
-  // Photos in the cache were rendered for the old size. The worker registers
+  // Photos in the cache were rendered for the old size. The backend applies
   // the new one before its next fetch.
   if (r > 0)
     pp_cache_invalidate(g_cache);
@@ -92,7 +92,7 @@ static int method_set_embed_qr(sd_bus_message *m, void *ud, sd_bus_error *err) {
   int r = sd_bus_message_read(m, "b", &v);
   if (r < 0)
     return sd_bus_error_set_errno(err, -r);
-  if (pp_www_session_set_embed_qr(g_ws, v != 0) > 0)
+  if (pp_backend_set_embed_qr(g_backend, v != 0) > 0)
     pp_cache_invalidate(g_cache);
   printf("PhotoProvider requested QR=%s\n", v ? "True" : "False");
   return sd_bus_reply_method_return(m, NULL);
@@ -111,8 +111,8 @@ static const sd_bus_vtable g_vtable[] = {
     SD_BUS_VTABLE_END,
 };
 
-int pp_dbus_init(struct pp_www_session *ws, struct pp_cache *cache) {
-  g_ws = ws;
+int pp_dbus_init(struct pp_backend *backend, struct pp_cache *cache) {
+  g_backend = backend;
   g_cache = cache;
 
   int r = sd_bus_open_system(&g_bus);

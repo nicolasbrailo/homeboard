@@ -3,26 +3,26 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "www_session.h"
+#include "backend.h"
 
 struct pp_cache;
 
 struct pp_cache_params {
-  struct pp_www_session *ws; // borrowed, not owned
+  struct pp_backend *backend; // borrowed, not owned
   uint32_t cache_depth;
   uint32_t history_depth; // 0 disables the "prev" history
   bool dump_to_disk;
   const char *dump_dir;
 };
 
-// Starts a worker thread that refills the ring from ws. The worker is the
-// only thread that calls into ws's network path.
+// Starts a worker thread that refills the ring from the backend. The worker is
+// the only thread that calls into the backend's network path.
 struct pp_cache *pp_cache_init(const struct pp_cache_params *p);
 void pp_cache_free(struct pp_cache *c);
 
-// Drops every held photo and discards any fetch in flight. Call after a ws
-// setter reports a config change, so no photo fetched with the old config is
-// served.
+// Drops every held photo and discards any fetch in flight. Call after a
+// backend setter reports a config change, so no photo fetched with the old
+// config is served.
 void pp_cache_invalidate(struct pp_cache *c);
 
 // Advances the cursor to the next photo and returns a copy. On success,

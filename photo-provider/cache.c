@@ -1,7 +1,7 @@
 #define _GNU_SOURCE
 #include "cache.h"
 
-#include "www_session.h"
+#include "backend.h"
 
 #include <errno.h>
 #include <pthread.h>
@@ -19,7 +19,7 @@ struct entry {
 };
 
 struct pp_cache {
-  struct pp_www_session *ws; // borrowed
+  struct pp_backend *backend; // borrowed
 
   bool dump_to_disk;
   char dump_dir[256];
@@ -136,7 +136,7 @@ static void *worker_main(void *arg) {
 
     int fd = -1;
     char *meta = NULL;
-    int rc = pp_www_session_fetch_next(c->ws, &fd, &meta);
+    int rc = pp_backend_fetch_next(c->backend, &fd, &meta);
 
     pthread_mutex_lock(&c->mu);
     if (rc < 0) {
@@ -182,7 +182,7 @@ struct pp_cache *pp_cache_init(const struct pp_cache_params *p) {
   struct pp_cache *c = calloc(1, sizeof(*c));
   if (!c)
     return NULL;
-  c->ws = p->ws;
+  c->backend = p->backend;
   c->dump_to_disk = p->dump_to_disk;
   strncpy(c->dump_dir, p->dump_dir ? p->dump_dir : "", sizeof(c->dump_dir) - 1);
   c->prefetch_depth = p->cache_depth ? p->cache_depth : 1;

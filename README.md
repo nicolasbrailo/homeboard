@@ -134,5 +134,6 @@ If everything goes well, the target `make install-systemd` can install each serv
 - eInk: verify why partial update isn't working
 - if eInk fails on startup then we never recover -> we should retry a few times, or crash and let systemd handle
 - eInk display layout is not great, often misses the last letter
-- Need to handle ENOTCONN for photo client, the bus may disconnect when retrieving a picture (check: any other risky call sites for ENOTCONN?)
+- The makefile puts all built .o files in the same build dir, leading to possible build name conflicts
+- Add a backend for an open picture provider
 

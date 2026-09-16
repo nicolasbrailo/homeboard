@@ -5,10 +5,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "backend.h"
 #include "cache.h"
 #include "config.h"
 #include "dbus.h"
-#include "www_session.h"
 
 static volatile sig_atomic_t g_quit;
 
@@ -29,36 +29,34 @@ int main(int argc, char *argv[]) {
 
   curl_global_init(CURL_GLOBAL_DEFAULT);
 
-  struct pp_www_session *ws = pp_www_session_init(
-      cfg.server_url, cfg.target_w, cfg.target_h, cfg.embed_qr,
-      cfg.connect_timeout_s, cfg.request_timeout_s);
-  if (!ws) {
-    fprintf(stderr, "pp_www_session_init failed\n");
+  struct pp_backend *backend = pp_backend_init(&cfg);
+  if (!backend) {
+    fprintf(stderr, "pp_backend_init failed\n");
     curl_global_cleanup();
     return 1;
   }
 
   struct pp_cache_params params = {
-      .ws = ws,
+      .backend = backend,
       .cache_depth = cfg.cache_depth,
       .history_depth = cfg.history_depth,
       .dump_to_disk = cfg.dump_to_disk,
       .dump_dir = cfg.dump_dir,
   };
-  // The cache worker registers with the server on its first fetch, and keeps
+  // The cache worker contacts the server on its first fetch, and keeps
   // retrying if the server is unreachable; until then GetPhoto answers
   // Unavailable.
   struct pp_cache *cache = pp_cache_init(&params);
   if (!cache) {
     fprintf(stderr, "pp_cache_init failed\n");
-    pp_www_session_free(ws);
+    pp_backend_free(backend);
     curl_global_cleanup();
     return 1;
   }
 
-  if (pp_dbus_init(ws, cache) < 0) {
+  if (pp_dbus_init(backend, cache) < 0) {
     pp_cache_free(cache);
-    pp_www_session_free(ws);
+    pp_backend_free(backend);
     curl_global_cleanup();
     return 1;
   }
@@ -74,7 +72,7 @@ int main(int argc, char *argv[]) {
 
   pp_dbus_free();
   pp_cache_free(cache);
-  pp_www_session_free(ws);
+  pp_backend_free(backend);
   curl_global_cleanup();
   return 0;
 }

@@ -1,4 +1,5 @@
 {
+  "backend": "wwwslide",
   "server_url": "http://10.0.0.10:5000",
   "target_size_w": 1920,
   "target_size_h": 1080,
@@ -8,5 +9,12 @@
   "dump_to_disk": false,
   "dump_dir": "./photo-provider-diskdump",
   "connect_timeout_s": 3,
-  "request_timeout_s": 10
+  "request_timeout_s": 10,
+  "immich": {
+    "server_url": "http://bati.casa:2222",
+    "api_key": "",
+    "max_pictures_per_album": 20,
+    "percent_per_album": 50,
+    "album_refresh_s": 86400
+  }
 }

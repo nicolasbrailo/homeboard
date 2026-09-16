@@ -7,3 +7,6 @@
 [submodule "ambience/nanosvg"]
 	path = ambience/nanosvg
 	url = https://github.com/memononen/nanosvg.git
+[submodule "photo-provider/libimmich-random"]
+	path = photo-provider/libimmich-random
+	url = git@github.com:nicolasbrailo/libimmich-random.git
