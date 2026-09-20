@@ -13,7 +13,9 @@
 //
 // Unlike wwwslide, Immich can't render a photo at the target size or embed a
 // QR code in it, so those settings are ignored: set Immich's preview
-// resolution (and JPEG format) in its image settings instead.
+// resolution (and JPEG format) in its image settings instead. It does support
+// an album filter, which the library applies where albums enter the rotation,
+// so an excluded album costs no request.
 
 struct pp_immich_backend;
 
@@ -27,6 +29,12 @@ void pp_immich_backend_free(struct pp_immich_backend *s);
 int pp_immich_backend_set_target_size(struct pp_immich_backend *s, uint32_t w,
                                       uint32_t h);
 int pp_immich_backend_set_embed_qr(struct pp_immich_backend *s, bool v);
+int pp_immich_backend_set_album_filter(struct pp_immich_backend *s,
+                                       const struct pp_album_filter_config *f);
+
+// Why nothing can be served, if the reason is worth telling a user about, else
+// NULL. See pp_backend_unavailable_reason.
+const char *pp_immich_backend_unavailable_reason(struct pp_immich_backend *s);
 
 // Fetches the next picture and its metadata, as pp_backend_fetch_next
 int pp_immich_backend_fetch_next(struct pp_immich_backend *s, int *fd_out,

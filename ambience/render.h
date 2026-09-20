@@ -12,6 +12,11 @@ struct RenderCtx;
 typedef void (*render_pre_commit_cb_t)(void *ud, uint32_t *fb,
                                        const struct fb_info *fbi,
                                        enum rotation rot);
+// Called on the render thread after each fetch, with what photo-provider said
+// about why it couldn't serve a photo, or "" once one can be served again. Use
+// it to tell the user why the fallback image is up.
+typedef void (*render_photo_error_cb_t)(void *ud, const char *msg);
+
 struct RenderCtx *render_init(render_pre_commit_cb_t cb,
                               void *render_pre_commit_cb_ud,
                               const char *fallback_img_path,
@@ -19,6 +24,10 @@ struct RenderCtx *render_init(render_pre_commit_cb_t cb,
                               bool eink_flip,
                               const struct img_render_cfg *img_cfg);
 void render_free(struct RenderCtx *s);
+
+// Optional; set it before the slideshow goes active. Not thread safe.
+void render_set_photo_error_cb(struct RenderCtx *s, render_photo_error_cb_t cb,
+                               void *ud);
 
 // Call when the DRM assigns an FB to this service
 void render_set_fb(struct RenderCtx *s, uint32_t *fb,

@@ -184,8 +184,8 @@ static int reregister(struct pp_wwwslide_backend *s) {
   strncpy(s->client_id, new_id, sizeof(s->client_id) - 1);
   s->client_id[sizeof(s->client_id) - 1] = '\0';
   s->last_activity_s = now_monotonic_s();
-  printf("Registered with server, client_id=%s (%ux%u, embed_qr=%d)\n",
-         new_id, tw, th, qr);
+  printf("Registered with server, client_id=%s (%ux%u, embed_qr=%d)\n", new_id,
+         tw, th, qr);
   return 0;
 }
 
@@ -275,6 +275,14 @@ int pp_wwwslide_backend_set_embed_qr(struct pp_wwwslide_backend *s, bool v) {
     return 0;
   atomic_store(&s->needs_register, true);
   return 1;
+}
+
+int pp_wwwslide_backend_set_album_filter(
+    struct pp_wwwslide_backend *s, const struct pp_album_filter_config *f) {
+  (void)s;
+  if (f->name[0] || f->exclude[0] || f->from_year || f->to_year)
+    printf("wwwslide backend: album filters aren't supported, ignoring it\n");
+  return 0;
 }
 
 static int fetch_img_into_fd(struct pp_wwwslide_backend *s, const char *id) {

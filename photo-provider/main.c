@@ -58,7 +58,7 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  if (pp_dbus_init(backend, cache) < 0) {
+  if (pp_dbus_init(backend, cache, &cfg, argv[1]) < 0) {
     pp_cache_free(cache);
     pp_backend_free(backend);
     curl_global_cleanup();

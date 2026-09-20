@@ -3,6 +3,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "config.h"
+
 // A session with the wwwslide HTTP server. Owns:
 //   - a registered client_id (refreshed on every config change)
 //   - the current target_size / embed_qr params
@@ -31,6 +33,12 @@ void pp_wwwslide_backend_free(struct pp_wwwslide_backend *s);
 int pp_wwwslide_backend_set_target_size(struct pp_wwwslide_backend *s,
                                         uint32_t w, uint32_t h);
 int pp_wwwslide_backend_set_embed_qr(struct pp_wwwslide_backend *s, bool v);
+
+// Always 0: wwwslide picks the pictures itself, so there are no albums here to
+// filter. Accepted rather than rejected so the same command can be sent to any
+// device without knowing which backend it runs.
+int pp_wwwslide_backend_set_album_filter(
+    struct pp_wwwslide_backend *s, const struct pp_album_filter_config *f);
 
 // (Re-)registers first if needed (config change, stale client, or a previous
 // registration failed), then fetches the next image + its metadata as a pair

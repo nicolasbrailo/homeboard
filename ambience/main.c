@@ -31,6 +31,11 @@ struct AmbienceCtx {
   // Persisted config and the file it was loaded from / will be saved to
   struct ambience_config cfg;
   const char *cfg_path;
+
+  // The photo-provider error currently on the overlay, "" if none. Lets us
+  // clear only what we put there, and skip redrawing an unchanged message
+  // while the provider keeps failing.
+  char photo_error[192];
 } g_ambience_ctx;
 
 void on_next(void *ud) {
@@ -87,8 +92,9 @@ int on_announce(void *ud, uint32_t timeout_seconds, const char *text) {
   overlay_set_text(ctx->overlay, text, timeout_seconds);
   // The overlay is only composited during a render cycle, which otherwise only
   // happens on a slideshow tick (up to transition_time_s away).
-  // If the photo-provider is unreachable (e.g. the network fault being announced)
-  // the fetch fails and the overlay composites over the fallback image instead.
+  // If the photo-provider is unreachable (e.g. the network fault being
+  // announced) the fetch fails and the overlay composites over the fallback
+  // image instead.
   render_slideshow_next(ctx->render);
   return 0;
 }
@@ -106,6 +112,25 @@ int on_overlay_from_file(void *ud, uint32_t timeout_seconds, const char *path) {
   overlay_set_from_file(ctx->overlay, (path && *path) ? path : NULL,
                         timeout_seconds);
   return 0;
+}
+
+// Shows why the fallback image is up. This shares the announce layer, so an
+// announcement made while the error is on screen is replaced when the error
+// clears -- worth it, since the alternative is a fallback image with no
+// explanation at all.
+void on_photo_error(void *ud, const char *msg) {
+  struct AmbienceCtx *s = ud;
+  const char *text = msg ? msg : "";
+  if (strcmp(text, s->photo_error) == 0)
+    return;
+
+  // Only clear what we put there: an announcement set while no error was
+  // showing has to survive.
+  if (text[0] == '\0' && s->photo_error[0] != '\0')
+    overlay_set_text(s->overlay, NULL, 0);
+  else if (text[0] != '\0')
+    overlay_set_text(s->overlay, text, 0);
+  snprintf(s->photo_error, sizeof(s->photo_error), "%s", text);
 }
 
 void on_presence_changed(void *ud, bool present) {
@@ -204,6 +229,11 @@ int main(int argc, char *argv[]) {
     fprintf(stderr, "overlay_init failed\n");
     return 1;
   }
+  // After overlay_init, since the callback draws on it, and before the
+  // slideshow goes active, which is when the render thread starts fetching
+  render_set_photo_error_cb(g_ambience_ctx.render, on_photo_error,
+                            &g_ambience_ctx);
+
   bool all_deps_ready = false;
   struct DBusListeners *listeners =
       dbus_listeners_init(&cbs, &g_ambience_ctx, &all_deps_ready);

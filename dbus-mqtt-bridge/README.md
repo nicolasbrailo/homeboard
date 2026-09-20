@@ -19,6 +19,7 @@ If the broker or a web UI in front of it is compromised, the blast radius on the
 - Listens for `io.homeboard.Occupancy1.Report` on the system bus and republishes it as retained JSON on `<prefix>state/occupancy`.
 - Listens for `io.homeboard.Ambience1.DisplayingPhoto` and republishes the photo-provider metadata JSON verbatim on `<prefix>state/displayed_photo` (passthrough, not re-wrapped).
 - Listens for `io.homeboard.Ambience1.SlideshowActive` and republishes `{"active":true}` / `{"active":false}` retained on `<prefix>state/slideshow_active`.
+- Drops any command message with the retain flag set, so a stale retained command isn't replayed on every reconnect.
 - Auto-reconnects to both the broker and (implicitly) D-Bus on failure.
 - Publishes the online variant of the same payload retained to `<prefix>state/bridge` on successful connect, and the offline variant on graceful shutdown — so the topic always carries a single record per device, with `state` toggling between `online` and `offline`. IP and other host info are captured at startup and do not refresh; a process restart is required to pick up changes.
 
@@ -65,8 +66,49 @@ All command payloads are **JSON objects**. Field names and types must match exac
 | `cmd/ambience/set_render_config` | `Ambience.SetRenderConfig` (`usss`) | `{"rotation": <uint>, "interp": <string>, "h_align": <string>, "v_align": <string>}` | rotation `0`/`90`/`180`/`270`; interp `nearest`/`bilinear`; aligns as on the D-Bus method. Validation happens service-side |
 | `cmd/photo_provider/set_embed_qr` | `PhotoProvider.SetEmbedQr` (`b`) | `{"on": <bool>}` | |
 | `cmd/photo_provider/set_target_size` | `PhotoProvider.SetTargetSize` (`uu`) | `{"w": <uint>, "h": <uint>}` | each in 1..10000 |
+| `cmd/ambience/set_album_filter` | `PhotoProvider.SetAlbumFilter` (`ssuu`), then `Ambience.Next` | `{"name": <string>, "exclude": <string>, "from_year": <int>, "to_year": <int>}` | all four optional; see below. Named after Ambience, unlike the other PhotoProvider commands it sits with — a wart to fix once the downstream senders (remote control, portal) can be changed with it |
 
 Unknown topics and malformed payloads are logged and dropped. The whole MQTT payload is hard-capped at 192 KB before JSON parsing.
+
+**Retained commands are ignored**, on every topic, with a log line. A retained message is redelivered on each reconnect, so acting on one replays a command sent days ago — typically right after a reboot, when the user expects the device's saved settings instead. Don't publish commands with `-r`.
+
+#### `set_album_filter`
+
+Restricts which Immich albums pictures are drawn from. Ignored (and logged) on a device running the wwwslide backend, which picks the pictures itself.
+
+**The payload replaces the whole filter.** An absent field is not "leave it as it was", it is "no constraint of that kind", so the device's state is a pure function of the last message — which matters when the sender is a home-automation rule rather than a person. It follows that `{}` clears the filter and shows every album again; that is the only way back to the default.
+
+| field | default | meaning |
+|---|---|---|
+| `name` | `""` | comma-separated patterns; keep an album whose name matches **any** of them |
+| `exclude` | `""` | comma-separated patterns; drop an album whose name matches any of them |
+| `from_year` | `0` | only albums holding pictures from this year onwards; `0` = no lower bound |
+| `to_year` | `0` | only albums holding pictures up to this year; `0` = no upper bound |
+
+Each pattern is trimmed, empty ones are dropped (`" , ,"` is no patterns at all), and what is left is matched **against the whole album name**, case-insensitively. `*` matches any run of characters and `?` exactly one; **every other character is literal**, including regex and shell metacharacters, so an album named `Trip (2019)` is selected by writing exactly that. `exclude` is evaluated after `name`, so it wins on a conflict.
+
+The year test is an **overlap** test against the dates Immich reports for the album's oldest and newest asset — not against its name, which is not evidence (`2024 - office` can hold assets from 2019). An album running 2010–2026 matches `from_year=2019, to_year=2021`. Albums with no dates at all are dropped as soon as either bound is set, and albums with no assets never appear.
+
+Dropped as a bad payload, with a log line and no change to the filter: malformed JSON, a non-string `name`/`exclude`, a non-integer or out-of-range year, a `name`/`exclude` over 511 bytes, and `from_year > to_year`. That last one is rejected rather than honoured because, the test being an overlap test, a reversed range selects exactly the albums straddling the boundary instead of nothing — which looks like the filter being ignored, since pictures keep appearing.
+
+On success the bridge calls `Ambience.Next`, so the picture on screen (which may come from an excluded album) is replaced and the slide timer reset, and republishes the applied filter on `state/album_filter`.
+
+```bash
+# Only albums named portalgo-something
+mosquitto_pub -h BROKER -t 'homeboard/cmd/ambience/set_album_filter' \
+  -m '{"name":"portalgo-*"}'
+
+# Two name patterns plus a date window
+mosquitto_pub -h BROKER -t 'homeboard/cmd/ambience/set_album_filter' \
+  -m '{"name":"Holidays *, Pets","from_year":2019,"to_year":2021}'
+
+# Everything except a couple of albums
+mosquitto_pub -h BROKER -t 'homeboard/cmd/ambience/set_album_filter' \
+  -m '{"exclude":"Screenshots, WhatsApp *"}'
+
+# Back to every album
+mosquitto_pub -h BROKER -t 'homeboard/cmd/ambience/set_album_filter' -m '{}'
+```
 
 ### State (bridge publishes)
 
@@ -78,6 +120,7 @@ All state payloads are JSON. `state/displayed_photo` is a passthrough of `photo-
 | `state/occupancy` | `{"occupied":<bool>,"distance_cm":<uint>,"ts":<unix_seconds>}` | yes — late-joining clients get current state |
 | `state/displayed_photo` | photo-provider's metadata JSON, passed through verbatim | yes — late-joining clients see the currently-displayed photo |
 | `state/slideshow_active` | `{"active":<bool>}` | yes — reflects whether the ambience screen is currently on and the slideshow is running |
+| `state/album_filter` | `{"name":...,"exclude":...,"from_year":<uint>,"to_year":<uint>}` | yes — the album filter the bridge last applied, in the same field names the command takes. Published only after a successful `set_album_filter`: photo-provider persists the filter across restarts, but exposes no getter, so after a bridge restart this topic holds the last filter *this bridge* set rather than the one in force |
 
 All publishes are QoS 0.
 

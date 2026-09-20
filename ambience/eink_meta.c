@@ -57,13 +57,11 @@ void eink_meta_set_inactive(struct EinkMeta *em) {
   show_status(em, "Sleeping...");
 }
 
-void eink_meta_set_no_photo(struct EinkMeta *em) {
-  show_status(em, "No photos available");
+void eink_meta_set_no_photo(struct EinkMeta *em, const char *reason) {
+  show_status(em, (reason && reason[0]) ? reason : "No photos available");
 }
 
-void eink_meta_clear(struct EinkMeta *em) {
-  eink_clear(em->display);
-}
+void eink_meta_clear(struct EinkMeta *em) { eink_clear(em->display); }
 
 void eink_meta_render(struct EinkMeta *em, const char *meta_json) {
   if (!em || !meta_json)

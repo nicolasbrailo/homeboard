@@ -5,7 +5,8 @@ IMMICH_DIR = libimmich-random
 SRCS = main.c config.c backend.c wwwslide_backend.c immich_backend.c cache.c \
        dbus.c \
        $(IMMICH_DIR)/immich.c $(IMMICH_DIR)/client.c $(IMMICH_DIR)/browse.c \
-       $(IMMICH_DIR)/fetch.c $(IMMICH_DIR)/random.c
+       $(IMMICH_DIR)/fetch.c $(IMMICH_DIR)/random.c \
+       $(IMMICH_DIR)/album_filter.c
 LDFLAGS += -Wl,-Bstatic -ljson-c -Wl,-Bdynamic -lcurl -lsystemd -lpthread
 DBUS_POLICY = io.homeboard.PhotoProvider.conf
 

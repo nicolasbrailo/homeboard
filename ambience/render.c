@@ -40,6 +40,8 @@ struct RenderCtx {
   atomic_bool photo_cfg_dirty;
   sem_t wake_sem;
   char *fallback_img_path;
+  render_photo_error_cb_t on_photo_error;
+  void *on_photo_error_ud;
 
   render_pre_commit_cb_t render_pre_commit_cb;
   void *render_pre_commit_cb_ud;
@@ -201,8 +203,9 @@ static void *render_thread_fn(void *arg) {
     int fd = -1;
     char *meta = NULL;
     struct jpeg_image *img = NULL;
-    if (photo_client_fetch_one(s->photo_client, method, &fd, &meta,
-                               &render_cfg) == 0) {
+    char photo_err[192] = "";
+    if (photo_client_fetch_one(s->photo_client, method, &fd, &meta, &render_cfg,
+                               photo_err, sizeof(photo_err)) == 0) {
       img = decode_for_fb(s, fd, NULL);
       if (!img)
         fprintf(stderr, "jpeg decode failed\n");
@@ -212,6 +215,12 @@ static void *render_thread_fn(void *arg) {
       fprintf(stderr, "No photo to display, rendering fallback image\n");
       img = decode_for_fb(s, -1, s->fallback_img_path);
     }
+
+    // Before the composite, so the reason lands on the same frame as the
+    // fallback image it explains. A decode failure leaves photo_err empty:
+    // photo-provider served a photo, we just couldn't read it.
+    if (s->on_photo_error)
+      s->on_photo_error(s->on_photo_error_ud, is_photo ? "" : photo_err);
 
     // Re-check active under the mutex: if pause raced with our fetch, the pause
     // path has already painted the fallback and we must not stomp on it.
@@ -236,7 +245,7 @@ static void *render_thread_fn(void *arg) {
     } else if (is_photo) {
       eink_meta_render(s->eink, meta);
     } else {
-      eink_meta_set_no_photo(s->eink);
+      eink_meta_set_no_photo(s->eink, photo_err);
     }
 
     free(meta);
@@ -313,6 +322,12 @@ void render_set_fb(struct RenderCtx *s, uint32_t *fb,
     render_fallback(s);
 
   sem_post(&s->wake_sem);
+}
+
+void render_set_photo_error_cb(struct RenderCtx *s, render_photo_error_cb_t cb,
+                               void *ud) {
+  s->on_photo_error = cb;
+  s->on_photo_error_ud = ud;
 }
 
 void render_free(struct RenderCtx *s) {

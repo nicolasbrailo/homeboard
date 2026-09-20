@@ -85,6 +85,16 @@ static void on_message_cb(struct mosquitto *mosq, void *obj,
       memcmp(msg->topic, m->cmd_prefix, m->cmd_prefix_len) != 0)
     return;
   const char *suffix = msg->topic + m->cmd_prefix_len;
+
+  // A retained command is redelivered on every reconnect, so acting on it
+  // replays a command sent days ago -- typically right after a reboot, when
+  // the user expects the device's saved settings instead. Not an error: the
+  // sender just shouldn't have published it with -r.
+  if (msg->retain) {
+    printf("Ignoring retained command on %s\n", msg->topic);
+    return;
+  }
+
   const char *payload = msg->payload ? (const char *)msg->payload : "";
   size_t plen = msg->payloadlen > 0 ? (size_t)msg->payloadlen : 0;
   m->on_cmd(suffix, payload, plen, m->ud);

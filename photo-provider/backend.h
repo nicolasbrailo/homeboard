@@ -32,6 +32,18 @@ void pp_backend_free(struct pp_backend *b);
 // backend, -1 if the value is invalid.
 int pp_backend_set_target_size(struct pp_backend *b, uint32_t w, uint32_t h);
 int pp_backend_set_embed_qr(struct pp_backend *b, bool v);
+// Restricts which albums pictures may come from. Backends with no notion of
+// albums accept it and return 0, so a caller doesn't have to know which
+// backend is configured.
+int pp_backend_set_album_filter(struct pp_backend *b,
+                                const struct pp_album_filter_config *f);
+
+// Why this backend can't serve a photo, when the reason is specific enough to
+// be worth showing a user (currently only "the album filter matches nothing"),
+// else NULL. The string is a literal, valid for the life of the backend.
+// Non-blocking, callable from any thread: it explains a failed GetPhoto, so it
+// has to answer even while the worker is stuck on the network.
+const char *pp_backend_unavailable_reason(struct pp_backend *b);
 
 // Fetches the next photo and its metadata. On success, *fd_out is a memfd
 // (caller closes) and *meta_out is a malloc'd JSON string (caller frees). On

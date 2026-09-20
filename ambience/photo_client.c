@@ -28,6 +28,10 @@ struct PhotoClient {
   sd_bus *bus;
   uint32_t requested_w;
   uint32_t requested_h;
+  // What photo-provider said about the last call that failed with an error
+  // reply of its own, or "" if the last call succeeded or failed some other
+  // way. Only meaningful until the next call.
+  char last_error[192];
 };
 
 static sd_bus *get_bus(struct PhotoClient *pc) {
@@ -89,9 +93,16 @@ static int call_method(struct PhotoClient *pc, const char *method,
   sd_bus_error err = SD_BUS_ERROR_NULL;
   r = sd_bus_call(bus, call, PHOTO_CALL_TIMEOUT_USEC, &err, reply);
   sd_bus_message_unref(call);
+  pc->last_error[0] = '\0';
   if (r < 0) {
     fprintf(stderr, "%s failed: %s\n", method,
             err.message ? err.message : strerror(-r));
+    // Only photo-provider's own message is worth showing a user: a timeout or
+    // a dropped bus says nothing about the photos.
+    if (err.name && err.message &&
+        strncmp(err.name, DBUS_PHOTO_ERROR_PREFIX,
+                strlen(DBUS_PHOTO_ERROR_PREFIX)) == 0)
+      snprintf(pc->last_error, sizeof(pc->last_error), "%s", err.message);
     drop_bus_unless_provider_error(pc, &err);
   }
   sd_bus_error_free(&err);
@@ -119,11 +130,17 @@ void photo_client_free(struct PhotoClient *pc) {
 
 int photo_client_fetch_one(struct PhotoClient *pc, const char *method,
                            int *fd_out, char **meta_out,
-                           const struct img_render_cfg *render_cfg) {
+                           const struct img_render_cfg *render_cfg,
+                           char *err_out, size_t err_sz) {
   printf("Fetching new photo with %s.%s\n", DBUS_PHOTO_SERVICE, method);
+  if (err_out && err_sz > 0)
+    err_out[0] = '\0';
   sd_bus_message *reply = NULL;
-  if (call_method(pc, method, &reply, "") < 0)
+  if (call_method(pc, method, &reply, "") < 0) {
+    if (err_out && err_sz > 0)
+      snprintf(err_out, err_sz, "%s", pc->last_error);
     return -1;
+  }
 
   int fd = -1;
   const char *meta = NULL;

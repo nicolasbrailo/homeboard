@@ -2,6 +2,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -21,8 +22,17 @@ static void usage(const char *argv0) {
           "  %s -prev <out.jpg>     fetch previous photo from history, save to "
           "<out.jpg>\n"
           "  %s -qr <0|1>           set embed-QR flag\n"
-          "  %s -size <WxH>         set target size (eg. 1024x768)\n",
-          argv0, argv0, argv0, argv0);
+          "  %s -size <WxH>         set target size (eg. 1024x768)\n"
+          "  %s -album-filter <name> <exclude> <from_year> <to_year>\n"
+          "                         restrict which albums pictures come from "
+          "(immich backend only).\n"
+          "                         <name>/<exclude> are comma-separated globs "
+          "matched against the\n"
+          "                         whole album name; \"\" and 0 mean no "
+          "constraint, so\n"
+          "                         '-album-filter \"\" \"\" 0 0' clears the "
+          "filter\n",
+          argv0, argv0, argv0, argv0, argv0);
 }
 
 static int call_simple(sd_bus *bus, const char *method, const char *sig, ...) {
@@ -155,6 +165,26 @@ int main(int argc, char *argv[]) {
       goto out;
     }
     rc = call_simple(bus, "SetTargetSize", "uu", (uint32_t)w, (uint32_t)h) < 0
+             ? 1
+             : 0;
+  } else if (strcmp(argv[1], "-album-filter") == 0) {
+    if (argc != 6) {
+      usage(argv[0]);
+      goto out;
+    }
+    char *end = NULL;
+    long from_year = strtol(argv[4], &end, 10);
+    if (*end != '\0' || from_year < 0 || from_year > 9999) {
+      fprintf(stderr, "bad from_year '%s' (expected 0..9999)\n", argv[4]);
+      goto out;
+    }
+    long to_year = strtol(argv[5], &end, 10);
+    if (*end != '\0' || to_year < 0 || to_year > 9999) {
+      fprintf(stderr, "bad to_year '%s' (expected 0..9999)\n", argv[5]);
+      goto out;
+    }
+    rc = call_simple(bus, "SetAlbumFilter", "ssuu", argv[2], argv[3],
+                     (uint32_t)from_year, (uint32_t)to_year) < 0
              ? 1
              : 0;
   } else if (strcmp(argv[1], "-prev") == 0) {

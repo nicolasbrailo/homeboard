@@ -18,8 +18,9 @@ Service `io.homeboard.PhotoProvider`, object `/io/homeboard/PhotoProvider`, inte
 | `GetPrevPhoto` | `() → (h, s)` | Retreats the cursor one step and returns the previous photo from the history window. Non-blocking; fails with `Unavailable` if no history is held. |
 | `SetTargetSize` | `(uu) → ()` | Updates `(w, h)` and flushes the cache; the worker re-registers with the server before its next fetch. Returns immediately, never touches the network. Fails with `InvalidArgs` outside 128..3840. |
 | `SetEmbedQr` | `(b) → ()` | Toggles QR embed; same re-register + flush behavior as `SetTargetSize`. |
+| `SetAlbumFilter` | `(ssuu) → ()` | `(name, exclude, from_year, to_year)`: restricts which albums pictures come from, flushes the cache and saves the filter back to the config file. Ignored by the wwwslide backend. Fails with `InvalidArgs` on a year outside 0..9999, `from_year > to_year`, or a string over 511 bytes. |
 
-Every method answers promptly, even while the server is unreachable: `GetPhoto` is the only one that waits, and its 5s bound is well under client call timeouts. Errors are named `io.homeboard.PhotoProvider.Error.*`.
+Every method answers promptly, even while the server is unreachable: `GetPhoto` is the only one that waits, and its 5s bound is well under client call timeouts. Errors are named `io.homeboard.PhotoProvider.Error.*`. `GetPhoto` answers `Error.Unavailable` in general, but `Error.NoAlbumMatchesFilter` when the album list is non-empty and the filter dropped every album — consumers show its message, so a mistyped pattern doesn't read as a blank screen.
 
 ## Config
 
@@ -40,8 +41,17 @@ JSON file; see `config.json` for an example.
 | `immich.max_pictures_per_album` | Show at most this many pictures from each album (0: no limit) |
 | `immich.percent_per_album` | Show this percentage of each album's pictures (0 or 100: all). Applied before `max_pictures_per_album` |
 | `immich.album_refresh_s` | Re-fetch the album list this often (0: never) |
+| `immich.album_filter` | `{name, exclude, from_year, to_year}`: which albums pictures may come from. Empty strings and `0` years mean no constraint, which is the default. **Written back by `SetAlbumFilter`**, so a filter set over D-Bus or MQTT survives a restart — and `make deploy-config` overwrites it, like every other persisted setting |
 
 The `immich` section is ignored with `backend: wwwslide`, and the wwwslide keys (`server_url`, `embed_qr`) with `backend: immich`.
+
+### Album filter
+
+Immich's `GET /albums` can only filter by exact name, so anything more expressive is decided here, on the list the server already returned — which costs nothing extra, since each entry already carries the album's name, asset count and the dates of its oldest and newest asset.
+
+`name` and `exclude` are comma-separated glob patterns matched against the **whole** album name, case-insensitively, with `*` and `?` as the only metacharacters (so `Trip (2019)` is selected by writing exactly that); `exclude` wins on a conflict. The year range is an **overlap** test against the server's dates, so an album running 2010–2026 matches `from_year=2019, to_year=2021`; an album with no dates is dropped as soon as either bound is set, and one with no assets never appears. A reversed range is rejected rather than honoured, since the overlap test would turn it into "the albums straddling the boundary" instead of "nothing".
+
+The filter is applied where albums enter the rotation, in `libimmich-random`, so an excluded album costs no request at all, and it is re-applied whenever the album list is refreshed. Setting it never triggers a fetch of its own. The service logs the filter when it changes and `"N albums, M in the rotation"` when the rotation is rebuilt. `libimmich-random`'s `make test` covers the selection rules.
 
 With `backend: immich`, `SetTargetSize` and `SetEmbedQr` are accepted but ignored (Immich can't render to a size or embed a QR code), and `connect_timeout_s` / `request_timeout_s` don't apply (the library uses a 10s connect timeout and aborts transfers stalled for 30s). Photos are Immich's previews: set their resolution to suit the display, and their format to JPEG, in Immich's image settings; non-JPEG previews are skipped. The metadata has wwwslide's keys except `albumpath`, plus `immich_id`, `description`, `latitude` / `longitude` and `people`.
 
@@ -61,7 +71,7 @@ make deploy-dbus-policy          # one-time; reloads dbus
 | File | Purpose |
 |------|---------|
 | `main.c` | Entry point, lifecycle wiring |
-| `config.c` | json-c config loader |
+| `config.c` | json-c config loader, plus the write-back that persists `SetAlbumFilter` |
 | `backend.c` | Picks the backend from the config and dispatches to it; documents the contract every backend follows |
 | `wwwslide_backend.c` | wwwslide backend: libcurl HTTP client; owns `client_id`, target size, embed_qr; handles (re-)registration |
 | `immich_backend.c` | Immich backend: picks pictures with `libimmich-random`, serves Immich's preview JPEG, converts Immich metadata to wwwslide's JSON keys |

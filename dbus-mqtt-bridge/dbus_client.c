@@ -263,3 +263,16 @@ int rc_dbus_photo_set_target_size(struct rc_dbus *d, uint32_t w, uint32_t h) {
   sd_bus_error_free(&err);
   return ret;
 }
+
+int rc_dbus_photo_set_album_filter(struct rc_dbus *d, const char *name,
+                                   const char *exclude, uint32_t from_year,
+                                   uint32_t to_year) {
+  sd_bus_error err = SD_BUS_ERROR_NULL;
+  int r =
+      sd_bus_call_method(d->bus, PHOTO_SERVICE, PHOTO_PATH, PHOTO_INTERFACE,
+                         "SetAlbumFilter", &err, NULL, "ssuu", name ? name : "",
+                         exclude ? exclude : "", from_year, to_year);
+  int ret = (r < 0) ? log_err("SetAlbumFilter", r, &err) : 0;
+  sd_bus_error_free(&err);
+  return ret;
+}

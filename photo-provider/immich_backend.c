@@ -14,10 +14,32 @@ struct pp_immich_backend {
   struct immich_client *client;
   struct immich_random_album_picture *picker;
 
+  // The filter handed to the picker, kept only to answer "did this change?".
+  // D-Bus thread only: the picker owns the copy the fetch thread reads.
+  struct pp_album_filter_config filter;
+
   // Fetch thread only
   uint32_t album_refresh_s; // 0: never
   long last_refresh_s;      // Monotonic
+  // The last rotation we reported, so a worker retrying every couple of
+  // seconds doesn't repeat itself
+  enum immich_album_selection last_selection;
+  size_t last_total;
+  size_t last_kept;
 };
+
+// Hands f to the picker. Returns 0, or -1 if the picker rejected it (a year
+// out of range, or a reversed year range: it says which on stderr).
+static int push_filter(struct pp_immich_backend *s,
+                       const struct pp_album_filter_config *f) {
+  const struct immich_album_filter af = {
+      .name = f->name,
+      .exclude = f->exclude,
+      .from_year = f->from_year,
+      .to_year = f->to_year,
+  };
+  return immich_random_album_picture_set_filter(s->picker, &af);
+}
 
 static long now_monotonic_s(void) {
   struct timespec ts;
@@ -47,8 +69,19 @@ struct pp_immich_backend *pp_immich_backend_init(const struct pp_config *cfg) {
     return NULL;
   }
 
+  s->filter = icfg->album_filter;
+  if (push_filter(s, &s->filter) < 0) {
+    // pp_config_load already rejects the ranges the picker rejects, so this
+    // means the two disagree. Start unfiltered rather than not at all.
+    fprintf(stderr, "immich backend: the configured album filter was rejected, "
+                    "starting with no filter\n");
+    memset(&s->filter, 0, sizeof(s->filter));
+    immich_random_album_picture_set_filter(s->picker, NULL);
+  }
+
   s->album_refresh_s = icfg->album_refresh_s;
   s->last_refresh_s = now_monotonic_s();
+  s->last_selection = IMMICH_ALBUMS_NONE_KNOWN;
   if (cfg->embed_qr)
     printf("immich backend: embed_qr isn't supported, ignoring it\n");
   return s;
@@ -77,6 +110,73 @@ int pp_immich_backend_set_embed_qr(struct pp_immich_backend *s, bool v) {
   if (v)
     printf("immich backend: embed_qr isn't supported, ignoring it\n");
   return 0;
+}
+
+static bool same_filter(const struct pp_album_filter_config *a,
+                        const struct pp_album_filter_config *b) {
+  return a->from_year == b->from_year && a->to_year == b->to_year &&
+         strcmp(a->name, b->name) == 0 && strcmp(a->exclude, b->exclude) == 0;
+}
+
+int pp_immich_backend_set_album_filter(struct pp_immich_backend *s,
+                                       const struct pp_album_filter_config *f) {
+  if (same_filter(&s->filter, f))
+    return 0;
+  if (push_filter(s, f) < 0)
+    return -1;
+
+  s->filter = *f;
+  if (f->name[0] || f->exclude[0] || f->from_year || f->to_year)
+    printf("immich backend: album filter set to name=\"%s\" exclude=\"%s\" "
+           "years=%u..%u\n",
+           f->name, f->exclude, f->from_year, f->to_year);
+  else
+    printf("immich backend: album filter cleared, every album is back in the "
+           "rotation\n");
+  return 1;
+}
+
+const char *pp_immich_backend_unavailable_reason(struct pp_immich_backend *s) {
+  // Lock-free, so this answers straight away even while the worker is blocked
+  // on a download
+  if (immich_random_album_picture_status(s->picker, NULL, NULL) ==
+      IMMICH_ALBUMS_NONE_MATCH_FILTER)
+    return "No album matches the album filter";
+  return NULL;
+}
+
+// Reports how many albums survived the filter, but only when that changes: the
+// cache worker retries every couple of seconds while nothing can be served,
+// and "1236 albums, 9 kept" is only worth saying once per rotation.
+static void log_selection(struct pp_immich_backend *s) {
+  size_t total = 0;
+  size_t kept = 0;
+  enum immich_album_selection sel =
+      immich_random_album_picture_status(s->picker, &total, &kept);
+  if (sel == s->last_selection && total == s->last_total &&
+      kept == s->last_kept)
+    return;
+  s->last_selection = sel;
+  s->last_total = total;
+  s->last_kept = kept;
+
+  switch (sel) {
+  case IMMICH_ALBUMS_OK:
+    printf("immich backend: %zu albums, %zu in the rotation\n", total, kept);
+    break;
+  case IMMICH_ALBUMS_NONE_KNOWN:
+    printf("immich backend: no album list yet\n");
+    break;
+  case IMMICH_ALBUMS_NONE_WITH_PICTURES:
+    printf("immich backend: %zu albums, none with any pictures\n", total);
+    break;
+  case IMMICH_ALBUMS_NONE_MATCH_FILTER:
+    // The filter itself was logged when it was set. Reading it here would
+    // race the D-Bus thread setting the next one.
+    printf("immich backend: %zu albums, none matches the album filter\n",
+           total);
+    break;
+  }
 }
 
 // Asks the picker to re-fetch the album list every album_refresh_s. It does so
@@ -172,7 +272,10 @@ int pp_immich_backend_fetch_next(struct pp_immich_backend *s, int *fd_out,
   maybe_refresh_albums(s);
 
   char id[IMMICH_ID_SIZE];
-  if (immich_get_random_album_picture(s->picker, id) < 0)
+  int picked = immich_get_random_album_picture(s->picker, id);
+  // After the pick, so it sees the rotation this call may have rebuilt
+  log_selection(s);
+  if (picked < 0)
     return -1;
 
   int fd = immich_fetch_picture_to_fd(s->client, id, IMMICH_PICTURE_PREVIEW);

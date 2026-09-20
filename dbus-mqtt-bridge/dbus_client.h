@@ -33,3 +33,6 @@ int rc_dbus_ambience_set_render_config(struct rc_dbus *d, uint32_t rotation,
 int rc_dbus_presence_call_void(struct rc_dbus *d, const char *method);
 int rc_dbus_photo_set_embed_qr(struct rc_dbus *d, bool on);
 int rc_dbus_photo_set_target_size(struct rc_dbus *d, uint32_t w, uint32_t h);
+int rc_dbus_photo_set_album_filter(struct rc_dbus *d, const char *name,
+                                   const char *exclude, uint32_t from_year,
+                                   uint32_t to_year);

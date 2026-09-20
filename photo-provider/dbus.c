@@ -21,6 +21,8 @@ static sd_bus *g_bus;
 static sd_bus_slot *g_vtable_slot;
 static struct pp_cache *g_cache;
 static struct pp_backend *g_backend;
+static struct pp_config *g_cfg;
+static const char *g_cfg_path;
 
 // The memfd is handed to the client via SCM_RIGHTS, which shares the open
 // file description (and thus the file offset) between sender and receiver.
@@ -38,13 +40,25 @@ static int reply_with_fd(sd_bus_message *m, sd_bus_error *err, int fd,
   return sd_bus_reply_method_return(m, "hs", fd, meta ? meta : "");
 }
 
+// Turns an empty cache into an error reply. A generic "no photo available"
+// leaves a user who mistyped a filter pattern looking at a blank screen with
+// no reason for it, so when the backend can name the cause, say it under its
+// own error name: consumers show the message.
+static int no_photo_error(sd_bus_error *err) {
+  const char *reason = pp_backend_unavailable_reason(g_backend);
+  if (reason)
+    return sd_bus_error_set(
+        err, "io.homeboard.PhotoProvider.Error.NoAlbumMatchesFilter", reason);
+  return sd_bus_error_set(err, "io.homeboard.PhotoProvider.Error.Unavailable",
+                          "no photo available");
+}
+
 static int method_get_photo(sd_bus_message *m, void *ud, sd_bus_error *err) {
   (void)ud;
   int fd = -1;
   char *meta = NULL;
   if (pp_cache_pop(g_cache, &fd, &meta, GET_PHOTO_TIMEOUT_MS) < 0)
-    return sd_bus_error_set(err, "io.homeboard.PhotoProvider.Error.Unavailable",
-                            "no photo available");
+    return no_photo_error(err);
 
   int r = reply_with_fd(m, err, fd, meta);
   close(fd); // dbus dup'd it; we drop ours
@@ -76,7 +90,8 @@ static int method_set_target_size(sd_bus_message *m, void *ud,
     return sd_bus_error_set_errno(err, -r);
   r = pp_backend_set_target_size(g_backend, w, h);
   if (r < 0)
-    return sd_bus_error_setf(err, "io.homeboard.PhotoProvider.Error.InvalidArgs",
+    return sd_bus_error_setf(err,
+                             "io.homeboard.PhotoProvider.Error.InvalidArgs",
                              "target size %ux%u out of range", w, h);
   // Photos in the cache were rendered for the old size. The backend applies
   // the new one before its next fetch.
@@ -98,6 +113,62 @@ static int method_set_embed_qr(sd_bus_message *m, void *ud, sd_bus_error *err) {
   return sd_bus_reply_method_return(m, NULL);
 }
 
+static int method_set_album_filter(sd_bus_message *m, void *ud,
+                                   sd_bus_error *err) {
+  (void)ud;
+  const char *name = NULL;
+  const char *exclude = NULL;
+  uint32_t from_year = 0;
+  uint32_t to_year = 0;
+  int r = sd_bus_message_read(m, "ssuu", &name, &exclude, &from_year, &to_year);
+  if (r < 0)
+    return sd_bus_error_set_errno(err, -r);
+
+  struct pp_album_filter_config f = {
+      .from_year = from_year,
+      .to_year = to_year,
+  };
+  if (from_year > 9999 || to_year > 9999)
+    return sd_bus_error_setf(
+        err, "io.homeboard.PhotoProvider.Error.InvalidArgs",
+        "years must be 0..9999, got %u..%u", from_year, to_year);
+  // The year test is an overlap test, so a reversed range selects the albums
+  // straddling the boundary rather than nothing -- which looks like the filter
+  // being ignored, because pictures keep appearing.
+  if (from_year != 0 && to_year != 0 && from_year > to_year)
+    return sd_bus_error_setf(
+        err, "io.homeboard.PhotoProvider.Error.InvalidArgs",
+        "from_year %u is after to_year %u", from_year, to_year);
+  // Truncating would apply a filter the caller didn't ask for
+  if (name && strlen(name) >= sizeof(f.name))
+    return sd_bus_error_setf(
+        err, "io.homeboard.PhotoProvider.Error.InvalidArgs",
+        "name is longer than %zu bytes", sizeof(f.name) - 1);
+  if (exclude && strlen(exclude) >= sizeof(f.exclude))
+    return sd_bus_error_setf(
+        err, "io.homeboard.PhotoProvider.Error.InvalidArgs",
+        "exclude is longer than %zu bytes", sizeof(f.exclude) - 1);
+  if (name)
+    strncpy(f.name, name, sizeof(f.name) - 1);
+  if (exclude)
+    strncpy(f.exclude, exclude, sizeof(f.exclude) - 1);
+
+  r = pp_backend_set_album_filter(g_backend, &f);
+  if (r < 0)
+    return sd_bus_error_set(err, "io.homeboard.PhotoProvider.Error.InvalidArgs",
+                            "the backend rejected the album filter");
+  if (r > 0) {
+    // Photos already in the cache may come from an album the new filter
+    // excludes
+    pp_cache_invalidate(g_cache);
+    g_cfg->immich.album_filter = f;
+    // A filter that only changed memory would silently revert on the next
+    // restart, and the config file would disagree with what's on screen
+    pp_config_save(g_cfg_path, g_cfg);
+  }
+  return sd_bus_reply_method_return(m, NULL);
+}
+
 static const sd_bus_vtable g_vtable[] = {
     SD_BUS_VTABLE_START(0),
     SD_BUS_METHOD("GetPhoto", "", "hs", method_get_photo,
@@ -108,12 +179,17 @@ static const sd_bus_vtable g_vtable[] = {
                   SD_BUS_VTABLE_UNPRIVILEGED),
     SD_BUS_METHOD("SetEmbedQr", "b", "", method_set_embed_qr,
                   SD_BUS_VTABLE_UNPRIVILEGED),
+    SD_BUS_METHOD("SetAlbumFilter", "ssuu", "", method_set_album_filter,
+                  SD_BUS_VTABLE_UNPRIVILEGED),
     SD_BUS_VTABLE_END,
 };
 
-int pp_dbus_init(struct pp_backend *backend, struct pp_cache *cache) {
+int pp_dbus_init(struct pp_backend *backend, struct pp_cache *cache,
+                 struct pp_config *cfg, const char *cfg_path) {
   g_backend = backend;
   g_cache = cache;
+  g_cfg = cfg;
+  g_cfg_path = cfg_path;
 
   int r = sd_bus_open_system(&g_bus);
   if (r < 0) {

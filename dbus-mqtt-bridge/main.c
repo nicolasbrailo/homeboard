@@ -4,6 +4,7 @@
 
 #include <jpeg_render/img_render.h>
 
+#include <ctype.h>
 #include <errno.h>
 #include <json-c/json.h>
 #include <poll.h>
@@ -137,6 +138,34 @@ static int get_bool(struct json_object *o, const char *key, bool *out) {
   return 0;
 }
 
+// Like get_string, but an absent key is not an error: *out keeps whatever the
+// caller put there. Returns -1 only if the key is present with the wrong type.
+static int get_opt_string(struct json_object *o, const char *key,
+                          const char **out) {
+  struct json_object *v;
+  if (!json_object_object_get_ex(o, key, &v))
+    return 0;
+  if (!json_object_is_type(v, json_type_string))
+    return -1;
+  *out = json_object_get_string(v);
+  return 0;
+}
+
+// Same, for a year: an integer in 0..9999. Anything else makes the whole
+// message a bad payload.
+static int get_opt_year(struct json_object *o, const char *key, uint32_t *out) {
+  struct json_object *v;
+  if (!json_object_object_get_ex(o, key, &v))
+    return 0;
+  if (!json_object_is_type(v, json_type_int))
+    return -1;
+  int64_t n = json_object_get_int64(v);
+  if (n < 0 || n > 9999)
+    return -1;
+  *out = (uint32_t)n;
+  return 0;
+}
+
 static void cmd_set_transition_time(struct app_ctx *ctx, const char *suffix,
                                     struct json_object *o) {
   uint32_t secs;
@@ -202,6 +231,103 @@ static void cmd_set_target_size(struct app_ctx *ctx, const char *suffix,
   rc_dbus_photo_set_target_size(ctx->dbus, w, h);
 }
 
+// photo-provider holds these in fixed buffers of this size plus a NUL
+#define ALBUM_FILTER_STR_CAP 511
+
+// Copies s into out without its surrounding whitespace. Returns -1 if it
+// doesn't fit: truncating would apply a filter nobody asked for.
+static int copy_trimmed(const char *s, char *out, size_t out_sz,
+                        const char *suffix, const char *key) {
+  while (*s && isspace((unsigned char)*s))
+    s++;
+  size_t len = strlen(s);
+  while (len > 0 && isspace((unsigned char)s[len - 1]))
+    len--;
+  if (len >= out_sz) {
+    fprintf(stderr, "%s: '%s' is longer than %zu bytes\n", suffix, key,
+            out_sz - 1);
+    return -1;
+  }
+  memcpy(out, s, len);
+  out[len] = '\0';
+  return 0;
+}
+
+// Publishes the filter now in force, so a dashboard can show what the device
+// is doing. Retained, like the other state topics.
+static void publish_album_filter(struct app_ctx *ctx, const char *name,
+                                 const char *exclude, uint32_t from_year,
+                                 uint32_t to_year) {
+  struct json_object *root = json_object_new_object();
+  if (!root)
+    return;
+  json_object_object_add(root, "name", json_object_new_string(name));
+  json_object_object_add(root, "exclude", json_object_new_string(exclude));
+  json_object_object_add(root, "from_year",
+                         json_object_new_int((int)from_year));
+  json_object_object_add(root, "to_year", json_object_new_int((int)to_year));
+  const char *out =
+      json_object_to_json_string_ext(root, JSON_C_TO_STRING_PLAIN);
+  if (out)
+    rc_mqtt_publish(ctx->mqtt, "state/album_filter", out, strlen(out), true);
+  json_object_put(root);
+}
+
+// Every field is optional, and an absent one means "no constraint of that
+// kind" rather than "leave it as it was": the payload replaces the whole
+// filter. {} clears the filter to show every album again.
+static void cmd_set_album_filter(struct app_ctx *ctx, const char *suffix,
+                                 struct json_object *o) {
+  const char *name = "";
+  const char *exclude = "";
+  uint32_t from_year = 0;
+  uint32_t to_year = 0;
+
+  if (get_opt_string(o, "name", &name) < 0 ||
+      get_opt_string(o, "exclude", &exclude) < 0) {
+    fprintf(stderr, "%s: 'name' and 'exclude' must be strings\n", suffix);
+    return;
+  }
+  if (get_opt_year(o, "from_year", &from_year) < 0 ||
+      get_opt_year(o, "to_year", &to_year) < 0) {
+    fprintf(stderr,
+            "%s: 'from_year' and 'to_year' must be integers in "
+            "0..9999\n",
+            suffix);
+    return;
+  }
+  // The year test is an overlap test, so a reversed range isn't empty: it
+  // selects exactly the albums straddling the boundary, which looks like the
+  // filter being ignored because pictures keep appearing.
+  if (from_year != 0 && to_year != 0 && from_year > to_year) {
+    fprintf(stderr,
+            "%s: from_year %u is after to_year %u; that selects the albums "
+            "straddling the boundary, which is almost certainly not what was "
+            "meant\n",
+            suffix, from_year, to_year);
+    return;
+  }
+
+  char name_buf[ALBUM_FILTER_STR_CAP + 1];
+  char exclude_buf[ALBUM_FILTER_STR_CAP + 1];
+  if (copy_trimmed(name, name_buf, sizeof(name_buf), suffix, "name") < 0 ||
+      copy_trimmed(exclude, exclude_buf, sizeof(exclude_buf), suffix,
+                   "exclude") < 0)
+    return;
+
+  printf("%s: name=\"%s\" exclude=\"%s\" years=%u..%u\n", suffix, name_buf,
+         exclude_buf, from_year, to_year);
+  if (rc_dbus_photo_set_album_filter(ctx->dbus, name_buf, exclude_buf,
+                                     from_year, to_year) < 0)
+    return;
+
+  // photo-provider has dropped the photos it had prefetched, but the one on
+  // screen may still come from an album the new filter excludes. This replaces
+  // it and resets the slide timer.
+  rc_dbus_ambience_call_void(ctx->dbus, "Next");
+  publish_album_filter(ctx, name_buf, exclude_buf, from_year, to_year);
+}
+
 static void on_cmd(const char *suffix, const char *payload, size_t len,
                    void *ud) {
   struct app_ctx *ctx = ud;
@@ -242,6 +368,11 @@ static void on_cmd(const char *suffix, const char *payload, size_t len,
     cmd_set_embed_qr(ctx, suffix, o);
   else if (strcmp(suffix, "photo_provider/set_target_size") == 0)
     cmd_set_target_size(ctx, suffix, o);
+  // Named after Ambience rather than PhotoProvider, unlike every other
+  // command here. A bug to fix some other day, but requires downstream changes
+  // to other projects (remote control, portal, and here)
+  else if (strcmp(suffix, "ambience/set_album_filter") == 0)
+    cmd_set_album_filter(ctx, suffix, o);
   else
     fprintf(stderr, "Unknown cmd: %s\n", suffix);
 

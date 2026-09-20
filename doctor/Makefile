@@ -10,6 +10,7 @@ ifeq ($(LOCAL_BUILD),1)
 DEPLOY_TGT_HOST = batman@127.0.0.1
 else
 DEPLOY_TGT_HOST = batman@10.0.0.93
+DEPLOY_TGT_HOST = batman@10.0.0.80
 endif
 DEPLOY_TGT_DIR = /home/batman/homeboard
 SSH = ssh $(DEPLOY_TGT_HOST)

@@ -2,7 +2,8 @@ SUBDIRS := $(filter-out rpiz-xcompile stockimgs lib bin, $(patsubst %/,%,$(wildc
 SERVICES_DIRS := ambience dbus-mqtt-bridge display-mgr doctor occupancy-sensor-ld2410s photo-provider presence-service
 
 # Keep these in sync with common.mk
-DEPLOY_TGT_HOST=batman@10.0.0.93
+DEPLOY_TGT_HOST=batman@10.0.0.71
+DEPLOY_TGT_HOST=batman@10.0.0.80
 DEPLOY_TGT_DIR=/home/batman/homeboard
 
 .PHONY: all clean format $(SUBDIRS)

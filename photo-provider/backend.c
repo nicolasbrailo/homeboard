@@ -70,6 +70,27 @@ int pp_backend_set_embed_qr(struct pp_backend *b, bool v) {
   return -1;
 }
 
+int pp_backend_set_album_filter(struct pp_backend *b,
+                                const struct pp_album_filter_config *f) {
+  switch (b->type) {
+  case PP_BACKEND_WWWSLIDE:
+    return pp_wwwslide_backend_set_album_filter(b->wwwslide, f);
+  case PP_BACKEND_IMMICH:
+    return pp_immich_backend_set_album_filter(b->immich, f);
+  }
+  return -1;
+}
+
+const char *pp_backend_unavailable_reason(struct pp_backend *b) {
+  switch (b->type) {
+  case PP_BACKEND_WWWSLIDE:
+    return NULL;
+  case PP_BACKEND_IMMICH:
+    return pp_immich_backend_unavailable_reason(b->immich);
+  }
+  return NULL;
+}
+
 int pp_backend_fetch_next(struct pp_backend *b, int *fd_out, char **meta_out) {
   switch (b->type) {
   case PP_BACKEND_WWWSLIDE:

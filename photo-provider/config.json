@@ -15,6 +15,12 @@
     "api_key": "",
     "max_pictures_per_album": 20,
     "percent_per_album": 50,
-    "album_refresh_s": 86400
+    "album_refresh_s": 86400,
+    "album_filter": {
+      "name": "",
+      "exclude": "",
+      "from_year": 0,
+      "to_year": 0
+    }
   }
 }

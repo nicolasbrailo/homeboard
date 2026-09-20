@@ -32,7 +32,7 @@ and exposes a D-Bus interface for manual control of the slideshow.
 | Service | Role |
 |---|---|
 | `display-mgr` | Owns the DRM device. Ambience acquires its framebuffer through `drm_mgr`. Ambience does not call `Display.On/Off` — `presence-service` does. |
-| `photo-provider` | Caches and serves JPEGs. Ambience calls `GetPhoto`/`GetPrevPhoto` for each transition, plus `SetTargetSize` / `SetEmbedQr` at startup. |
+| `photo-provider` | Caches and serves JPEGs. Ambience calls `GetPhoto`/`GetPrevPhoto` for each transition, plus `SetTargetSize` / `SetEmbedQr` at startup. An error reply from it that names a user-visible cause is shown on screen. |
 | `presence-service` | Emits `io.homeboard.Presence1.PresenceChanged(b)`. Ambience starts/stops the slideshow on this signal. |
 
 All three must be reachable on the **system** bus.
@@ -83,6 +83,15 @@ make tgt-next               # trigger Ambience.Next() over SSH (for testing)
   panel (via the shared `eink` lib).
 - `fallback_image` — path to a JPEG drawn whenever fetch/decode fails so the
   screen never goes blank. Optional; ignored if not readable.
+
+When `photo-provider` refuses a photo for a reason worth telling a user about —
+currently only "No album matches the album filter" — its message is drawn over
+the fallback image as announcement text, and on the e-ink strip in place of the
+generic "No photos available". It clears when a photo can be served again. Note
+this shares the one announcement layer, so an `Announce` made while the message
+is up is dropped when it clears; the alternative was a fallback image with no
+explanation at all. Errors that say nothing about the photos (a timeout, a
+dropped bus) are not shown.
 
 ## D-Bus interface
 
