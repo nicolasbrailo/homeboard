@@ -6,8 +6,8 @@ LOCAL_BUILD ?= 0
 ifeq ($(LOCAL_BUILD),1)
 DEPLOY_TGT_HOST=batman@127.0.0.1
 else
-DEPLOY_TGT_HOST=batman@10.0.0.71
 DEPLOY_TGT_HOST=batman@10.0.0.80
+DEPLOY_TGT_HOST=batman@10.0.0.71
 endif
 DEPLOY_TGT_DIR=/home/batman/homeboard/
 DEPLOY_USER=batman

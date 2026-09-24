@@ -49,6 +49,17 @@ static void on_report(bool occupied, uint16_t distance, void *ud) {
   (void)ud;
   if (!g_bus)
     return;
+
+  // Only called from the sensor poller thread, so no locking needed
+  static bool have_last = false;
+  static bool last_occupied;
+  static uint16_t last_distance;
+  if (have_last && occupied == last_occupied && distance == last_distance)
+    return;
+  have_last = true;
+  last_occupied = occupied;
+  last_distance = distance;
+
   int r = sd_bus_emit_signal(g_bus, DBUS_PATH, DBUS_INTERFACE, "Report", "bu",
                              (int)occupied, (uint32_t)distance);
   if (r < 0)
