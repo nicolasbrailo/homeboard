@@ -37,10 +37,23 @@ struct app_ctx {
   bool have_last_render_cfg;
   uint32_t display_w_px;
   uint32_t display_h_px;
+  bool have_last_occupancy;
+  bool last_occupied;
+  uint32_t last_distance;
 };
 
 static void on_occupancy(bool occupied, uint32_t distance, void *ud) {
   struct app_ctx *ctx = ud;
+
+  // The sensor reports ~1/sec even when nothing changes; only forward changes
+  // to avoid spamming mqtt.
+  if (ctx->have_last_occupancy && occupied == ctx->last_occupied &&
+      distance == ctx->last_distance)
+    return;
+  ctx->have_last_occupancy = true;
+  ctx->last_occupied = occupied;
+  ctx->last_distance = distance;
+
   char payload[128];
   int n =
       snprintf(payload, sizeof(payload),
