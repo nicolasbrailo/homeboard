@@ -16,9 +16,8 @@ If the broker or a web UI in front of it is compromised, the blast radius on the
 
 - Connects to an MQTT broker as a client, with Last-Will-and-Testament set to `<prefix>state/bridge` = `{"state":"offline", machine_id, hostname, ip, host_model, ...}` (retained). The LWT payload is pre-formatted from host info collected at startup, so an ungraceful disconnect leaves a useful last-known record on the broker rather than an anonymous "offline" marker.
 - Subscribes to `<prefix>cmd/#`. Each known topic suffix maps to one D-Bus method call. Payloads are JSON objects (see table below).
-- Listens for `io.homeboard.Occupancy1.Report` on the system bus and republishes it as retained JSON on `<prefix>state/occupancy`.
+- Collects occupancy (`io.homeboard.Occupancy1.Report`), slideshow state (`io.homeboard.Ambience1.SlideshowActive`), the applied album filter and wifi signal into one retained record on `<prefix>state`, published when it changes (see below).
 - Listens for `io.homeboard.Ambience1.DisplayingPhoto` and republishes the photo-provider metadata JSON verbatim on `<prefix>state/displayed_photo` (passthrough, not re-wrapped).
-- Listens for `io.homeboard.Ambience1.SlideshowActive` and republishes `{"active":true}` / `{"active":false}` retained on `<prefix>state/slideshow_active`.
 - Drops any command message with the retain flag set, so a stale retained command isn't replayed on every reconnect.
 - Auto-reconnects to both the broker and (implicitly) D-Bus on failure.
 - Publishes the online variant of the same payload retained to `<prefix>state/bridge` on successful connect, and the offline variant on graceful shutdown — so the topic always carries a single record per device, with `state` toggling between `online` and `offline`. IP and other host info are captured at startup and do not refresh; a process restart is required to pick up changes.
@@ -91,7 +90,7 @@ The year test is an **overlap** test against the dates Immich reports for the al
 
 Dropped as a bad payload, with a log line and no change to the filter: malformed JSON, a non-string `name`/`exclude`, a non-integer or out-of-range year, a `name`/`exclude` over 511 bytes, and `from_year > to_year`. That last one is rejected rather than honoured because, the test being an overlap test, a reversed range selects exactly the albums straddling the boundary instead of nothing — which looks like the filter being ignored, since pictures keep appearing.
 
-On success the bridge calls `Ambience.Next`, so the picture on screen (which may come from an excluded album) is replaced and the slide timer reset, and republishes the applied filter on `state/album_filter`.
+On success the bridge calls `Ambience.Next`, so the picture on screen (which may come from an excluded album) is replaced and the slide timer reset, and reports the applied filter in `slideshow.album_filter` of `state`.
 
 ```bash
 # Only albums named portalgo-something
@@ -117,12 +116,29 @@ All state payloads are JSON. `state/displayed_photo` is a passthrough of `photo-
 | Topic | Payload | Retained |
 |-------|---------|----------|
 | `state/bridge` | online: `{"state":"online","machine_id":...,"hostname":...,"ip":...,"host_model":...,"started_at":...,"started_at_iso":...,"rotation":<uint>,"interp":...,"h_align":...,"v_align":...}`. offline: `{"state":"offline","machine_id":...,"hostname":...,"host_model":...,"started_at":...}` | yes. Two payload shapes share this topic. **Online** is the rich live record, republished on connect, on render_cfg change, and any other live update. **Offline** is a lean immutable-fields-only payload published on graceful shutdown AND preset as the LWT at connect time, so the broker emits the same shape regardless of whether the bridge died gracefully or crashed. The offline payload deliberately omits `ip` (DHCP can drift), `started_at_iso` (derived), and the render_cfg fields (mutable) — once the bridge has stopped serving, those values would be frozen-at-shutdown and presenting them as authoritative would be a lie. MQTT 3.1.1 latches the LWT in CONNECT and offers no way to update it on a live session, which is the underlying reason the LWT can't carry mutable state |
-| `state/occupancy` | `{"occupied":<bool>,"distance_cm":<uint>,"ts":<unix_seconds>}` | yes — late-joining clients get current state |
+| `state` | the device record, see below | yes |
 | `state/displayed_photo` | photo-provider's metadata JSON, passed through verbatim | yes — late-joining clients see the currently-displayed photo |
-| `state/slideshow_active` | `{"active":<bool>}` | yes — reflects whether the ambience screen is currently on and the slideshow is running |
-| `state/album_filter` | `{"name":...,"exclude":...,"from_year":<uint>,"to_year":<uint>}` | yes — the album filter the bridge last applied, in the same field names the command takes. Published only after a successful `set_album_filter`: photo-provider persists the filter across restarts, but exposes no getter, so after a bridge restart this topic holds the last filter *this bridge* set rather than the one in force |
 
 All publishes are QoS 0.
+
+### `state`
+
+One retained record, same shape as the Android sister device (AstroDock) publishes, so one UI renders both. Published only when something other than `ts` changed. Fields homeboard doesn't know are `null`.
+
+```json
+{"occupancy":{"occupied":true,"source":"mmwave","distance_cm":150},
+ "slideshow":{"active":true,"shown_in":null,"night_cover":null,
+              "album_filter":{"name":"","exclude":"","from_year":0,"to_year":0}},
+ "screen":null,"errors":null,"battery":null,"wifi_rssi":-60,"light_lux":null,"app":null,
+ "ts":1790705031}
+```
+
+- `occupancy.occupied`: from `Occupancy1.Report`; `null` until the first one.
+- `occupancy.distance_cm` (homeboard only): `null` when not occupied or when the sensor reports 0 (no UART). Only updated after a move of 50 cm or more.
+- `slideshow.active`: from `Ambience1.SlideshowActive`; `null` until the first signal after a bridge start.
+- `slideshow.album_filter`: the filter this bridge last applied with `cmd/ambience/set_album_filter`; `null` until then (photo-provider has no getter).
+- `wifi_rssi`: dBm from `/proc/net/wireless`, read every 10 s; `null` without a wireless reading. Only updated after a change of 5 dBm or more.
+- `ts`: unix time of the publish.
 
 ## D-Bus
 
@@ -175,5 +191,5 @@ Run on target:
 
 - **No TLS, no on-device auth.** Trust boundary is the LAN. Broker-side ACLs (if any) are the only access control.
 - **Reconnect behaviour.** libmosquitto retries with backoff 2s→30s. On a dead broker, the poll loop still services D-Bus — occupancy signals are still received, just not forwarded until MQTT is back.
-- **Retained occupancy.** After a bridge restart, the last-known occupancy state stays available to new subscribers via the retained message, but the `ts` field will be stale until the next sensor event. Consumers should treat `ts` as authoritative for freshness.
+- **Retained state.** After a bridge restart, the last `state` record stays on the broker until something changes; treat `ts` as authoritative for freshness.
 - **Ordering.** QoS 0 means fire-and-forget — the bridge does not guarantee delivery of either commands or state. This is fine for a remote control; do not build safety-critical workflows on top of it.

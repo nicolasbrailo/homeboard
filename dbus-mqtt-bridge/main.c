@@ -1,5 +1,6 @@
 #include "config.h"
 #include "dbus_client.h"
+#include "device_state.h"
 #include "mqtt.h"
 
 #include <jpeg_render/img_render.h>
@@ -33,34 +34,16 @@ static void sig_handler(int sig) {
 struct app_ctx {
   struct rc_dbus *dbus;
   struct rc_mqtt *mqtt;
+  struct rc_state *state;
   struct img_render_cfg last_render_cfg;
   bool have_last_render_cfg;
   uint32_t display_w_px;
   uint32_t display_h_px;
-  bool have_last_occupancy;
-  bool last_occupied;
-  uint32_t last_distance;
 };
 
 static void on_occupancy(bool occupied, uint32_t distance, void *ud) {
   struct app_ctx *ctx = ud;
-
-  // The sensor reports ~1/sec even when nothing changes; only forward changes
-  // to avoid spamming mqtt.
-  if (ctx->have_last_occupancy && occupied == ctx->last_occupied &&
-      distance == ctx->last_distance)
-    return;
-  ctx->have_last_occupancy = true;
-  ctx->last_occupied = occupied;
-  ctx->last_distance = distance;
-
-  char payload[128];
-  int n =
-      snprintf(payload, sizeof(payload),
-               "{\"occupied\":%s,\"distance_cm\":%u,\"ts\":%lld}",
-               occupied ? "true" : "false", distance, (long long)time(NULL));
-  if (n > 0 && (size_t)n < sizeof(payload))
-    rc_mqtt_publish(ctx->mqtt, "state/occupancy", payload, (size_t)n, true);
+  rc_state_set_occupancy(ctx->state, occupied, distance);
 }
 
 static void on_displayed_photo_changed(const char *meta,
@@ -82,9 +65,7 @@ static void on_displayed_photo_changed(const char *meta,
 
 static void on_slideshow_active_changed(bool active, void *ud) {
   struct app_ctx *ctx = ud;
-  const char *payload = active ? "{\"active\":true}" : "{\"active\":false}";
-  rc_mqtt_publish(ctx->mqtt, "state/slideshow_active", payload, strlen(payload),
-                  true);
+  rc_state_set_slideshow_active(ctx->state, active);
 }
 
 // Parses payload as a JSON object. Returns NULL and logs on failure (not an
@@ -266,26 +247,6 @@ static int copy_trimmed(const char *s, char *out, size_t out_sz,
   return 0;
 }
 
-// Publishes the filter now in force, so a dashboard can show what the device
-// is doing. Retained, like the other state topics.
-static void publish_album_filter(struct app_ctx *ctx, const char *name,
-                                 const char *exclude, uint32_t from_year,
-                                 uint32_t to_year) {
-  struct json_object *root = json_object_new_object();
-  if (!root)
-    return;
-  json_object_object_add(root, "name", json_object_new_string(name));
-  json_object_object_add(root, "exclude", json_object_new_string(exclude));
-  json_object_object_add(root, "from_year",
-                         json_object_new_int((int)from_year));
-  json_object_object_add(root, "to_year", json_object_new_int((int)to_year));
-  const char *out =
-      json_object_to_json_string_ext(root, JSON_C_TO_STRING_PLAIN);
-  if (out)
-    rc_mqtt_publish(ctx->mqtt, "state/album_filter", out, strlen(out), true);
-  json_object_put(root);
-}
-
 // Every field is optional, and an absent one means "no constraint of that
 // kind" rather than "leave it as it was": the payload replaces the whole
 // filter. {} clears the filter to show every album again.
@@ -338,7 +299,8 @@ static void cmd_set_album_filter(struct app_ctx *ctx, const char *suffix,
   // screen may still come from an album the new filter excludes. This replaces
   // it and resets the slide timer.
   rc_dbus_ambience_call_void(ctx->dbus, "Next");
-  publish_album_filter(ctx, name_buf, exclude_buf, from_year, to_year);
+  rc_state_set_album_filter(ctx->state, name_buf, exclude_buf, from_year,
+                            to_year);
 }
 
 static void on_cmd(const char *suffix, const char *payload, size_t len,
@@ -419,6 +381,12 @@ int main(int argc, char *argv[]) {
     rc_dbus_free(ctx.dbus);
     return 1;
   }
+  ctx.state = rc_state_new(ctx.mqtt);
+  if (!ctx.state) {
+    rc_mqtt_free(ctx.mqtt);
+    rc_dbus_free(ctx.dbus);
+    return 1;
+  }
 
   printf("Bridge running\n");
 
@@ -466,9 +434,11 @@ int main(int argc, char *argv[]) {
         rc_mqtt_loop_write(ctx.mqtt);
     }
     rc_mqtt_loop_misc(ctx.mqtt);
+    rc_state_poll_wifi(ctx.state);
   }
 
   printf("Shutting down\n");
+  rc_state_free(ctx.state);
   rc_mqtt_free(ctx.mqtt);
   rc_dbus_free(ctx.dbus);
   return 0;
