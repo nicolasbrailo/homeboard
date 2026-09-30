@@ -84,7 +84,7 @@ static void inspect_retained(struct claim_state *s,
   json_tokener_free(tok);
   if (!root) {
     fprintf(stderr,
-            "state/bridge: malformed JSON in retained payload; overwriting\n");
+            "availability: malformed JSON in retained payload; overwriting\n");
     return;
   }
   struct json_object *o;
@@ -112,12 +112,12 @@ static void inspect_retained(struct claim_state *s,
 
   if (!other_machine_id || !*other_machine_id) {
     fprintf(stderr,
-            "state/bridge: retained payload missing machine_id; overwriting\n");
+            "availability: retained payload missing machine_id; overwriting\n");
     json_object_put(root);
     return;
   }
   if (strcmp(other_machine_id, s->our_machine_id) == 0) {
-    printf("state/bridge: stale claim from previous run on this machine "
+    printf("availability: stale claim from previous run on this machine "
            "(machine_id=%s); overwriting\n",
            other_machine_id);
     json_object_put(root);
@@ -168,8 +168,7 @@ struct rc_mqtt_claim *rc_mqtt_claim_new(const char *topic_prefix,
   struct rc_mqtt_claim *c = calloc(1, sizeof(*c));
   if (!c)
     return NULL;
-  snprintf(c->topic, sizeof(c->topic), "%sstate/bridge", topic_prefix);
-
+  snprintf(c->topic, sizeof(c->topic), "%savailability", topic_prefix);
   if (rc_host_info_collect(&c->host_info) < 0) {
     fprintf(
         stderr,
@@ -338,5 +337,6 @@ int rc_mqtt_claim_run(struct rc_mqtt_claim *c, struct mosquitto *mosq,
   }
   c->claimed = true;
   printf("Claim accepted for '%s'\n", c->topic);
+
   return RC_MQTT_CLAIM_OK;
 }

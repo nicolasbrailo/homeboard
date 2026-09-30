@@ -12,7 +12,7 @@ struct rc_mqtt_claim;
 #define RC_MQTT_CLAIM_TRANSPORT (-2)
 
 // Allocate claim state. Reads host info and pre-formats both the online and
-// offline JSON payloads for the merged state/bridge topic. Returns NULL if
+// offline JSON payloads for the <prefix>availability topic. Returns NULL if
 // host info cannot be collected.
 // The instance of mosq must be valid but not connected yet (the LWT needs to be
 // set before calling mosquitto_connect)
@@ -25,7 +25,7 @@ struct rc_mqtt_claim *rc_mqtt_claim_new(const char *topic_prefix,
 // failed-init state.
 void rc_mqtt_claim_free(struct rc_mqtt_claim *c, struct mosquitto *mosq);
 
-// Synchronously verify no other machine currently owns the state/bridge
+// Synchronously verify no other machine currently owns the availability
 // topic and publish our retained online claim.
 //
 // `mosq` must already have had mosquitto_connect() called on it (TCP-level)
