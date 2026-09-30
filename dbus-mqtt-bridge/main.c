@@ -303,6 +303,39 @@ static void cmd_set_album_filter(struct app_ctx *ctx, const char *suffix,
                             to_year);
 }
 
+static void cmd_announce(struct app_ctx *ctx, const char *suffix,
+                         struct json_object *o) {
+  uint32_t timeout;
+  const char *msg;
+  if (get_u32(o, "timeout", &timeout) < 0 || get_string(o, "msg", &msg) < 0) {
+    fprintf(stderr, "%s: missing/invalid 'timeout' or 'msg'\n", suffix);
+    return;
+  }
+  rc_dbus_ambience_announce(ctx->dbus, timeout, msg);
+}
+
+// Sent by zmw_homeboard when its speakers start playing something. The
+// homeboard has no speaker, so there's nothing to do but log it.
+static void cmd_announce_audio(const char *suffix, struct json_object *o) {
+  const char *uri;
+  const char *msg = "";
+  uint32_t volume = 0;
+  if (get_string(o, "uri", &uri) < 0) {
+    fprintf(stderr, "%s: missing/invalid 'uri'\n", suffix);
+    return;
+  }
+  if (get_opt_string(o, "msg", &msg) < 0) {
+    fprintf(stderr, "%s: 'msg' must be a string\n", suffix);
+    return;
+  }
+  bool has_volume = get_u32(o, "volume", &volume) == 0;
+  printf("%s: no speaker, ignoring (uri=\"%.200s\" msg=\"%.200s\"", suffix, uri,
+         msg);
+  if (has_volume)
+    printf(" volume=%u", volume);
+  printf(")\n");
+}
+
 static void on_cmd(const char *suffix, const char *payload, size_t len,
                    void *ud) {
   struct app_ctx *ctx = ud;
@@ -335,6 +368,10 @@ static void on_cmd(const char *suffix, const char *payload, size_t len,
 
   if (strcmp(suffix, "ambience/set_transition_time_secs") == 0)
     cmd_set_transition_time(ctx, suffix, o);
+  else if (strcmp(suffix, "ambience/announce") == 0)
+    cmd_announce(ctx, suffix, o);
+  else if (strcmp(suffix, "ambience/announce_audio") == 0)
+    cmd_announce_audio(suffix, o);
   else if (strcmp(suffix, "ambience/set_svg_overlay") == 0)
     cmd_set_svg_overlay(ctx, suffix, o);
   else if (strcmp(suffix, "ambience/set_render_config") == 0)

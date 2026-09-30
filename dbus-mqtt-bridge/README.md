@@ -60,7 +60,8 @@ All command payloads are **JSON objects**. Field names and types must match exac
 | `cmd/presence/force_on` | `Presence.ForceOn` | ignored | force presence=true |
 | `cmd/presence/force_off` | `Presence.ForceOff` | ignored | latch presence=false until next genuine vacancy |
 | `cmd/ambience/set_transition_time_secs` | `Ambience.SetTransitionTimeSecs` (`u`) | `{"secs": <uint>}` | e.g. `{"secs":30}` |
-| `cmd/ambience/announce` | `Ambience.Announce` (`us`) | `{"timeout": <uint>, "msg": <string>}` | timeout `0` means no auto-clear |
+| `cmd/ambience/announce` | `Ambience.Announce` (`us`) | `{"timeout": <uint>, "msg": <string>}` | word-wrapped text drawn over the picture, on top of any SVG overlay. timeout `0` means no auto-clear; empty `msg` clears it. Shares ambience's text layer with photo-provider errors, so one of those clearing also clears the announcement |
+| `cmd/ambience/announce_audio` | none (logged) | `{"uri": <string>, "msg": <string>, "volume": <uint>}` | `msg` and `volume` optional. The homeboard has no speaker: validated and logged, then ignored |
 | `cmd/ambience/set_svg_overlay` | `Ambience.SetSvgOverlay` (`us`) | `{"timeout": <uint>, "svg": <string>}` | timeout `0` means no auto-clear. SVG string capped at 128 KB; total payload capped at 192 KB. nanosvg is the parser — no `<text>`, no filters, limited gradients. Empty `svg` clears the overlay |
 | `cmd/ambience/set_render_config` | `Ambience.SetRenderConfig` (`usss`) | `{"rotation": <uint>, "interp": <string>, "h_align": <string>, "v_align": <string>}` | rotation `0`/`90`/`180`/`270`; interp `nearest`/`bilinear`; aligns as on the D-Bus method. Validation happens service-side |
 | `cmd/photo_provider/set_embed_qr` | `PhotoProvider.SetEmbedQr` (`b`) | `{"on": <bool>}` | |
